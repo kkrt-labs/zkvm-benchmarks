@@ -2,6 +2,7 @@ use std::time::{Duration, Instant};
 
 use utils::benchmark;
 
+use anyhow;
 use std::fs::File;
 use std::io::BufReader;
 use std::ops::Range;
@@ -9,12 +10,17 @@ use std::ops::Range;
 use plonky2::field::goldilocks_field::GoldilocksField;
 use plonky2::plonk::config::{GenericConfig, PoseidonGoldilocksConfig};
 use plonky2::util::timing::TimingTree;
+use plonky2x::backend::circuit::Groth16WrapperParameters;
+use plonky2x::backend::wrapper::wrap::WrappedCircuit;
+use plonky2x::frontend::builder::CircuitBuilder as WrapperBuilder;
+use plonky2x::prelude::DefaultParameters;
 
 use zkm_emulator::utils::{load_elf_with_patch, split_prog_into_segs};
 use zkm_prover::all_stark::AllStark;
 use zkm_prover::config::StarkConfig;
 use zkm_prover::cpu::kernel::assembler::segment_kernel;
 use zkm_prover::fixed_recursive_verifier::AllRecursiveCircuits;
+use zkm_prover::generation::state::{AssumptionReceipts, Receipt};
 use zkm_prover::proof;
 use zkm_prover::proof::PublicValues;
 use zkm_prover::prover::prove;
@@ -28,7 +34,11 @@ const SHA3_ELF: &str = "./sha3/target/mips-unknown-linux-musl/release/sha3-bench
 const BIGMEM_ELF: &str = "./bigmem/target/mips-unknown-linux-musl/release/bigmem";
 const SEG_SIZE: usize = 262144 * 8; //G
 
-const DEGREE_BITS_RANGE: [Range<usize>; 6] = [10..23, 10..23, 10..23, 8..23, 6..23, 13..25];
+const DEGREE_BITS_RANGE: [Range<usize>; 8] =
+    [10..21, 12..22, 11..21, 8..21, 6..21, 6..21, 6..21, 13..23];
+const D: usize = 2;
+type C = PoseidonGoldilocksConfig;
+type F = <C as GenericConfig<D>>::F;
 
 fn main() {
     init_logger();
@@ -37,66 +47,61 @@ fn main() {
     let _ = std::fs::rename("/tmp/zkm", "/tmp/zkm.old");
 
     let lengths = [32, 256, 512, 1024, 2048];
-    benchmark(benchmark_sha2, &lengths, "../benchmark_outputs/sha2_zkm.csv", "byte length");
-    benchmark(benchmark_sha3, &lengths, "../benchmark_outputs/sha3_zkm.csv", "byte length");
+    benchmark(
+        benchmark_sha2,
+        &lengths,
+        "../benchmark_outputs/sha2_zkm.csv",
+        "byte length",
+    );
+    benchmark(
+        benchmark_sha3,
+        &lengths,
+        "../benchmark_outputs/sha3_zkm.csv",
+        "byte length",
+    );
 
     let ns = [100, 1000, 10000, 50000];
-    benchmark(benchmark_fibonacci, &ns, "../benchmark_outputs/fiboancci_zkm.csv", "n");
+    benchmark(
+        benchmark_fibonacci,
+        &ns,
+        "../benchmark_outputs/fiboancci_zkm.csv",
+        "n",
+    );
 
     let values = [5];
-    benchmark(benchmark_bigmem, &values, "../benchmark_outputs/bigmem_zkm.csv", "value");
+    benchmark(
+        benchmark_bigmem,
+        &values,
+        "../benchmark_outputs/bigmem_zkm.csv",
+        "value",
+    );
 
     let iters = [230, 460, 920, 1840, 3680];
-    benchmark(benchmark_sha2_chain, &iters, "../benchmark_outputs/sha2_chain_zkm.csv", "iters");
-    benchmark(benchmark_sha3_chain, &iters, "../benchmark_outputs/sha3_chain_zkm.csv", "iters");
+    benchmark(
+        benchmark_sha2_chain,
+        &iters,
+        "../benchmark_outputs/sha2_chain_zkm.csv",
+        "iters",
+    );
+    benchmark(
+        benchmark_sha3_chain,
+        &iters,
+        "../benchmark_outputs/sha3_chain_zkm.csv",
+        "iters",
+    );
 }
 
-fn prove_single_seg_common(
-    seg_file: &str,
-    basedir: &str,
-    block: &str,
-    file: &str,
-) -> usize {
-    let seg_reader = BufReader::new(File::open(seg_file).unwrap());
-    let kernel = segment_kernel(basedir, block, file, seg_reader);
-
-    const D: usize = 2;
-    type C = PoseidonGoldilocksConfig;
-    type F = <C as GenericConfig<D>>::F;
-
-    let allstark: AllStark<F, D> = AllStark::default();
-    let config = StarkConfig::standard_fast_config();
-    let mut timing = TimingTree::new("prove", log::Level::Info);
-    let allproof: proof::AllProof<GoldilocksField, C, D> =
-        prove(&allstark, &kernel, &config, &mut timing).unwrap();
-    let mut count_bytes: usize = 0;
-    for (row, proof) in allproof.stark_proofs.clone().iter().enumerate() {
-        let proof_str = serde_json::to_string(&proof.proof).unwrap();
-        log::info!("row:{} proof bytes:{}", row, proof_str.len());
-        count_bytes += proof_str.len();
-    }
-    timing.filter(Duration::from_millis(100)).print();
-    log::info!("total proof bytes:{}KB", count_bytes / 1024);
-    verify_proof(&allstark, allproof, &config).unwrap();
-    log::info!("Prove done");
-    count_bytes
-}
-
-fn prove_multi_seg_common(
+pub fn prove_segments(
     seg_dir: &str,
     basedir: &str,
     block: &str,
     file: &str,
     seg_file_number: usize,
     seg_start_id: usize,
-) -> usize {
-    type F = GoldilocksField;
-    const D: usize = 2;
-    type C = PoseidonGoldilocksConfig;
-
-    if seg_file_number < 2 {
-        panic!("seg file number must >= 2\n");
-    }
+    assumptions: AssumptionReceipts<F, C, D>,
+) -> anyhow::Result<usize> {
+    type InnerParameters = DefaultParameters;
+    type OuterParameters = Groth16WrapperParameters;
 
     let total_timing = TimingTree::new("prove total time", log::Level::Info);
     let all_stark = AllStark::<F, D>::default();
@@ -107,14 +112,19 @@ fn prove_multi_seg_common(
 
     let seg_file = format!("{}/{}", seg_dir, seg_start_id);
     log::info!("Process segment {}", seg_file);
-    let seg_reader = BufReader::new(File::open(seg_file).unwrap());
+    let seg_reader = BufReader::new(File::open(seg_file)?);
     let input_first = segment_kernel(basedir, block, file, seg_reader);
     let mut timing = TimingTree::new("prove root first", log::Level::Info);
-    let (mut agg_proof, mut updated_agg_public_values) =
-        all_circuits.prove_root(&all_stark, &input_first, &config, &mut timing).unwrap();
+    let mut agg_receipt = all_circuits.prove_root_with_assumption(
+        &all_stark,
+        &input_first,
+        &config,
+        &mut timing,
+        assumptions.clone(),
+    )?;
 
     timing.filter(Duration::from_millis(100)).print();
-    all_circuits.verify_root(agg_proof.clone()).unwrap();
+    all_circuits.verify_root(agg_receipt.clone())?;
 
     let mut base_seg = seg_start_id + 1;
     let mut seg_num = seg_file_number - 1;
@@ -123,32 +133,25 @@ fn prove_multi_seg_common(
     if seg_file_number % 2 == 0 {
         let seg_file = format!("{}/{}", seg_dir, seg_start_id + 1);
         log::info!("Process segment {}", seg_file);
-        let seg_reader = BufReader::new(File::open(seg_file).unwrap());
+        let seg_reader = BufReader::new(File::open(seg_file)?);
         let input = segment_kernel(basedir, block, file, seg_reader);
         timing = TimingTree::new("prove root second", log::Level::Info);
-        let (root_proof, public_values) =
-            all_circuits.prove_root(&all_stark, &input, &config, &mut timing).unwrap();
+        let receipt = all_circuits.prove_root_with_assumption(
+            &all_stark,
+            &input,
+            &config,
+            &mut timing,
+            assumptions.clone(),
+        )?;
         timing.filter(Duration::from_millis(100)).print();
 
-        all_circuits.verify_root(root_proof.clone()).unwrap();
+        all_circuits.verify_root(receipt.clone())?;
 
-        // Update public values for the aggregation.
-        let agg_public_values = PublicValues {
-            roots_before: updated_agg_public_values.roots_before,
-            roots_after: public_values.roots_after,
-            userdata: public_values.userdata,
-        };
         timing = TimingTree::new("prove aggression", log::Level::Info);
         // We can duplicate the proofs here because the state hasn't mutated.
-        (agg_proof, updated_agg_public_values) = all_circuits.prove_aggregation(
-            false,
-            &agg_proof,
-            false,
-            &root_proof,
-            agg_public_values.clone(),
-        ).unwrap();
+        agg_receipt = all_circuits.prove_aggregation(false, &agg_receipt, false, &receipt)?;
         timing.filter(Duration::from_millis(100)).print();
-        all_circuits.verify_aggregation(&agg_proof).unwrap();
+        all_circuits.verify_aggregation(&agg_receipt)?;
 
         is_agg = true;
         base_seg = seg_start_id + 2;
@@ -158,76 +161,89 @@ fn prove_multi_seg_common(
     for i in 0..seg_num / 2 {
         let seg_file = format!("{}/{}", seg_dir, base_seg + (i << 1));
         log::info!("Process segment {}", seg_file);
-        let seg_reader = BufReader::new(File::open(&seg_file).unwrap());
+        let seg_reader = BufReader::new(File::open(&seg_file)?);
         let input_first = segment_kernel(basedir, block, file, seg_reader);
         let mut timing = TimingTree::new("prove root first", log::Level::Info);
-        let (root_proof_first, first_public_values) =
-            all_circuits.prove_root(&all_stark, &input_first, &config, &mut timing).unwrap();
+        let root_receipt_first = all_circuits.prove_root_with_assumption(
+            &all_stark,
+            &input_first,
+            &config,
+            &mut timing,
+            assumptions.clone(),
+        )?;
 
         timing.filter(Duration::from_millis(100)).print();
-        all_circuits.verify_root(root_proof_first.clone()).unwrap();
+        all_circuits.verify_root(root_receipt_first.clone())?;
 
         let seg_file = format!("{}/{}", seg_dir, base_seg + (i << 1) + 1);
         log::info!("Process segment {}", seg_file);
-        let seg_reader = BufReader::new(File::open(&seg_file).unwrap());
+        let seg_reader = BufReader::new(File::open(&seg_file)?);
         let input = segment_kernel(basedir, block, file, seg_reader);
         let mut timing = TimingTree::new("prove root second", log::Level::Info);
-        let (root_proof, public_values) =
-            all_circuits.prove_root(&all_stark, &input, &config, &mut timing).unwrap();
+        let root_receipt = all_circuits.prove_root_with_assumption(
+            &all_stark,
+            &input,
+            &config,
+            &mut timing,
+            assumptions.clone(),
+        )?;
         timing.filter(Duration::from_millis(100)).print();
 
-        all_circuits.verify_root(root_proof.clone()).unwrap();
+        all_circuits.verify_root(root_receipt.clone())?;
 
-        // Update public values for the aggregation.
-        let new_agg_public_values = PublicValues {
-            roots_before: first_public_values.roots_before,
-            roots_after: public_values.roots_after,
-            userdata: public_values.userdata,
-        };
         timing = TimingTree::new("prove aggression", log::Level::Info);
         // We can duplicate the proofs here because the state hasn't mutated.
-        let (new_agg_proof, new_updated_agg_public_values) = all_circuits.prove_aggregation(
-            false,
-            &root_proof_first,
-            false,
-            &root_proof,
-            new_agg_public_values,
-        ).unwrap();
+        let new_agg_receipt =
+            all_circuits.prove_aggregation(false, &root_receipt_first, false, &root_receipt)?;
         timing.filter(Duration::from_millis(100)).print();
-        all_circuits.verify_aggregation(&new_agg_proof).unwrap();
+        all_circuits.verify_aggregation(&new_agg_receipt)?;
 
-        // Update public values for the nested aggregation.
-        let agg_public_values = PublicValues {
-            roots_before: updated_agg_public_values.roots_before,
-            roots_after: new_updated_agg_public_values.roots_after,
-            userdata: new_updated_agg_public_values.userdata,
-        };
         timing = TimingTree::new("prove nested aggression", log::Level::Info);
 
         // We can duplicate the proofs here because the state hasn't mutated.
-        (agg_proof, updated_agg_public_values) = all_circuits.prove_aggregation(
-            is_agg,
-            &agg_proof,
-            true,
-            &new_agg_proof,
-            agg_public_values.clone(),
-        ).unwrap();
+        agg_receipt =
+            all_circuits.prove_aggregation(is_agg, &agg_receipt, true, &new_agg_receipt)?;
         is_agg = true;
         timing.filter(Duration::from_millis(100)).print();
 
-        all_circuits.verify_aggregation(&agg_proof).unwrap();
+        all_circuits.verify_aggregation(&agg_receipt)?;
     }
 
-    let (block_proof, _block_public_values) =
-        all_circuits.prove_block(None, &agg_proof, updated_agg_public_values).unwrap();
-
-    let size = serde_json::to_string(&block_proof.proof).unwrap().len();
     log::info!(
         "proof size: {:?}",
-        size
+        serde_json::to_string(&agg_receipt.proof().proof)
+            .unwrap()
+            .len()
     );
+    let final_receipt = if seg_file_number > 1 {
+        let block_receipt = all_circuits.prove_block(None, &agg_receipt)?;
+        all_circuits.verify_block(&block_receipt)?;
+        let build_path = "../verifier/data".to_string();
+        let path = format!("{}/test_circuit/", build_path);
+        let builder = WrapperBuilder::<DefaultParameters, 2>::new();
+        let mut circuit = builder.build();
+        circuit.set_data(all_circuits.block.circuit);
+        let mut bit_size = vec![32usize; 16];
+        bit_size.extend(vec![8; 32]);
+        bit_size.extend(vec![64; 68]);
+        let wrapped_circuit = WrappedCircuit::<InnerParameters, OuterParameters, D>::build(
+            circuit,
+            Some((vec![], bit_size)),
+        );
+        let wrapped_proof = wrapped_circuit.prove(&block_receipt.proof()).unwrap();
+        wrapped_proof.save(path).unwrap();
+
+        block_receipt
+    } else {
+        agg_receipt
+    };
+
+    log::info!("build finish");
+
     total_timing.filter(Duration::from_millis(100)).print();
-    size
+    // Ok(final_receipt)
+    let size = serde_json::to_string(&final_receipt.proof()).unwrap().len();
+    Ok(size)
 }
 
 fn init_logger() {
@@ -248,16 +264,11 @@ fn benchmark_sha2_chain(iters: u32) -> (Duration, usize) {
     let (_total_steps, seg_num, mut state) = split_prog_into_segs(state, seg_path, "", seg_size);
 
     let start = Instant::now();
-    let size = if seg_num == 1 {
-        let seg_file = format!("{seg_path}/{}", 0);
-        prove_single_seg_common(&seg_file, "", "", "")
-    } else {
-        prove_multi_seg_common(seg_path, "", "", "", seg_num, 0)
-    };
+    let size = prove_segments(&seg_path, "", "", "", seg_num, 0, vec![]).unwrap();
     let end = Instant::now();
     let duration = end.duration_since(start);
 
-    let _hash =  state.read_public_values::<[u8; 32]>();
+    let _hash = state.read_public_values::<[u8; 32]>();
 
     (duration, size)
 }
@@ -274,16 +285,11 @@ fn benchmark_sha3_chain(iters: u32) -> (Duration, usize) {
     let (_total_steps, seg_num, mut state) = split_prog_into_segs(state, seg_path, "", seg_size);
 
     let start = Instant::now();
-    let size = if seg_num == 1 {
-        let seg_file = format!("{seg_path}/{}", 0);
-        prove_single_seg_common(&seg_file, "", "", "")
-    } else {
-        prove_multi_seg_common(seg_path, "", "", "", seg_num, 0)
-    };
+    let size = prove_segments(&seg_path, "", "", "", seg_num, 0, vec![]).unwrap();
     let end = Instant::now();
     let duration = end.duration_since(start);
 
-    let _hash =  state.read_public_values::<[u8; 32]>();
+    let _hash = state.read_public_values::<[u8; 32]>();
 
     (duration, size)
 }
@@ -299,16 +305,11 @@ fn benchmark_sha2(num_bytes: usize) -> (Duration, usize) {
     let (_total_steps, seg_num, mut state) = split_prog_into_segs(state, seg_path, "", seg_size);
 
     let start = Instant::now();
-    let size = if seg_num == 1 {
-        let seg_file = format!("{seg_path}/{}", 0);
-        prove_single_seg_common(&seg_file, "", "", "")
-    } else {
-        prove_multi_seg_common(seg_path, "", "", "", seg_num, 0)
-    };
+    let size = prove_segments(&seg_path, "", "", "", seg_num, 0, vec![]).unwrap();
     let end = Instant::now();
     let duration = end.duration_since(start);
 
-    let _hash =  state.read_public_values::<[u8; 32]>();
+    let _hash = state.read_public_values::<[u8; 32]>();
 
     (duration, size)
 }
@@ -324,16 +325,11 @@ fn benchmark_sha3(num_bytes: usize) -> (Duration, usize) {
     let (_total_steps, seg_num, mut state) = split_prog_into_segs(state, seg_path, "", seg_size);
 
     let start = Instant::now();
-    let size = if seg_num == 1 {
-        let seg_file = format!("{seg_path}/{}", 0);
-        prove_single_seg_common(&seg_file, "", "", "")
-    } else {
-        prove_multi_seg_common(seg_path, "", "", "", seg_num, 0)
-    };
+    let size = prove_segments(&seg_path, "", "", "", seg_num, 0, vec![]).unwrap();
     let end = Instant::now();
     let duration = end.duration_since(start);
 
-    let _hash =  state.read_public_values::<[u8; 32]>();
+    let _hash = state.read_public_values::<[u8; 32]>();
 
     (duration, size)
 }
@@ -348,12 +344,7 @@ fn benchmark_fibonacci(n: u32) -> (Duration, usize) {
     let (_total_steps, seg_num, mut state) = split_prog_into_segs(state, seg_path, "", seg_size);
 
     let start = Instant::now();
-    let size = if seg_num == 1 {
-        let seg_file = format!("{seg_path}/{}", 0);
-        prove_single_seg_common(&seg_file, "", "", "")
-    } else {
-        prove_multi_seg_common(seg_path, "", "", "", seg_num, 0)
-    };
+    let size = prove_segments(&seg_path, "", "", "", seg_num, 0, vec![]).unwrap();
     let end = Instant::now();
     let duration = end.duration_since(start);
 
@@ -371,12 +362,7 @@ fn benchmark_bigmem(value: u32) -> (Duration, usize) {
     let (_total_steps, seg_num, mut state) = split_prog_into_segs(state, seg_path, "", seg_size);
 
     let start = Instant::now();
-    let size = if seg_num == 1 {
-        let seg_file = format!("{seg_path}/{}", 0);
-        prove_single_seg_common(&seg_file, "", "", "")
-    } else {
-        prove_multi_seg_common(seg_path, "", "", "", seg_num, 0)
-    };
+    let size = prove_segments(&seg_path, "", "", "", seg_num, 0, vec![]).unwrap();
     let end = Instant::now();
     let duration = end.duration_since(start);
 
