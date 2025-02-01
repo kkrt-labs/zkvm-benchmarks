@@ -3,26 +3,38 @@ use std::{
     usize,
 };
 
+use jolt::host_utils::Serializable;
 use utils::benchmark;
 
 pub fn main() {
     // let iters = [230, 460, 920, 1840, 3680];
-    let iters = [230, 250];
-    benchmark(
-        benchmark_sha2_chain,
-        &iters,
-        "../benchmark_outputs/sha2_chain_jolt.csv",
-        "iters",
-    );
+    // let iters = [230, 250];
+    // benchmark(
+    //     benchmark_sha2_chain,
+    //     &iters,
+    //     "../benchmark_outputs/sha2_chain_jolt.csv",
+    //     "iters",
+    // );
 
     // benchmark(benchmark_sha3_chain, &iters, "../benchmark_outputs/sha3_chain_jolt.csv", "iters");
 
     // let lengths = [32, 256, 512, 1024, 2048];
-    // benchmark(benchmark_sha2, &lengths, "../benchmark_outputs/sha2_jolt.csv", "byte length");
+    let lengths = [32, 64];
+    benchmark(
+        benchmark_sha2,
+        &lengths,
+        "../benchmark_outputs/sha2_jolt.csv",
+        "byte length",
+    );
     // benchmark(benchmark_sha3, &lengths, "../benchmark_outputs/sha3_jolt.csv", "byte length");
 
     // let ns = [100, 1000, 10000, 50000];
-    // benchmark(benchmark_fib, &ns, "../benchmark_outputs/fiboancci_jolt.csv", "n");
+    // benchmark(
+    //     benchmark_fib,
+    //     &ns,
+    //     "../benchmark_outputs/fiboancci_jolt.csv",
+    //     "n",
+    // );
 
     // let values = [5];
     // benchmark(benchmark_bigmem, &values, "../benchmark_outputs/bigmem_jolt.csv", "value");

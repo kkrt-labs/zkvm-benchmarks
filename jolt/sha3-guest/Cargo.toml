@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [[bin]]
-name = "guest"
+name = "sha3-guest"
 path = "src/lib.rs"
 
 [features]
