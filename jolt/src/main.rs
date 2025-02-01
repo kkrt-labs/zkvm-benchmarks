@@ -1,11 +1,20 @@
-use std::{time::{Duration, Instant}, usize};
+use std::{
+    time::{Duration, Instant},
+    usize,
+};
 
 use utils::benchmark;
 
 pub fn main() {
-    let iters = [230, 460, 920, 1840, 3680];
-    benchmark(benchmark_sha2_chain, &iters, "../benchmark_outputs/sha2_chain_jolt.csv", "iters");
-    
+    // let iters = [230, 460, 920, 1840, 3680];
+    let iters = [230, 250];
+    benchmark(
+        benchmark_sha2_chain,
+        &iters,
+        "../benchmark_outputs/sha2_chain_jolt.csv",
+        "iters",
+    );
+
     // benchmark(benchmark_sha3_chain, &iters, "../benchmark_outputs/sha3_chain_jolt.csv", "iters");
 
     // let lengths = [32, 256, 512, 1024, 2048];

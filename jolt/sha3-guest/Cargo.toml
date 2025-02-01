@@ -11,5 +11,5 @@ path = "src/lib.rs"
 guest = []
 
 [dependencies]
-jolt = { package = "jolt-sdk", git = "https://github.com/a16z/Lasso", branch = "jolt" }
+jolt = { package = "jolt-sdk", git = "https://github.com/a16z/jolt", features = ["guest-std"]}
 sha3 = { version = "0.10.8", default-features = false }
