@@ -1,5 +1,25 @@
 # zkVM Benchmarks
 
+Supported zkVMs:
+
+- Jolt
+- Nexus (WIP)
+- Powdr (WIP)
+- RISC Zero
+- SP1
+
+Want to support in the future:
+
+- zkWASM (in the future)
+- Open VM (in the future)
+- Valida: [The repo is currently private, and the latest docker image is not available.](https://github.com/lita-xyz/valida-releases)
+
+Don't support:
+
+- Cairo VM: doesn't support Rust yet
+- Miden VM: doesn't support Rust yet
+- ...
+
 ## Installation
 
 ### Install Jolt/Nexus

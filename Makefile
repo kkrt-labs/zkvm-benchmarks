@@ -3,7 +3,7 @@ bench-all:
 	make bench-sp1
 	make bench-risczero
 	make bench-zkm
-
+	make bench-powdr
 bench-jolt:
 	cd jolt && RUSTFLAGS="-C target-cpu=native" cargo run --release
 
@@ -38,3 +38,6 @@ build-zkm:
 	cd zkm/bigmem && cargo build --target=mips-unknown-linux-musl --release
 	cd zkm/sha2-chain && cargo build --target=mips-unknown-linux-musl --release
 	cd zkm/sha3-chain && cargo build --target=mips-unknown-linux-musl --release
+
+bench-powdr:
+	cd powdr && RUSTFLAGS='-C target-cpu=native' cargo run --release

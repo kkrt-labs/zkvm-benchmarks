@@ -3,3 +3,4 @@ benchmark_outputs/*
 .DS_Store
 **/*.log
 target
+powdr/powdr-target
