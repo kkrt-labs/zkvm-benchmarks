@@ -10,9 +10,11 @@ Supported zkVMs:
 
 Want to support in the future:
 
+- Ceno: doesn't support guest yet
 - zkWASM (in the future)
 - Open VM (in the future)
 - Valida: [The repo is currently private, and the latest docker image is not available.](https://github.com/lita-xyz/valida-releases)
+- Snarkify?
 
 Don't support:
 
@@ -61,6 +63,13 @@ tar -zxvf mips-linux-muslsf-cross.tgz
 [target.mips-unknown-linux-musl]
 linker = "<path-to>/mips-linux-muslsf-cross/bin/mips-linux-muslsf-gcc"
 rustflags = ["--cfg", 'target_os="zkvm"',"-C", "target-feature=+crt-static", "-C", "link-arg=-g"]
+```
+
+### Install Open VM
+
+```bash
+cargo +nightly install --git http://github.com/openvm-org/openvm.git cargo-openvm
+cargo openvm --version
 ```
 
 ## Running

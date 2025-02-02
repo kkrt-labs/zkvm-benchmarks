@@ -4,6 +4,8 @@ bench-all:
 	make bench-risczero
 	make bench-zkm
 	make bench-powdr
+	make bench-openvm
+
 bench-jolt:
 	cd jolt && RUSTFLAGS="-C target-cpu=native" cargo run --release
 
@@ -41,3 +43,9 @@ build-zkm:
 
 bench-powdr:
 	cd powdr && RUSTFLAGS='-C target-cpu=native' cargo run --release
+
+bench-openvm:
+	cd openvm && \
+	cargo openvm build && \
+	cargo openvm keygen && \
+	OPENVM_FAST_TEST=1 cargo openvm prove app --input "0x0A00000000000000"
