@@ -22,7 +22,7 @@ fn main() {
     );
 }
 
-fn benchmark_fib(n: u32) -> (Duration, usize) {
+fn benchmark_fib(n: u32) -> (Duration, usize, usize) {
     println!("Setting up Nova public parameters...");
     let pp: PP = PP::generate().expect("failed to generate parameters");
 
@@ -45,5 +45,5 @@ fn benchmark_fib(n: u32) -> (Duration, usize) {
 
     println!("  Succeeded!");
 
-    (end.duration_since(start), 0x1000000)
+    (end.duration_since(start), 0x1000000, 0x1000000)
 }
