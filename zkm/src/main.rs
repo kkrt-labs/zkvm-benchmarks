@@ -26,6 +26,8 @@ use zkm_prover::proof::PublicValues;
 use zkm_prover::prover::prove;
 use zkm_prover::verifier::verify_proof;
 
+type BenchResult = (Duration, usize, usize);
+
 const FIBONACCI_ELF: &str = "./fibonacci/target/mips-unknown-linux-musl/release/fibonacci";
 const SHA2_ELF: &str = "./sha2/target/mips-unknown-linux-musl/release/sha2-bench";
 const SHA2_CHAIN_ELF: &str = "./sha2-chain/target/mips-unknown-linux-musl/release/sha2-chain";
@@ -252,7 +254,7 @@ fn init_logger() {
     env_logger::init()
 }
 
-fn benchmark_sha2_chain(iters: u32) -> (Duration, usize) {
+fn benchmark_sha2_chain(iters: u32) -> BenchResult {
     let input = [5u8; 32];
     let mut state = load_elf_with_patch(SHA2_CHAIN_ELF, vec![]);
     state.add_input_stream(&input);
@@ -270,10 +272,10 @@ fn benchmark_sha2_chain(iters: u32) -> (Duration, usize) {
 
     let _hash = state.read_public_values::<[u8; 32]>();
 
-    (duration, size)
+    (duration, size, state.cycle as usize)
 }
 
-fn benchmark_sha3_chain(iters: u32) -> (Duration, usize) {
+fn benchmark_sha3_chain(iters: u32) -> BenchResult {
     let input = [5u8; 32];
     let mut state = load_elf_with_patch(SHA3_CHAIN_ELF, vec![]);
     state.add_input_stream(&input);
@@ -291,10 +293,10 @@ fn benchmark_sha3_chain(iters: u32) -> (Duration, usize) {
 
     let _hash = state.read_public_values::<[u8; 32]>();
 
-    (duration, size)
+    (duration, size, state.cycle as usize)
 }
 
-fn benchmark_sha2(num_bytes: usize) -> (Duration, usize) {
+fn benchmark_sha2(num_bytes: usize) -> BenchResult {
     let input = vec![5u8; num_bytes];
     let mut state = load_elf_with_patch(SHA2_ELF, vec![]);
     state.add_input_stream(&input);
@@ -311,10 +313,10 @@ fn benchmark_sha2(num_bytes: usize) -> (Duration, usize) {
 
     let _hash = state.read_public_values::<[u8; 32]>();
 
-    (duration, size)
+    (duration, size, state.cycle as usize)
 }
 
-fn benchmark_sha3(num_bytes: usize) -> (Duration, usize) {
+fn benchmark_sha3(num_bytes: usize) -> BenchResult {
     let input = vec![5u8; num_bytes];
     let mut state = load_elf_with_patch(SHA3_ELF, vec![]);
     state.add_input_stream(&input);
@@ -331,10 +333,10 @@ fn benchmark_sha3(num_bytes: usize) -> (Duration, usize) {
 
     let _hash = state.read_public_values::<[u8; 32]>();
 
-    (duration, size)
+    (duration, size, state.cycle as usize)
 }
 
-fn benchmark_fibonacci(n: u32) -> (Duration, usize) {
+fn benchmark_fibonacci(n: u32) -> BenchResult {
     let mut state = load_elf_with_patch(FIBONACCI_ELF, vec![]);
     state.add_input_stream(&n);
 
@@ -349,10 +351,10 @@ fn benchmark_fibonacci(n: u32) -> (Duration, usize) {
     let duration = end.duration_since(start);
 
     let _output = state.read_public_values::<u128>();
-    (duration, size)
+    (duration, size, state.cycle as usize)
 }
 
-fn benchmark_bigmem(value: u32) -> (Duration, usize) {
+fn benchmark_bigmem(value: u32) -> BenchResult {
     let mut state = load_elf_with_patch(BIGMEM_ELF, vec![]);
     state.add_input_stream(&value);
 
@@ -367,5 +369,5 @@ fn benchmark_bigmem(value: u32) -> (Duration, usize) {
     let duration = end.duration_since(start);
 
     let _output = state.read_public_values::<u32>();
-    (duration, size)
+    (duration, size, state.cycle as usize)
 }
