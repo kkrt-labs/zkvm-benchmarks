@@ -10,7 +10,7 @@ Supported zkVMs:
 
 Want to support in the future:
 
-- Ceno: doesn't support guest yet
+- Ceno: insufficient impelentation, such as non-supporting aggregations, guest programs, etc.
 - zkWASM (in the future)
 - Open VM (in the future)
 - Valida: [The repo is currently private, and the latest docker image is not available.](https://github.com/lita-xyz/valida-releases)
