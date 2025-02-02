@@ -12,6 +12,8 @@ const SHA3_CHAIN_ELF: &[u8] = include_bytes!("../sha2-chain/elf/riscv32im-succin
 const SHA3_ELF: &[u8] = include_bytes!("../sha3/elf/riscv32im-succinct-zkvm-elf");
 const BIGMEM_ELF: &[u8] = include_bytes!("../bigmem/elf/riscv32im-succinct-zkvm-elf");
 
+type BenchResult = (Duration, usize, usize);
+
 fn main() {
     init_logger();
 
@@ -45,7 +47,8 @@ fn main() {
     // benchmark(benchmark_sha2, &lengths, "../benchmark_outputs/sha2_sp1.csv", "byte length");
     // benchmark(benchmark_sha3, &lengths, "../benchmark_outputs/sha3_sp1.csv", "byte length");
 
-    let ns = [100, 1000, 10000, 50000];
+    // let ns = [100, 1000, 10000, 50000];
+    let ns = [100, 200, 300];
     benchmark(
         bench_fibonacci,
         &ns,
@@ -63,7 +66,7 @@ fn init_logger() {
 }
 
 fn benchmark_with_shard_size(
-    func: fn(u32) -> (Duration, usize),
+    func: fn(u32) -> BenchResult,
     iters: &[u32],
     shard_sizes: &[usize],
     file_name: &str,
@@ -79,82 +82,85 @@ fn benchmark_with_shard_size(
     utils::write_csv(file_name, input_name, iters, &info);
 }
 
-fn benchmark_sha2_chain(iters: u32) -> (Duration, usize) {
-    let mut stdin = SP1Stdin::new();
-    let input = [5u8; 32];
-    stdin.write(&input);
-    stdin.write(&iters);
+// fn benchmark_sha2_chain(iters: u32) -> BenchResult {
+//     let mut stdin = SP1Stdin::new();
+//     let input = [5u8; 32];
+//     stdin.write(&input);
+//     stdin.write(&iters);
 
-    let start = Instant::now();
-    let mut proof =
-        SP1Prover::prove_with_config(SHA2_CHAIN_ELF, stdin, BabyBearPoseidon2::new()).unwrap();
-    let end = Instant::now();
-    let duration = end.duration_since(start);
+//     let start = Instant::now();
+//     let mut proof =
+//         SP1Prover::prove_with_config(SHA2_CHAIN_ELF, stdin, BabyBearPoseidon2::new()).unwrap();
+//     let end = Instant::now();
+//     let duration = end.duration_since(start);
 
-    let _hash = proof.public_values.read::<[u8; 32]>();
-    // SP1Verifier::verify_with_config(SHA2_CHAIN_ELF, &proof, BabyBearPoseidon2::new()).expect("verification failed");
+//     let _hash = proof.public_values.read::<[u8; 32]>();
+//     // SP1Verifier::verify_with_config(SHA2_CHAIN_ELF, &proof, BabyBearPoseidon2::new()).expect("verification failed");
 
-    (duration, size(&proof))
-}
+//     (duration, size(&proof))
+// }
 
-fn benchmark_sha3_chain(iters: u32) -> (Duration, usize) {
-    let mut stdin = SP1Stdin::new();
-    let input = [5u8; 32];
-    stdin.write(&input);
-    stdin.write(&iters);
+// fn benchmark_sha3_chain(iters: u32) -> (Duration, usize) {
+//     let mut stdin = SP1Stdin::new();
+//     let input = [5u8; 32];
+//     stdin.write(&input);
+//     stdin.write(&iters);
 
-    let start = Instant::now();
-    let mut proof =
-        SP1Prover::prove_with_config(SHA3_CHAIN_ELF, stdin, BabyBearPoseidon2::new()).unwrap();
-    let end = Instant::now();
-    let duration = end.duration_since(start);
+//     let start = Instant::now();
+//     let mut proof =
+//         SP1Prover::prove_with_config(SHA3_CHAIN_ELF, stdin, BabyBearPoseidon2::new()).unwrap();
+//     let end = Instant::now();
+//     let duration = end.duration_since(start);
 
-    let _hash = proof.public_values.read::<[u8; 32]>();
-    SP1Verifier::verify_with_config(SHA3_CHAIN_ELF, &proof, BabyBearPoseidon2::new())
-        .expect("verification failed");
+//     let _hash = proof.public_values.read::<[u8; 32]>();
+//     SP1Verifier::verify_with_config(SHA3_CHAIN_ELF, &proof, BabyBearPoseidon2::new())
+//         .expect("verification failed");
 
-    (duration, size(&proof))
-}
+//     (duration, size(&proof))
+// }
 
-fn benchmark_sha2(num_bytes: usize) -> (Duration, usize) {
-    let mut stdin = SP1Stdin::new();
-    let input = vec![5u8; num_bytes];
-    stdin.write(&input);
+// fn benchmark_sha2(num_bytes: usize) -> (Duration, usize) {
+//     let mut stdin = SP1Stdin::new();
+//     let input = vec![5u8; num_bytes];
+//     stdin.write(&input);
 
-    let start = Instant::now();
-    let mut proof =
-        SP1Prover::prove_with_config(SHA2_ELF, stdin, BabyBearPoseidon2::new()).unwrap();
-    let end = Instant::now();
-    let duration = end.duration_since(start);
+//     let start = Instant::now();
+//     let mut proof =
+//         SP1Prover::prove_with_config(SHA2_ELF, stdin, BabyBearPoseidon2::new()).unwrap();
+//     let end = Instant::now();
+//     let duration = end.duration_since(start);
 
-    let _hash = proof.public_values.read::<[u8; 32]>();
-    SP1Verifier::verify_with_config(SHA2_ELF, &proof, BabyBearPoseidon2::new())
-        .expect("verification failed");
+//     let _hash = proof.public_values.read::<[u8; 32]>();
+//     SP1Verifier::verify_with_config(SHA2_ELF, &proof, BabyBearPoseidon2::new())
+//         .expect("verification failed");
 
-    (duration, size(&proof))
-}
+//     (duration, size(&proof))
+// }
 
-fn benchmark_sha3(num_bytes: usize) -> (Duration, usize) {
-    let mut stdin = SP1Stdin::new();
-    let input = vec![5u8; num_bytes];
-    stdin.write(&input);
+// fn benchmark_sha3(num_bytes: usize) -> (Duration, usize) {
+//     let mut stdin = SP1Stdin::new();
+//     let input = vec![5u8; num_bytes];
+//     stdin.write(&input);
 
-    let start = Instant::now();
-    let mut proof =
-        SP1Prover::prove_with_config(SHA3_ELF, stdin, BabyBearPoseidon2::new()).unwrap();
-    let end = Instant::now();
-    let duration = end.duration_since(start);
+//     let start = Instant::now();
+//     let mut proof =
+//         SP1Prover::prove_with_config(SHA3_ELF, stdin, BabyBearPoseidon2::new()).unwrap();
+//     let end = Instant::now();
+//     let duration = end.duration_since(start);
 
-    let _hash = proof.public_values.read::<[u8; 32]>();
-    SP1Verifier::verify_with_config(SHA3_ELF, &proof, BabyBearPoseidon2::new())
-        .expect("verification failed");
+//     let _hash = proof.public_values.read::<[u8; 32]>();
+//     SP1Verifier::verify_with_config(SHA3_ELF, &proof, BabyBearPoseidon2::new())
+//         .expect("verification failed");
 
-    (duration, size(&proof))
-}
+//     (duration, size(&proof))
+// }
 
-fn bench_fibonacci(n: u32) -> (Duration, usize) {
+fn bench_fibonacci(n: u32) -> BenchResult {
     let mut stdin = SP1Stdin::new();
     stdin.write(&n);
+
+    let (report, _) = SP1Prover::execute(FIBONACCI_ELF, stdin).expect("execution failed");
+    let cycles = report.1.total_instruction_count();
 
     let start = Instant::now();
     let mut proof =
@@ -166,22 +172,22 @@ fn bench_fibonacci(n: u32) -> (Duration, usize) {
     SP1Verifier::verify_with_config(FIBONACCI_ELF, &proof, BabyBearPoseidon2::new())
         .expect("verification failed");
 
-    (duration, size(&proof))
+    (duration, size(&proof), cycles)
 }
 
-fn bench_bigmem(value: u32) -> (Duration, usize) {
-    let mut stdin = SP1Stdin::new();
-    stdin.write(&value);
+// fn bench_bigmem(value: u32) -> (Duration, usize) {
+//     let mut stdin = SP1Stdin::new();
+//     stdin.write(&value);
 
-    let start = Instant::now();
-    let mut proof =
-        SP1Prover::prove_with_config(BIGMEM_ELF, stdin, BabyBearPoseidon2::new()).unwrap();
-    let end = Instant::now();
-    let duration = end.duration_since(start);
+//     let start = Instant::now();
+//     let mut proof =
+//         SP1Prover::prove_with_config(BIGMEM_ELF, stdin, BabyBearPoseidon2::new()).unwrap();
+//     let end = Instant::now();
+//     let duration = end.duration_since(start);
 
-    let _output = proof.public_values.read::<u32>();
-    SP1Verifier::verify_with_config(BIGMEM_ELF, &proof, BabyBearPoseidon2::new())
-        .expect("verification failed");
+//     let _output = proof.public_values.read::<u32>();
+//     SP1Verifier::verify_with_config(BIGMEM_ELF, &proof, BabyBearPoseidon2::new())
+//         .expect("verification failed");
 
-    (duration, size(&proof))
-}
+//     (duration, size(&proof))
+// }
