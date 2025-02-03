@@ -5,4 +5,4 @@ name = "bigmem"
 edition = "2021"
 
 [dependencies]
-sp1-zkvm = { git = "https://github.com/succinctlabs/sp1.git", rev = "v4.0.1" }
+sp1-zkvm = "4.0.0"

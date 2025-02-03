@@ -1,16 +1,14 @@
-#![feature(generic_const_exprs)]
-
 use std::time::{Duration, Instant};
 
-use sp1_sdk::{utils::BabyBearPoseidon2, SP1ProofWithIO, SP1Prover, SP1Stdin, SP1Verifier};
+use sp1_sdk::{include_elf, ProverClient, SP1Stdin};
 use utils::{benchmark, size};
 
-const FIBONACCI_ELF: &[u8] = include_bytes!("../fibonacci/elf/riscv32im-succinct-zkvm-elf");
-const SHA2_ELF: &[u8] = include_bytes!("../sha2/elf/riscv32im-succinct-zkvm-elf");
-const SHA2_CHAIN_ELF: &[u8] = include_bytes!("../sha2-chain/elf/riscv32im-succinct-zkvm-elf");
-const SHA3_CHAIN_ELF: &[u8] = include_bytes!("../sha2-chain/elf/riscv32im-succinct-zkvm-elf");
-const SHA3_ELF: &[u8] = include_bytes!("../sha3/elf/riscv32im-succinct-zkvm-elf");
-const BIGMEM_ELF: &[u8] = include_bytes!("../bigmem/elf/riscv32im-succinct-zkvm-elf");
+const FIBONACCI_ELF: &[u8] = include_elf!("fibonacci");
+// const SHA2_ELF: &[u8] = include_elf!("../sha2/elf/riscv32im-succinct-zkvm-elf");
+// const SHA2_CHAIN_ELF: &[u8] = include_elf!("../sha2-chain/elf/riscv32im-succinct-zkvm-elf");
+// const SHA3_CHAIN_ELF: &[u8] = include_elf!("../sha2-chain/elf/riscv32im-succinct-zkvm-elf");
+// const SHA3_ELF: &[u8] = include_elf!("../sha3/elf/riscv32im-succinct-zkvm-elf");
+// const BIGMEM_ELF: &[u8] = include_elf!("../bigmem/elf/riscv32im-succinct-zkvm-elf");
 
 type BenchResult = (Duration, usize, usize);
 
@@ -62,7 +60,7 @@ fn main() {
 
 fn init_logger() {
     std::env::set_var("RUST_LOG", "info");
-    sp1_core::utils::setup_logger();
+    sp1_sdk::utils::setup_logger();
 }
 
 fn benchmark_with_shard_size(
@@ -159,20 +157,22 @@ fn bench_fibonacci(n: u32) -> BenchResult {
     let mut stdin = SP1Stdin::new();
     stdin.write(&n);
 
-    let (report, _) = SP1Prover::execute(FIBONACCI_ELF, stdin).expect("execution failed");
-    let cycles = report.1.total_instruction_count();
+    let client = ProverClient::from_env();
+
+    let (mut public_values, execution_report) = client.execute(FIBONACCI_ELF, &stdin).run().unwrap();
+    let cycles = execution_report.total_instruction_count() + execution_report.total_syscall_count();
+
+    let (pk, vk) = client.setup(FIBONACCI_ELF);
 
     let start = Instant::now();
-    let mut proof =
-        SP1Prover::prove_with_config(FIBONACCI_ELF, stdin, BabyBearPoseidon2::new()).unwrap();
+    let mut proof = client::prove(&pk, &stdin).run().unwrap();
     let end = Instant::now();
     let duration = end.duration_since(start);
 
     let _output = proof.public_values.read::<u128>();
-    SP1Verifier::verify_with_config(FIBONACCI_ELF, &proof, BabyBearPoseidon2::new())
-        .expect("verification failed");
+    client.verify(&proof, &vk).expect("verification failed");
 
-    (duration, size(&proof), cycles)
+    (duration, size(&proof), cycles as usize)
 }
 
 // fn bench_bigmem(value: u32) -> (Duration, usize) {

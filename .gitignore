@@ -1,6 +1,8 @@
 benchmark_outputs/*
-!benchmark_outputs/.gitkeep 
+!benchmark_outputs/.gitkeep
 .DS_Store
 **/*.log
 target
 powdr/powdr-target
+*.tgz
+mips-linux-muslsf-cross/

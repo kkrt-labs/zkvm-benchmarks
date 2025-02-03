@@ -1,9 +1,9 @@
 [workspace]
 [package]
 version = "0.1.0"
-name = "sha2-chain"
+name = "sha3-chain"
 edition = "2021"
 
 [dependencies]
-sp1-zkvm = { git = "https://github.com/succinctlabs/sp1.git", rev = "v4.0.1" }
+sp1-zkvm = "4.0.0"
 sha3 = { version = "0.10.8", default-features = false }
