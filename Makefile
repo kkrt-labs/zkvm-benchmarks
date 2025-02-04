@@ -13,6 +13,9 @@ bench-sp1:
 	make build-sp1
 	cd sp1 && RUSTFLAGS="-C target-cpu=native" cargo run --release
 
+bench-sp1-turbo:
+	cd sp1-turbo/sha2/script && RUSTFLAGS="-C target-cpu=native" cargo run --release -- --prove
+
 bench-zkm:
 	make build-zkm
 	cd zkm && RUSTFLAGS="-C target-cpu=native" cargo run --release

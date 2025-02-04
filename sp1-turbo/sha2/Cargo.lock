@@ -1687,38 +1687,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "fibonacci-lib"
-version = "0.1.0"
-dependencies = [
- "alloy-sol-types 0.7.7",
-]
-
-[[package]]
-name = "fibonacci-program"
-version = "0.1.0"
-dependencies = [
- "alloy-sol-types 0.7.7",
- "fibonacci-lib",
- "sp1-zkvm",
-]
-
-[[package]]
-name = "fibonacci-script"
-version = "0.1.0"
-dependencies = [
- "alloy-sol-types 0.7.7",
- "clap",
- "dotenv",
- "fibonacci-lib",
- "hex",
- "serde",
- "serde_json",
- "sp1-build",
- "sp1-sdk",
- "tracing",
-]
-
-[[package]]
 name = "fixed-hash"
 version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4069,6 +4037,40 @@ dependencies = [
 ]
 
 [[package]]
+name = "sha2-lib"
+version = "0.1.0"
+dependencies = [
+ "alloy-sol-types 0.7.7",
+ "sha2",
+]
+
+[[package]]
+name = "sha2-program"
+version = "0.1.0"
+dependencies = [
+ "alloy-sol-types 0.7.7",
+ "sha2-lib",
+ "sp1-zkvm",
+]
+
+[[package]]
+name = "sha2-script"
+version = "0.1.0"
+dependencies = [
+ "alloy-sol-types 0.7.7",
+ "clap",
+ "dotenv",
+ "hex",
+ "serde",
+ "serde_json",
+ "sha2-lib",
+ "sp1-build",
+ "sp1-sdk",
+ "tracing",
+ "utils",
+]
+
+[[package]]
 name = "sha3"
 version = "0.10.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5301,6 +5303,14 @@ name = "utf8parse"
 version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "06abde3611657adf66d383f00b093d7faecc7fa57071cce2578660c9f1010821"
+
+[[package]]
+name = "utils"
+version = "0.1.0"
+dependencies = [
+ "bincode",
+ "serde",
+]
 
 [[package]]
 name = "valuable"

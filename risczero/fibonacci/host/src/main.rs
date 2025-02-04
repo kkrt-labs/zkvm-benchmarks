@@ -11,9 +11,11 @@ fn main() {
     benchmark(bench_fibonacci, &ns, "../../benchmark_outputs/fibonacci_risczero.csv", "n");
 }
 
-fn bench_fibonacci(n: u32) -> (Duration, usize) {
+fn bench_fibonacci(n: u32) -> (Duration, usize, usize) {
     let env = ExecutorEnv::builder().write::<u32>(&n).unwrap().build().unwrap();
     let prover = LocalProver::new("prover");
+    let mut exec = ExecutorImpl::from_elf(env, FIBONACCI_ELF).unwrap();
+    let sessoin = exec.run().unwrap();
 
     let start = std::time::Instant::now();
     let receipt = prover.prove(env, FIBONACCI_ELF).unwrap().receipt;
@@ -22,7 +24,7 @@ fn bench_fibonacci(n: u32) -> (Duration, usize) {
 
     let _output: u32 = receipt.journal.decode().unwrap();
     receipt.verify(FIBONACCI_ID).unwrap();
-    
-    (duration, size(&receipt))
+
+    (duration, size(&receipt), session.user_cycles as usize)
 }
 
