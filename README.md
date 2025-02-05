@@ -24,6 +24,13 @@ Don't support:
 
 ## Installation
 
+We highly recommend to build them on:
+- linux/x86_64
+- >64GB RAM
+- strong CPU
+
+When I tried to build on my Mac/M1 using docker, some toolchains were unable to build.
+
 ### Install Jolt/Nexus
 
 ```bash
