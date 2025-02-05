@@ -1,3 +1,5 @@
+This repo is used for academic workshop, with the title "Benchmarking zkVMs: Efficiency, Bottlenecks, and Best Practices", at [ZKProof7 in Sofia](https://zkproof.org/events/zkproof-7-sofia/).
+
 # zkVM Benchmarks
 
 Supported zkVMs:
