@@ -50,3 +50,6 @@ bench-openvm:
 	cargo openvm build && \
 	cargo openvm keygen && \
 	OPENVM_FAST_TEST=1 cargo openvm prove app --input "0x0A00000000000000"
+
+bench-nexus:
+	cd nexus && RUSTFLAGS="-C target-cpu=native" cargo run --release

@@ -2755,6 +2755,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "sha2-guest"
+version = "0.1.0"
+dependencies = [
+ "nexus-rt",
+ "postcard",
+ "sha2",
+]
+
+[[package]]
 name = "sha3"
 version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
