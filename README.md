@@ -26,7 +26,7 @@ Don't support:
 
 We highly recommend to build them on:
 - linux/x86_64
-- >64GB RAM
+- 64GB RAM (128GB on Jolt, 256GB on ZKM's evm proving)
 - strong CPU
 
 When I tried to build on my Mac/M1 using docker, some toolchains were unable to build.
