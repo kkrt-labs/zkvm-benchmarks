@@ -11,10 +11,10 @@
 //! ```
 //!
 
-use std::time::Duration;
 use alloy_sol_types::SolType;
 use fibonacci_lib::PublicValuesStruct;
 use sp1_sdk::{include_elf, ProverClient, SP1Stdin};
+use std::time::Duration;
 use utils::{benchmark, size};
 
 /// The ELF (executable and linkable format) file for the Succinct RISC-V zkVM.
@@ -23,7 +23,12 @@ type BenchResult = (Duration, usize, usize);
 
 fn main() {
     let lengths = [100, 1000, 10000, 50000];
-    benchmark(bench_fib, &lengths, "../../../benchmark_outputs/fib_sp1turbo.csv", "n");
+    benchmark(
+        bench_fib,
+        &lengths,
+        "../../../benchmark_outputs/fib_sp1turbo.csv",
+        "n",
+    );
 }
 
 fn bench_fib(n: u32) -> BenchResult {
@@ -39,7 +44,6 @@ fn bench_fib(n: u32) -> BenchResult {
     stdin.write(&n);
 
     println!("n: {}", n);
-
 
     // Execute the program
     let (output, report) = client.execute(FIBONACCI_ELF, &stdin).run().unwrap();
@@ -77,5 +81,9 @@ fn bench_fib(n: u32) -> BenchResult {
     // Verify the proof.
     client.verify(&proof, &vk).expect("failed to verify proof");
 
-    (duration, size(&proof), report.total_instruction_count() as usize)
+    (
+        duration,
+        size(&proof),
+        report.total_instruction_count() as usize,
+    )
 }
