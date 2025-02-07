@@ -11,8 +11,8 @@
 //! ```
 //!
 
-use std::time::Duration;
 use sp1_sdk::{include_elf, ProverClient, SP1Stdin};
+use std::time::Duration;
 use utils::{benchmark, size};
 
 /// The ELF (executable and linkable format) file for the Succinct RISC-V zkVM.
@@ -21,7 +21,12 @@ type BenchResult = (Duration, usize, usize);
 
 fn main() {
     let lengths = [32, 256, 512, 1024];
-    benchmark(bench_sha2, &lengths, "../benchmark_outputs/sha2_sp1turbo.csv", "byte length");
+    benchmark(
+        bench_sha2,
+        &lengths,
+        "../benchmark_outputs/sha2_sp1turbo.csv",
+        "byte length",
+    );
 }
 
 fn bench_sha2(num_bytes: usize) -> BenchResult {
@@ -61,5 +66,9 @@ fn bench_sha2(num_bytes: usize) -> BenchResult {
     // Verify the proof.
     client.verify(&proof, &vk).expect("failed to verify proof");
 
-    (duration, size(&proof), report.total_instruction_count() as usize)
+    (
+        duration,
+        size(&proof),
+        report.total_instruction_count() as usize,
+    )
 }

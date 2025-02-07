@@ -12,7 +12,6 @@ use alloy_sol_types::SolType;
 use ecdsa_lib::{verify, PublicValuesStruct};
 
 fn main() {
-
     let b = verify();
 
     assert!(b);
