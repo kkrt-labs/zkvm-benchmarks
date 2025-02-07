@@ -6,6 +6,10 @@ members = [
   "sha2/lib",
   "sha2/program",
   "sha2/script",
+  "ecdsa/lib",
+  "ecdsa/helper",
+  "ecdsa/program",
+  # "ecdsa/script",
 ]
 resolver = "2"
 
