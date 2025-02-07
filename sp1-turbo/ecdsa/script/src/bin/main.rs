@@ -16,15 +16,15 @@ use sp1_sdk::{include_elf, ProverClient, SP1Stdin};
 use utils::{benchmark, size};
 
 /// The ELF (executable and linkable format) file for the Succinct RISC-V zkVM.
-pub const SHA2_ELF: &[u8] = include_elf!("sha2-program");
+pub const ECDSA_ELF: &[u8] = include_elf!("ecdsa-program");
 type BenchResult = (Duration, usize, usize);
 
 fn main() {
-    let lengths = [32, 256, 512, 1024];
-    benchmark(bench_sha2, &lengths, "../../../benchmark_outputs/sha2_sp1turbo.csv", "byte length");
+    let lengths = [0];
+    benchmark(bench_ecdsa, &lengths, "../benchmark_outputs/ecdsa_sp1turbo.csv", "byte length");
 }
 
-fn bench_sha2(num_bytes: usize) -> BenchResult {
+fn bench_ecdsa(_dummy: usize) -> BenchResult {
     // Setup the logger.
     sp1_sdk::utils::setup_logger();
     dotenv::dotenv().ok();
@@ -33,19 +33,17 @@ fn bench_sha2(num_bytes: usize) -> BenchResult {
     let client = ProverClient::from_env();
 
     // Setup the inputs.
-    let mut stdin = SP1Stdin::new();
-    let input = vec![5u8; num_bytes];
-    stdin.write(&input);
+    let stdin = SP1Stdin::new();
 
     // Execute the program
-    let (_, report) = client.execute(SHA2_ELF, &stdin).run().unwrap();
+    let (_, report) = client.execute(ECDSA_ELF, &stdin).run().unwrap();
     println!("Program executed successfully.");
 
     // Record the number of cycles executed.
     println!("Number of cycles: {}", report.total_instruction_count());
 
     // Setup the program for proving.
-    let (pk, vk) = client.setup(SHA2_ELF);
+    let (pk, vk) = client.setup(ECDSA_ELF);
 
     let start = std::time::Instant::now();
     // Generate the proof

@@ -22,11 +22,11 @@ pub const FIBONACCI_ELF: &[u8] = include_elf!("fibonacci-program");
 type BenchResult = (Duration, usize, usize);
 
 fn main() {
-    let lengths = [100, 1000, 10000, 50000];
+    let lengths = [100];
     benchmark(
         bench_fib,
         &lengths,
-        "../../../benchmark_outputs/fib_sp1turbo.csv",
+        "../benchmark_outputs/fib_sp1turbo.csv",
         "n",
     );
 }

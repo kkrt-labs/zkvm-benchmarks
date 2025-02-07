@@ -15,6 +15,8 @@ fn main() {
 
     let b = verify();
 
+    assert!(b);
+
     let bytes = PublicValuesStruct::abi_encode(&PublicValuesStruct { result: b });
 
     sp1_zkvm::io::commit_slice(&bytes);

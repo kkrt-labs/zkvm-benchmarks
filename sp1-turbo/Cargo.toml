@@ -9,7 +9,7 @@ members = [
   "ecdsa/lib",
   "ecdsa/helper",
   "ecdsa/program",
-  # "ecdsa/script",
+  "ecdsa/script",
 ]
 resolver = "2"
 

@@ -21,7 +21,7 @@ type BenchResult = (Duration, usize, usize);
 
 fn main() {
     let lengths = [32, 256, 512, 1024];
-    benchmark(bench_sha2, &lengths, "../../../benchmark_outputs/sha2_sp1turbo.csv", "byte length");
+    benchmark(bench_sha2, &lengths, "../benchmark_outputs/sha2_sp1turbo.csv", "byte length");
 }
 
 fn bench_sha2(num_bytes: usize) -> BenchResult {
