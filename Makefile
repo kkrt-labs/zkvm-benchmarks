@@ -14,7 +14,10 @@ bench-sp1:
 	cd sp1 && RUSTFLAGS="-C target-cpu=native" cargo run --release
 
 bench-sp1-turbo:
-	cd sp1-turbo/sha2/script && RUSTFLAGS="-C target-cpu=native" cargo run --release -- --prove
+	cd sp1-turbo && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -p sha2-script && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -p fibonacci-script && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -p ecdsa-script
 
 bench-zkm:
 	make build-zkm
