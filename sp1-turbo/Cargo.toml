@@ -1,0 +1,17 @@
+[workspace]
+members = [
+  "fibonacci/lib",
+  "fibonacci/program",
+  "fibonacci/script",
+  "sha2/lib",
+  "sha2/program",
+  "sha2/script",
+  "ecdsa/lib",
+  "ecdsa/helper",
+  "ecdsa/program",
+  "ecdsa/script",
+]
+resolver = "2"
+
+[workspace.dependencies]
+alloy-sol-types = "0.7.7"

@@ -1,6 +1,6 @@
 [package]
 version = "0.1.0"
-name = "sha2-script"
+name = "ecdsa-script"
 edition = "2021"
 default-run = "sha2"
 
@@ -24,7 +24,7 @@ clap = { version = "4.0", features = ["derive", "env"] }
 tracing = "0.1.40"
 hex = "0.4.3"
 alloy-sol-types = { workspace = true }
-sha2-lib = { path = "../lib" }
+ecdsa-lib = { path = "../lib" }
 dotenv = "0.15.0"
 utils = { path = "../../../utils" }
 
