@@ -6,16 +6,16 @@ use k256::{
 use std::{fs::File, io::Write};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let message = b"Hello Public Key!";
+    let message = b"This is a message that will be signed, and verified within the zkVM".to_vec();
     let signing_key = SigningKey::random(&mut OsRng);
     let verifying_key = signing_key.verifying_key();
-    let signature: Signature = signing_key.sign(message);
+    let signature: Signature = signing_key.sign(&message);
 
     let mut message_file = File::create("ecdsa/message.txt")?;
     let mut verifying_key_file = File::create("ecdsa/verifying_key.txt")?;
     let mut signature_file = File::create("ecdsa/signature.txt")?;
 
-    write!(message_file, "{}", hex::encode(message))?;
+    write!(message_file, "{}", hex::encode(&message))?;
     write!(
         verifying_key_file,
         "{}",

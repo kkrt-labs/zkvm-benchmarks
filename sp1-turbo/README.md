@@ -1,18 +1,18 @@
 ## Fibonacci
 
 ```
-cargo run --release -p fibonacci-script -- --execute
+cargo run --release -p fibonacci-script
 ```
 
-## SGA2
+## SHA2
 
 ```
-cargo run --release -p sha2-script -- --execute
+cargo run --release -p sha2-script
 ```
 
 ## ECDSA
 
 ```
 cargo run --release -p ecdsa-helper
-cargo run --release -p ecdsa-script -- --execute
+cargo run --release -p ecdsa-script
 ```

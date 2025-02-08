@@ -20,7 +20,7 @@ pub const ECDSA_ELF: &[u8] = include_elf!("ecdsa-program");
 type BenchResult = (Duration, usize, usize);
 
 fn main() {
-    let lengths = [0];
+    let lengths = [1];
     benchmark(
         bench_ecdsa,
         &lengths,
