@@ -20,6 +20,8 @@ pub type EE2 = ipa_pc::EvaluationEngine<Dual<E>>;
 pub type S1 = spartan::batched::BatchedRelaxedR1CSSNARK<E, EE1>;
 pub type S2 = spartan::batched::BatchedRelaxedR1CSSNARK<Dual<E>, EE2>;
 
+// use utils::benchmark;
+
 fn main() -> Result<(), ZKWASMError> {
   init_logger();
 
