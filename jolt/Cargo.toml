@@ -11,6 +11,7 @@ members = [
     "sha3-guest",
     "fibonacci-guest",
     "bigmem-guest",
+    "ecdsa-guest",
 ]
 
 [profile.release]
@@ -28,6 +29,7 @@ sha2-guest = { path = "./sha2-guest" }
 sha3-guest = { path = "./sha3-guest" }
 fibonacci-guest = { path = "./fibonacci-guest" }
 bigmem-guest = { path = "./bigmem-guest" }
+ecdsa-guest = {path = "./ecdsa-guest"}
 
 [patch.crates-io]
 ark-ff = { git = "https://github.com/a16z/arkworks-algebra", branch = "optimize/field-from-u64" }

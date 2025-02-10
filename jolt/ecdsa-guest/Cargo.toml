@@ -1,0 +1,22 @@
+[package]
+name = "ecdsa-guest"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "ecdsa-guest"
+path = "src/lib.rs"
+
+[features]
+guest = []
+
+[dependencies]
+jolt = { package = "jolt-sdk", git = "https://github.com/a16z/jolt", features = ["guest-std"]}
+hex = "0.4.3"
+k256 = { version = "=0.13.3", features = [
+  "arithmetic",
+  "serde",
+  "expose-field",
+  "std",
+  "ecdsa",
+], default-features = false }
