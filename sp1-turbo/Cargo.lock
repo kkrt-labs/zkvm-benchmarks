@@ -1578,17 +1578,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ecdsa-helper"
-version = "0.1.0"
-dependencies = [
- "alloy-sol-types 0.7.7",
- "base64",
- "hex",
- "k256",
- "sha2",
-]
-
-[[package]]
 name = "ecdsa-lib"
 version = "0.1.0"
 dependencies = [
