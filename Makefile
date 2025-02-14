@@ -32,7 +32,7 @@ build-sp1:
 	cd sp1/bigmem && cargo prove build
 
 bench-risczero:
-	cd risczero && RUSTFLAGS="-C target-cpu=native" cargo run --release -- fibonacci
+	cd risczero && RUSTFLAGS="-C target-cpu=native" cargo run --release
 
 bench-risczero-gpu:
 	cd risczero && cargo run --release -F cuda
