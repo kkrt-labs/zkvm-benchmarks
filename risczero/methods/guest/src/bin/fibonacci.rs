@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use nalgebra::Matrix2;
 use risc0_zkvm::guest::env;
 
 fn main() {
@@ -21,6 +20,15 @@ fn main() {
     env::commit(&answer);
 }
 
-fn fibonacci(n: u32) -> u64 {
-    Matrix2::new(1, 1, 1, 0).pow(n - 1)[(0, 0)]
+fn fibonacci(n: u32) -> u128 {
+    let mut a: u128 = 0;
+    let mut b: u128 = 1;
+    let mut sum: u128;
+    for _ in 1..n {
+        sum = a + b;
+        a = b;
+        b = sum;
+    }
+
+    b
 }

@@ -15,7 +15,6 @@ k256 = { version = "=0.13.3", features = [
   "std",
   "ecdsa",
 ], default-features = false }
-nalgebra = "0.32"
 risc0-benchmark-lib = { path = "../../shared", default-features = false }
 risc0-zkvm = { version = "1.2.2", default-features = false, features = [
   "std",
