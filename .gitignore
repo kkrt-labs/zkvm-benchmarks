@@ -6,3 +6,6 @@ target
 powdr/powdr-target
 *.tgz
 mips-linux-muslsf-cross/
+**/perf.data
+**/perf.data.old
+**/flamegraph.svg

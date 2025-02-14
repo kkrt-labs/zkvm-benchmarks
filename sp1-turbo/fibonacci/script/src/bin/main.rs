@@ -22,13 +22,22 @@ pub const FIBONACCI_ELF: &[u8] = include_elf!("fibonacci-program");
 type BenchResult = (Duration, usize, usize);
 
 fn main() {
-    let lengths = [100];
-    benchmark(
-        bench_fib,
-        &lengths,
-        "../benchmark_outputs/fib_sp1turbo.csv",
-        "n",
-    );
+    let args: Vec<String> = std::env::args().collect();
+    if args.iter().any(|arg| arg == "--once") {
+        println!("Profile mode activated: executing bench_fib(100) only...");
+        let (duration, proof_size, cycles) = bench_fib(100);
+        println!("Proof generation duration: {:?}", duration);
+        println!("Proof size: {} bytes", proof_size);
+        println!("Instruction cycles: {}", cycles);
+    } else {
+        let lengths = [10, 50, 90];
+        benchmark(
+            bench_fib,
+            &lengths,
+            "../benchmark_outputs/fib_sp1turbo.csv",
+            "n",
+        );
+    }
 }
 
 fn bench_fib(n: u32) -> BenchResult {

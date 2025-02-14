@@ -56,3 +56,11 @@ bench-openvm:
 
 bench-nexus:
 	cd nexus && RUSTFLAGS="-C target-cpu=native" cargo run --release
+
+perf-all:
+	make perf-sp1turbo
+
+perf-sp1turbo:
+	cd sp1-turbo && \
+	CARGO_PROFILE_RELEASE_DEBUG=true RUSTFLAGS="-C target-cpu=native" \
+	cargo flamegraph --release -p fibonacci-script --freq 50 -- --flamegraph-args="--ignore rayon" --once
