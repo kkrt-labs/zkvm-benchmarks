@@ -79,3 +79,8 @@ perf-nexus:
 	cd nexus && \
 	CARGO_PROFILE_RELEASE_DEBUG=true RUSTFLAGS="-C target-cpu=native" \
 	RUSTFLAGS="-C target-cpu=native" cargo flamegraph --release -p nexus -F 100 -o ../benchmark_outputs/flamegraph_nexus.svg --no-inline -- --once
+
+perf-zkm:
+	cd zkm && \
+	CARGO_PROFILE_RELEASE_DEBUG=true RUSTFLAGS="-C target-cpu=native" \
+	RUSTFLAGS="-C target-cpu=native" cargo flamegraph --release -p zkm-script -F 100 -o ../benchmark_outputs/flamegraph_zkm.svg --no-inline -- --once
