@@ -74,3 +74,8 @@ perf-jolt:
 	cd jolt && \
 	CARGO_PROFILE_RELEASE_DEBUG=true RUSTFLAGS="-C target-cpu=native" \
 	cargo flamegraph --release -p jolt-benchmarks -F 100 -o ../benchmark_outputs/flamegraph_jolt.svg --no-inline -- --once
+
+perf-nexus:
+	cd nexus && \
+	CARGO_PROFILE_RELEASE_DEBUG=true RUSTFLAGS="-C target-cpu=native" \
+	RUSTFLAGS="-C target-cpu=native" cargo flamegraph --release -p nexus -F 100 -o ../benchmark_outputs/flamegraph_nexus.svg --no-inline -- --once
