@@ -9,37 +9,47 @@ use utils::benchmark;
 type BenchResult = (Duration, usize, usize);
 
 pub fn main() {
-    // let iters = [230, 460, 920, 1840, 3680];
-    // let iters = [230, 250];
-    // benchmark(
-    //     benchmark_sha2_chain,
-    //     &iters,
-    //     "../benchmark_outputs/sha2_chain_jolt.csv",
-    //     "iters",
-    // );
+    let args: Vec<String> = std::env::args().collect();
+    if args.iter().any(|arg| arg == "--once") {
+        println!("Profile mode activated: executing bench_fib(100) only...");
+        let n = 100;
+        let (prove_fib, _verify_fib) = fibonacci_guest::build_fib();
+        let (_output, _proof) = prove_fib(n);
+        println!("Finished proving");
+    } else {
+        // let iters = [230, 460, 920, 1840, 3680];
+        // let iters = [230, 250];
+        // benchmark(
+        //     benchmark_sha2_chain,
+        //     &iters,
+        //     "../benchmark_outputs/sha2_chain_jolt.csv",
+        //     "iters",
+        // );
 
-    // benchmark(benchmark_sha3_chain, &iters, "../benchmark_outputs/sha3_chain_jolt.csv", "iters");
+        // benchmark(benchmark_sha3_chain, &iters, "../benchmark_outputs/sha3_chain_jolt.csv", "iters");
 
-    // let lengths = [32, 256, 512, 1024, 2048];
-    let lengths = [32, 64];
-    benchmark(
-        benchmark_sha2,
-        &lengths,
-        "../benchmark_outputs/sha2_jolt.csv",
-        "byte length",
-    );
-    // benchmark(benchmark_sha3, &lengths, "../benchmark_outputs/sha3_jolt.csv", "byte length");
+        // let lengths = [32, 256, 512, 1024, 2048];
+        let lengths = [32, 64];
+        benchmark(
+            benchmark_sha2,
+            &lengths,
+            "../benchmark_outputs/sha2_jolt.csv",
+            "byte length",
+        );
+        // benchmark(benchmark_sha3, &lengths, "../benchmark_outputs/sha3_jolt.csv", "byte length");
 
-    // let ns = [100, 1000, 10000, 50000];
-    // benchmark(
-    //     benchmark_fib,
-    //     &ns,
-    //     "../benchmark_outputs/fiboancci_jolt.csv",
-    //     "n",
-    // );
+        // let ns = [100, 1000, 10000, 50000];
+        // benchmark(
+        //     benchmark_fib,
+        //     &ns,
+        //     "../benchmark_outputs/fiboancci_jolt.csv",
+        //     "n",
+        // );
 
-    // let values = [5];
-    // benchmark(benchmark_bigmem, &values, "../benchmark_outputs/bigmem_jolt.csv", "value");
+        // let values = [5];
+        // benchmark(benchmark_bigmem, &values, "../benchmark_outputs/bigmem_jolt.csv", "value");
+    }
+
 }
 
 fn benchmark_sha2_chain(iters: u32) -> BenchResult {

@@ -48,6 +48,7 @@ enum Command {
     IterSha2,
     Membership,
     Sudoku,
+    Profiling,
 }
 
 impl Command {
@@ -70,6 +71,7 @@ impl Command {
             Command::IterSha2 => iter_sha2::new_jobs(),
             Command::Membership => membership::new_jobs(),
             Command::Sudoku => sudoku::new_jobs(),
+            Command::Profiling => todo!(),
         }
     }
 }
@@ -85,5 +87,10 @@ fn main() {
 
     let cli = Cli::parse();
     let cmd = cli.command.unwrap_or(Command::All);
-    run_jobs(&cli.out, cmd.get_jobs());
+    match cmd {
+        Command::Profiling => fibonacci::profile(),
+        _ => {
+            run_jobs(&cli.out, cmd.get_jobs());
+        },
+    }
 }

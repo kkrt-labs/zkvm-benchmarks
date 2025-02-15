@@ -63,4 +63,14 @@ perf-all:
 perf-sp1turbo:
 	cd sp1-turbo && \
 	CARGO_PROFILE_RELEASE_DEBUG=true RUSTFLAGS="-C target-cpu=native" \
-	cargo flamegraph --release -p fibonacci-script --freq 50 -- --flamegraph-args="--ignore rayon" --once
+	cargo flamegraph --release -p fibonacci-script -F 100 -o ../benchmark_outputs/flamegraph_sp1turbo.svg --no-inline -- --once
+
+perf-risczero:
+	cd risczero && \
+	CARGO_PROFILE_RELEASE_DEBUG=true RUSTFLAGS="-C target-cpu=native" \
+	cargo flamegraph --release -F 100 -o ../benchmark_outputs/flamegraph_risczero.svg --no-inline -- profiling
+
+perf-jolt:
+	cd jolt && \
+	CARGO_PROFILE_RELEASE_DEBUG=true RUSTFLAGS="-C target-cpu=native" \
+	cargo flamegraph --release -p jolt-benchmarks -F 100 -o ../benchmark_outputs/flamegraph_jolt.svg --no-inline -- --once

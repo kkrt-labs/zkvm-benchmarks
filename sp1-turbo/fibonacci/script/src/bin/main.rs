@@ -25,10 +25,21 @@ fn main() {
     let args: Vec<String> = std::env::args().collect();
     if args.iter().any(|arg| arg == "--once") {
         println!("Profile mode activated: executing bench_fib(100) only...");
-        let (duration, proof_size, cycles) = bench_fib(100);
-        println!("Proof generation duration: {:?}", duration);
-        println!("Proof size: {} bytes", proof_size);
-        println!("Instruction cycles: {}", cycles);
+        sp1_sdk::utils::setup_logger();
+        dotenv::dotenv().ok();
+        // Setup the prover client.
+        let client = ProverClient::from_env();
+        // Setup the inputs.
+        let mut stdin = SP1Stdin::new();
+        let n = 100;
+        stdin.write(&n);
+        println!("n: {}", n);
+        // Setup the program for proving.
+        let (pk, vk) = client.setup(FIBONACCI_ELF);
+        let proof = client
+            .prove(&pk, &stdin)
+            .run()
+            .expect("failed to generate proof");
     } else {
         let lengths = [10, 50, 90];
         benchmark(
