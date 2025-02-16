@@ -14,16 +14,39 @@ const FIB_PACKAGE: &str = "fibonacci-guest";
 const SHA2_PACKAGE: &str = "sha2-guest";
 
 fn main() {
-    let ns = [32, 64];
-    benchmark(
-        benchmark_fib,
-        &ns,
-        "../benchmark_outputs/fib_nexus.csv",
-        "n",
-    );
+    let args: Vec<String> = std::env::args().collect();
+    if args.iter().any(|arg| arg == "--once") {
+        once_fib();
+    } else {
+        let ns = [32, 64];
+        benchmark(
+            benchmark_fib,
+            &ns,
+            "../benchmark_outputs/fib_nexus.csv",
+            "n",
+        );
 
-    let lengths = [32, 256, 512, 1024, 2048];
-    benchmark(benchmark_sha2, &lengths, "../benchmark_outputs/sha2_nexus.csv", "byte length");
+        let lengths = [32, 256, 512, 1024, 2048];
+        benchmark(benchmark_sha2, &lengths, "../benchmark_outputs/sha2_nexus.csv", "byte length");
+    }
+}
+
+fn once_fib() {
+    let n = 100u32;
+    println!("Profile mode activated: executing bench_fib(100) only...");
+    let pp: PP = PP::generate().expect("failed to generate parameters");
+
+    let mut opts = CompileOpts::new(FIB_PACKAGE);
+    opts.set_memlimit(8); // use an 8mb memory
+
+    println!("Compiling guest program...");
+    let prover: Nova<Local> = Nova::compile(&opts).expect("failed to compile guest program");
+
+    println!("Proving execution of vm...");
+    let proof = prover
+        .prove_with_input::<u32>(&pp, &n)
+        .expect("failed to prove program");
+    println!("  Succeeded!");
 }
 
 fn benchmark_fib(n: u32) -> (Duration, usize, usize) {

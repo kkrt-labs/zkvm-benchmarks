@@ -22,13 +22,33 @@ pub const FIBONACCI_ELF: &[u8] = include_elf!("fibonacci-program");
 type BenchResult = (Duration, usize, usize);
 
 fn main() {
-    let lengths = [100];
-    benchmark(
-        bench_fib,
-        &lengths,
-        "../benchmark_outputs/fib_sp1turbo.csv",
-        "n",
-    );
+    let args: Vec<String> = std::env::args().collect();
+    if args.iter().any(|arg| arg == "--once") {
+        println!("Profile mode activated: executing bench_fib(100) only...");
+        sp1_sdk::utils::setup_logger();
+        dotenv::dotenv().ok();
+        // Setup the prover client.
+        let client = ProverClient::from_env();
+        // Setup the inputs.
+        let mut stdin = SP1Stdin::new();
+        let n = 100;
+        stdin.write(&n);
+        println!("n: {}", n);
+        // Setup the program for proving.
+        let (pk, vk) = client.setup(FIBONACCI_ELF);
+        let proof = client
+            .prove(&pk, &stdin)
+            .run()
+            .expect("failed to generate proof");
+    } else {
+        let lengths = [10, 50, 90];
+        benchmark(
+            bench_fib,
+            &lengths,
+            "../benchmark_outputs/fib_sp1turbo.csv",
+            "n",
+        );
+    }
 }
 
 fn bench_fib(n: u32) -> BenchResult {

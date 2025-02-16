@@ -48,49 +48,54 @@ fn main() {
     let _ = std::fs::remove_dir_all("/tmp/zkm.old");
     let _ = std::fs::rename("/tmp/zkm", "/tmp/zkm.old");
 
-    let lengths = [32, 256, 512, 1024, 2048];
-    benchmark(
-        benchmark_sha2,
-        &lengths,
-        "../benchmark_outputs/sha2_zkm.csv",
-        "byte length",
-    );
-    benchmark(
-        benchmark_sha3,
-        &lengths,
-        "../benchmark_outputs/sha3_zkm.csv",
-        "byte length",
-    );
+    let args: Vec<String> = std::env::args().collect();
+    if args.iter().any(|arg| arg == "--once") {
+        once_fibonacci();
+    } else {
+        let lengths = [32, 256, 512, 1024, 2048];
+        benchmark(
+            benchmark_sha2,
+            &lengths,
+            "../benchmark_outputs/sha2_zkm.csv",
+            "byte length",
+        );
+        benchmark(
+            benchmark_sha3,
+            &lengths,
+            "../benchmark_outputs/sha3_zkm.csv",
+            "byte length",
+        );
 
-    let ns = [100, 1000, 10000, 50000];
-    benchmark(
-        benchmark_fibonacci,
-        &ns,
-        "../benchmark_outputs/fiboancci_zkm.csv",
-        "n",
-    );
+        let ns = [100, 1000, 10000, 50000];
+        benchmark(
+            benchmark_fibonacci,
+            &ns,
+            "../benchmark_outputs/fiboancci_zkm.csv",
+            "n",
+        );
 
-    let values = [5];
-    benchmark(
-        benchmark_bigmem,
-        &values,
-        "../benchmark_outputs/bigmem_zkm.csv",
-        "value",
-    );
+        let values = [5];
+        benchmark(
+            benchmark_bigmem,
+            &values,
+            "../benchmark_outputs/bigmem_zkm.csv",
+            "value",
+        );
 
-    let iters = [230, 460, 920, 1840, 3680];
-    benchmark(
-        benchmark_sha2_chain,
-        &iters,
-        "../benchmark_outputs/sha2_chain_zkm.csv",
-        "iters",
-    );
-    benchmark(
-        benchmark_sha3_chain,
-        &iters,
-        "../benchmark_outputs/sha3_chain_zkm.csv",
-        "iters",
-    );
+        let iters = [230, 460, 920, 1840, 3680];
+        benchmark(
+            benchmark_sha2_chain,
+            &iters,
+            "../benchmark_outputs/sha2_chain_zkm.csv",
+            "iters",
+        );
+        benchmark(
+            benchmark_sha3_chain,
+            &iters,
+            "../benchmark_outputs/sha3_chain_zkm.csv",
+            "iters",
+        );
+    }
 }
 
 pub fn prove_segments(
@@ -334,6 +339,22 @@ fn benchmark_sha3(num_bytes: usize) -> BenchResult {
     let _hash = state.read_public_values::<[u8; 32]>();
 
     (duration, size, state.cycle as usize)
+}
+
+fn once_fibonacci() {
+    println!("Profile mode activated: executing bench_fib(100) only...");
+    let n = 100u32;
+    let mut state = load_elf_with_patch(FIBONACCI_ELF, vec![]);
+    state.add_input_stream(&n);
+
+    let seg_size = SEG_SIZE;
+    let seg_path = "/tmp/zkm/fibonacci";
+
+    let (_total_steps, seg_num, mut state) = split_prog_into_segs(state, seg_path, "", seg_size);
+
+    println!("Proving...");
+    let size = prove_segments(&seg_path, "", "", "", seg_num, 0, vec![]).unwrap();
+    println!("Done!");
 }
 
 fn benchmark_fibonacci(n: u32) -> BenchResult {
