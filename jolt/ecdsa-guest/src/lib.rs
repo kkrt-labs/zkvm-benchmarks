@@ -1,24 +1,18 @@
-use alloy_sol_types::sol;
+#![cfg_attr(feature = "guest", no_std)]
+#![no_main]
+
 use k256::{
     ecdsa::{signature::Verifier, Signature, VerifyingKey},
     elliptic_curve::sec1::EncodedPoint,
     Secp256k1,
 };
 
-extern crate alloc;
+const MESSAGE: &[u8] = include_bytes!("../../../helper/ecdsa_signature/message.txt");
+const KEY: &[u8] = include_bytes!("../../../helper/ecdsa_signature/verifying_key.txt");
+const SIGNATURE: &[u8] = include_bytes!("../../../helper/ecdsa_signature/signature.txt");
 
-sol! {
-    /// The public values encoded as a struct that can be easily deserialized inside Solidity.
-    struct PublicValuesStruct {
-        bool result;
-    }
-}
-
-const MESSAGE: &[u8] = include_bytes!("../../../../helper/ecdsa_signature/message.txt");
-const KEY: &[u8] = include_bytes!("../../../../helper/ecdsa_signature/verifying_key.txt");
-const SIGNATURE: &[u8] = include_bytes!("../../../../helper/ecdsa_signature/signature.txt");
-
-pub fn verify() -> bool {
+#[jolt::provable]
+pub fn ecdsa_verify() -> bool {
     let message = hex::decode(MESSAGE).expect("Failed to decode hex of 'message'");
 
     let encoded_point = EncodedPoint::<Secp256k1>::from_bytes(

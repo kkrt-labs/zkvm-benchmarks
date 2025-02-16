@@ -11,9 +11,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let verifying_key = signing_key.verifying_key();
     let signature: Signature = signing_key.sign(&message);
 
-    let mut message_file = File::create("ecdsa/message.txt")?;
-    let mut verifying_key_file = File::create("ecdsa/verifying_key.txt")?;
-    let mut signature_file = File::create("ecdsa/signature.txt")?;
+    let mut message_file = File::create("ecdsa_signature/message.txt")?;
+    let mut verifying_key_file = File::create("ecdsa_signature/verifying_key.txt")?;
+    let mut signature_file = File::create("ecdsa_signature/signature.txt")?;
 
     write!(message_file, "{}", hex::encode(&message))?;
     write!(
