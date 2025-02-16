@@ -11,7 +11,7 @@ const MESSAGE: &[u8] = include_bytes!("../../../helper/ecdsa_signature/message.t
 const KEY: &[u8] = include_bytes!("../../../helper/ecdsa_signature/verifying_key.txt");
 const SIGNATURE: &[u8] = include_bytes!("../../../helper/ecdsa_signature/signature.txt");
 
-#[jolt::provable]
+#[jolt::provable(stack_size = 10000, memory_size = 100000)]
 pub fn ecdsa_verify() -> bool {
     let message = hex::decode(MESSAGE).expect("Failed to decode hex of 'message'");
 
