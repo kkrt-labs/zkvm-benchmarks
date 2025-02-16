@@ -1,4 +1,6 @@
-benchmark_outputs/*
+benchmark_outputs/*.csv
+benchmark_outputs/*.svg
+.ipynb_checkpoints/
 !benchmark_outputs/.gitkeep
 .DS_Store
 **/*.log

@@ -20,7 +20,7 @@ pub const SHA2_ELF: &[u8] = include_elf!("sha2-program");
 type BenchResult = (Duration, usize, usize);
 
 fn main() {
-    let lengths = [32, 256, 512, 1024];
+    let lengths = [32, 256, 512, 1024, 2048];
     benchmark(
         bench_sha2,
         &lengths,
