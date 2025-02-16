@@ -9,7 +9,7 @@ fn main() {
     benchmark(
         bench_ecdsa,
         &lengths,
-        "../../../benchmark_outputs/ecdsa_jolt.csv",
+        "../benchmark_outputs/ecdsa_jolt.csv",
         "byte length",
     );
 }

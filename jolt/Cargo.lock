@@ -1591,6 +1591,7 @@ dependencies = [
  "bigmem-guest",
  "ecdsa-guest",
  "fibonacci-guest",
+ "getrandom 0.2.15",
  "jolt-sdk",
  "sha2-chain-guest",
  "sha2-guest",
