@@ -1,17 +1,21 @@
-#![cfg_attr(feature = "guest", no_std)]
-#![no_main]
-
+#![cfg_attr(target_arch = "riscv32", no_std, no_main)]
 use k256::{
     ecdsa::{signature::Verifier, Signature, VerifyingKey},
     elliptic_curve::sec1::EncodedPoint,
     Secp256k1,
 };
+use nexus_rt::{read_private_input, write_output};
 
-const MESSAGE: &[u8] = include_bytes!("../../../helper/ecdsa_signature/message.txt");
-const KEY: &[u8] = include_bytes!("../../../helper/ecdsa_signature/verifying_key.txt");
-const SIGNATURE: &[u8] = include_bytes!("../../../helper/ecdsa_signature/signature.txt");
+#[nexus_rt::main]
+fn main() {
+    let is_ok = ecdsa_verify();
+    write_output::<bool>(&is_ok)
+}
 
-#[jolt::provable(stack_size = 10000, memory_size = 100000)]
+const MESSAGE: &[u8] = include_bytes!("../../../../helper/ecdsa_signature/message.txt");
+const KEY: &[u8] = include_bytes!("../../../../helper/ecdsa_signature/verifying_key.txt");
+const SIGNATURE: &[u8] = include_bytes!("../../../../helper/ecdsa_signature/signature.txt");
+
 pub fn ecdsa_verify() -> bool {
     let message = hex::decode(MESSAGE).expect("Failed to decode hex of 'message'");
 

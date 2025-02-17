@@ -20,3 +20,4 @@ k256 = { version = "=0.13.3", features = [
   "std",
   "ecdsa",
 ], default-features = false }
+getrandom = { version = "0.2", features = ["custom"] }
