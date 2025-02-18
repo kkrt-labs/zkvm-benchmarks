@@ -46,6 +46,7 @@ build-zkm:
 	cd zkm/bigmem && cargo build --target=mips-unknown-linux-musl --release
 	cd zkm/sha2-chain && cargo build --target=mips-unknown-linux-musl --release
 	cd zkm/sha3-chain && cargo build --target=mips-unknown-linux-musl --release
+	cd zkm/ecdsa && cargo build --target=mips-unknown-linux-musl --release
 
 bench-powdr:
 	cd powdr && RUSTFLAGS='-C target-cpu=native' cargo run --release

@@ -34,10 +34,24 @@ const SHA2_CHAIN_ELF: &str = "./sha2-chain/target/mips-unknown-linux-musl/releas
 const SHA3_CHAIN_ELF: &str = "./sha3-chain/target/mips-unknown-linux-musl/release/sha3-chain";
 const SHA3_ELF: &str = "./sha3/target/mips-unknown-linux-musl/release/sha3-bench";
 const BIGMEM_ELF: &str = "./bigmem/target/mips-unknown-linux-musl/release/bigmem";
+const ECDSA_ELF: &str = "./ecdsa/target/mips-unknown-linux-musl/release/ecdsa";
+
 const SEG_SIZE: usize = 262144 * 8; //G
 
-const DEGREE_BITS_RANGE: [Range<usize>; 8] =
-    [10..21, 12..22, 11..21, 8..21, 6..21, 6..21, 6..21, 13..23];
+const DEGREE_BITS_RANGE: [Range<usize>; 12] = [
+    10..21,
+    12..22,
+    11..21,
+    8..21,
+    6..10,
+    6..10,
+    6..16,
+    6..16,
+    6..16,
+    6..16,
+    6..21,
+    13..23,
+];
 const D: usize = 2;
 type C = PoseidonGoldilocksConfig;
 type F = <C as GenericConfig<D>>::F;
@@ -52,27 +66,27 @@ fn main() {
     if args.iter().any(|arg| arg == "--once") {
         once_fibonacci();
     } else {
-        let lengths = [32, 256, 512, 1024, 2048];
-        benchmark(
-            benchmark_sha2,
-            &lengths,
-            "../benchmark_outputs/sha2_zkm.csv",
-            "byte length",
-        );
-        benchmark(
-            benchmark_sha3,
-            &lengths,
-            "../benchmark_outputs/sha3_zkm.csv",
-            "byte length",
-        );
+        // let lengths = [32, 256, 512, 1024, 2048];
+        // benchmark(
+        //     benchmark_sha2,
+        //     &lengths,
+        //     "../benchmark_outputs/sha2_zkm.csv",
+        //     "byte length",
+        // );
+        // benchmark(
+        //     benchmark_sha3,
+        //     &lengths,
+        //     "../benchmark_outputs/sha3_zkm.csv",
+        //     "byte length",
+        // );
 
-        let ns = [100, 1000, 10000, 50000];
-        benchmark(
-            benchmark_fibonacci,
-            &ns,
-            "../benchmark_outputs/fiboancci_zkm.csv",
-            "n",
-        );
+        // let ns = [100, 1000, 10000, 50000];
+        // benchmark(
+        //     benchmark_fibonacci,
+        //     &ns,
+        //     "../benchmark_outputs/fiboancci_zkm.csv",
+        //     "n",
+        // );
 
         let values = [5];
         benchmark(
@@ -82,19 +96,25 @@ fn main() {
             "value",
         );
 
-        let iters = [230, 460, 920, 1840, 3680];
-        benchmark(
-            benchmark_sha2_chain,
-            &iters,
-            "../benchmark_outputs/sha2_chain_zkm.csv",
-            "iters",
-        );
-        benchmark(
-            benchmark_sha3_chain,
-            &iters,
-            "../benchmark_outputs/sha3_chain_zkm.csv",
-            "iters",
-        );
+        // let iters = [230, 460, 920, 1840, 3680];
+        // benchmark(
+        //     benchmark_sha2_chain,
+        //     &iters,
+        //     "../benchmark_outputs/sha2_chain_zkm.csv",
+        //     "iters",
+        // );
+        // benchmark(
+        //     benchmark_sha3_chain,
+        //     &iters,
+        //     "../benchmark_outputs/sha3_chain_zkm.csv",
+        //     "iters",
+        // );
+        // benchmark(
+        //     benchmark_ecdsa,
+        //     &[1],
+        //     "../benchmark_outputs/ecdsa_zkm.csv",
+        //     "n",
+        // );
     }
 }
 
@@ -390,5 +410,23 @@ fn benchmark_bigmem(value: u32) -> BenchResult {
     let duration = end.duration_since(start);
 
     let _output = state.read_public_values::<u32>();
+    (duration, size, state.cycle as usize)
+}
+
+fn benchmark_ecdsa(_num_bytes: usize) -> BenchResult {
+    let mut state = load_elf_with_patch(ECDSA_ELF, vec![]);
+
+    let seg_size = SEG_SIZE;
+    let seg_path = "/tmp/zkm/ecdsa";
+
+    let (_total_steps, seg_num, mut state) = split_prog_into_segs(state, seg_path, "", seg_size);
+
+    let start = Instant::now();
+    let size = prove_segments(&seg_path, "", "", "", seg_num, 0, vec![]).unwrap();
+    let end = Instant::now();
+    let duration = end.duration_since(start);
+
+    let _is_ok = state.read_public_values::<bool>();
+
     (duration, size, state.cycle as usize)
 }
