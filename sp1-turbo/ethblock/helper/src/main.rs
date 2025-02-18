@@ -34,7 +34,7 @@ infuraへのCallはrequest limitがあり、REVMの実行速度では制限に�
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     // Set up the HTTP transport which is consumed by the RPC client.
-    let rpc_url = "https://mainnet.infura.io/v3/c60b0bb42f8a4c6481ecd229eddaca27".parse()?;
+    let rpc_url = "https://ethereum-rpc.publicnode.com".parse()?;
 
     // Create ethers client and wrap it in Arc<M>
     let client = ProviderBuilder::new().on_http(rpc_url);
@@ -62,7 +62,7 @@ async fn main() -> anyhow::Result<()> {
     let prev_id: BlockId = previous_block_number.into();  // Note: 前のブロックを参照して、state_dbとしているのだが、向こうでも必要？
     // SAFETY: This cannot fail since this is in the top-level tokio runtime
 
-    let state_db = WrapDatabaseAsync::new(SleepWrapperDB::new(AlloyDB::new(client, prev_id), 500)).unwrap();
+    let state_db = WrapDatabaseAsync::new(SleepWrapperDB::new(AlloyDB::new(client, prev_id), 10)).unwrap();
     let cache_db: CacheDB<_> = CacheDB::new(state_db);
     // let wapper_db = WrapperDB::new(cache_db);
     let mut state = StateBuilder::new_with_database(cache_db).build();
@@ -105,7 +105,7 @@ async fn main() -> anyhow::Result<()> {
         panic!("Wrong transaction type")
     };
 
-    for tx in transactions[..5].to_vec() {
+    for tx in transactions {
         // sleep(Duration::from_secs(10)).await;
         let tx_info = TransactionInfo {
             from: tx.from,
