@@ -1,5 +1,4 @@
 benchmark_outputs/*.csv
-benchmark_outputs/*.svg
 .ipynb_checkpoints/
 !benchmark_outputs/.gitkeep
 .DS_Store
@@ -10,4 +9,3 @@ powdr/powdr-target
 mips-linux-muslsf-cross/
 **/perf.data
 **/perf.data.old
-**/flamegraph.svg
