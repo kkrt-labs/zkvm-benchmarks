@@ -9,11 +9,16 @@ members = [
   "ecdsa/lib",
   "ecdsa/program",
   "ecdsa/script",
+  "ethblock/helper",
+  "ethblock/utils",
   "ethblock/lib",
-  # "ethblock/program",
-  # "ethblock/script",
+  "ethblock/program",
+  "ethblock/script",
 ]
 resolver = "2"
 
 [workspace.dependencies]
 alloy-sol-types = "0.8"
+
+# [patch.crates-io]
+# alloy-eip2930 = { version = "0.1.0", default-features = false, features = ["serde"]}

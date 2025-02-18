@@ -16,7 +16,7 @@ use std::time::Duration;
 use utils::{benchmark, size};
 
 /// The ELF (executable and linkable format) file for the Succinct RISC-V zkVM.
-pub const ECDSA_ELF: &[u8] = include_elf!("ecdsa-program");
+pub const ECDSA_ELF: &[u8] = include_elf!("ethblock-program");
 type BenchResult = (Duration, usize, usize);
 
 fn main() {

@@ -9,11 +9,10 @@
 sp1_zkvm::entrypoint!(main);
 
 use alloy_sol_types::SolType;
-use ethblock_lib::{execuse_transfer_uniswap_v2, PublicValuesStruct};
+use ethblock_lib::{trace_block, PublicValuesStruct};
 
 fn main() {
-    let b = verify();
-
+    let b = trace_block();
     assert!(b);
 
     let bytes = PublicValuesStruct::abi_encode(&PublicValuesStruct { result: b });
