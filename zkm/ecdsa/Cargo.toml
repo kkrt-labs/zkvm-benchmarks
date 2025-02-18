@@ -1,0 +1,16 @@
+[workspace]
+[package]
+version = "0.1.0"
+name = "ecdsa"
+edition = "2021"
+
+[dependencies]
+zkm-runtime = { git = "https://github.com/zkMIPS/zkm", branch = "main"}
+hex = "0.4.3"
+k256 = { version = "=0.13.3", features = [
+  "arithmetic",
+  "serde",
+  "expose-field",
+  "std",
+  "ecdsa",
+], default-features = false }

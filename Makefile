@@ -7,7 +7,9 @@ bench-all:
 	make bench-openvm
 
 bench-jolt:
-	cd jolt && RUSTFLAGS="-C target-cpu=native" cargo run --release
+	cd jolt && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2
 
 bench-sp1:
 	make build-sp1
@@ -44,6 +46,7 @@ build-zkm:
 	cd zkm/bigmem && cargo build --target=mips-unknown-linux-musl --release
 	cd zkm/sha2-chain && cargo build --target=mips-unknown-linux-musl --release
 	cd zkm/sha3-chain && cargo build --target=mips-unknown-linux-musl --release
+	cd zkm/ecdsa && cargo build --target=mips-unknown-linux-musl --release
 
 bench-powdr:
 	cd powdr && RUSTFLAGS='-C target-cpu=native' cargo run --release
@@ -73,7 +76,7 @@ perf-risczero:
 perf-jolt:
 	cd jolt && \
 	CARGO_PROFILE_RELEASE_DEBUG=true RUSTFLAGS="-C target-cpu=native" \
-	cargo flamegraph --release -p jolt-benchmarks -F 100 -o ../benchmark_outputs/flamegraph_jolt.svg --no-inline -- --once
+	cargo flamegraph --release -p jolt-benchmarks -F 100 -o ../benchmark_outputs/flamegraph_jolt.svg --no-inline --bin profiling
 
 perf-nexus:
 	cd nexus && \
