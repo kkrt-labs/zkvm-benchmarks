@@ -24,7 +24,7 @@ fn main() {
     benchmark(
         bench_ecdsa,
         &lengths,
-        "../benchmark_outputs/ecdsa_sp1turbo.csv",
+        "../benchmark_outputs/ethblock_sp1turbo.csv",
         "byte length",
     );
 }
