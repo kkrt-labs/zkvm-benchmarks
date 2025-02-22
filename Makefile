@@ -12,6 +12,12 @@ bench-jolt:
 	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2 && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin ecdsa
 
+bench-jolt-gpu:
+	cd jolt && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci -F icicle && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2 -F icicle && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin ecdsa -F icicle
+
 bench-sp1:
 	make build-sp1
 	cd sp1 && RUSTFLAGS="-C target-cpu=native" cargo run --release

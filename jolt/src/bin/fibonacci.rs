@@ -6,13 +6,18 @@ type BenchResult = (Duration, usize, usize);
 
 fn main() {
     let ns = [10, 50, 90];
+    let csv_file = format!(
+        "../benchmark_outputs/fib_jolt{}{}.csv",
+        if cfg!(feature = "icicle") { "_gpu" } else { "" },
+        ""
+    );
+
     benchmark(
         benchmark_fib,
         &ns,
-        "../benchmark_outputs/fib_jolt.csv",
+        &csv_file,
         "n",
     );
-
 }
 
 fn benchmark_fib(n: u32) -> BenchResult {

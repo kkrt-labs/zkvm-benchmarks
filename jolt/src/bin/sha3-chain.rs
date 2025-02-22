@@ -5,9 +5,15 @@ use utils::benchmark;
 type BenchResult = (Duration, usize, usize);
 
 fn main() {
+    let csv_file = format!(
+        "../benchmark_outputs/sha3_chain_jolt{}{}.csv",
+        if cfg!(feature = "icicle") { "_gpu" } else { "" },
+        ""
+    );
+
     // let iters = [230, 460, 920, 1840, 3680];
     let iters = [230, 250];
-    benchmark(benchmark_sha3_chain, &iters, "../benchmark_outputs/sha3_chain_jolt.csv", "n");
+    benchmark(benchmark_sha3_chain, &iters, &csv_file, "n");
 }
 
 fn benchmark_sha3_chain(iters: u32) -> BenchResult {

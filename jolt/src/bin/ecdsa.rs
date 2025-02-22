@@ -5,11 +5,17 @@ use utils::benchmark;
 type BenchResult = (Duration, usize, usize);
 
 fn main() {
+    let csv_file = format!(
+        "../benchmark_outputs/ecdsa_jolt{}{}.csv",
+        if cfg!(feature = "icicle") { "_gpu" } else { "" },
+        ""
+    );
+
     let lengths = [1];
     benchmark(
         bench_ecdsa,
         &lengths,
-        "../benchmark_outputs/ecdsa_jolt.csv",
+        &csv_file,
         "n",
     );
 }
