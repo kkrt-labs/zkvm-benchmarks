@@ -8,8 +8,9 @@ bench-all:
 
 bench-jolt:
 	cd jolt && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2 && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin ecdsa
 
 bench-sp1:
 	make build-sp1
@@ -20,6 +21,10 @@ bench-sp1-turbo:
 	RUSTFLAGS="-C target-cpu=native" cargo run --release -p sha2-script && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release -p fibonacci-script && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release -p ecdsa-script
+
+bench-sp1-turbo-gpu:
+	cd sp1-turbo && \
+	SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p fibonacci-script
 
 bench-zkm:
 	make build-zkm
@@ -34,10 +39,16 @@ build-sp1:
 	cd sp1/bigmem && cargo prove build
 
 bench-risczero:
-	cd risczero && RUSTFLAGS="-C target-cpu=native" cargo run --release
+	cd risczero && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -- --out ../benchmark_outputs/fib_risczero.csv fibonacci && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -- --out ../benchmark_outputs/sha2_risczero.csv big-sha2 && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -- --out ../benchmark_outputs/ecdsa_risczero.csv ecdsa-verify
 
 bench-risczero-gpu:
-	cd risczero && cargo run --release -F cuda
+	cd risczero && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -F cuda -- --out ../benchmark_outputs/fib_risczero_gpu.csv fibonacci && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -F cuda -- --out ../benchmark_outputs/sha2_risczero_gpu.csv big-sha2 && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -F cuda -- --out ../benchmark_outputs/ecdsa_risczero_gpu.csv ecdsa-verify
 
 build-zkm:
 	cd zkm/fibonacci && cargo build --target=mips-unknown-linux-musl --release

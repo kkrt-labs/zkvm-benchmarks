@@ -6,7 +6,7 @@ type BenchResult = (Duration, usize, usize);
 
 fn main() {
     let lengths = [32, 256, 512, 1024, 2048];
-    benchmark(benchmark_sha3, &lengths, "../benchmark_outputs/sha3_jolt.csv", "byte length");
+    benchmark(benchmark_sha3, &lengths, "../benchmark_outputs/sha3_jolt.csv", "n");
 }
 
 fn benchmark_sha3(num_bytes: usize) -> BenchResult {

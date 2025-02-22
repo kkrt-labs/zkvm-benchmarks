@@ -24,7 +24,7 @@ fn main() {
         //     benchmark_ecdsa_verify,
         //     &lengths,
         //     "../benchmark_outputs/ecdsa_nexus.csv",
-        //     "byte length",
+        //     "n",
         // );
 
         // let ns = [10, 50, 90];
@@ -36,7 +36,7 @@ fn main() {
         // );
 
         let lengths = [32, 256, 512, 1024];
-        benchmark(benchmark_sha2, &lengths, "../benchmark_outputs/sha2_nexus.csv", "byte length");
+        benchmark(benchmark_sha2, &lengths, "../benchmark_outputs/sha2_nexus.csv", "n");
     }
 }
 

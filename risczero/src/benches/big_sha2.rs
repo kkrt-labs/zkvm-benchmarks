@@ -20,7 +20,7 @@ use crate::Job;
 pub fn new_jobs() -> Vec<Job> {
     let mut rand = StdRng::seed_from_u64(1337);
     let mut jobs = Vec::new();
-    for job_size in [1024, 2048, 4096, 8192] {
+    for job_size in [32, 256, 512, 1024, 2048] {
         let mut guest_input = vec![0; job_size];
         rand.fill_bytes(&mut guest_input);
         jobs.push(Job::new(

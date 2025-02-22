@@ -10,7 +10,7 @@ fn main() {
         bench_ecdsa,
         &lengths,
         "../benchmark_outputs/ecdsa_jolt.csv",
-        "byte length",
+        "n",
     );
 }
 

@@ -10,7 +10,7 @@ fn main() {
         benchmark_sha2,
         &lengths,
         "../benchmark_outputs/sha2_jolt.csv",
-        "byte length",
+        "n",
     );
 }
 

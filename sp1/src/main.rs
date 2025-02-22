@@ -44,8 +44,8 @@ fn main() {
     // benchmark(benchmark_sha3_chain, &iters, "../benchmark_outputs/sha3_chain_sp1.csv", "iters");
 
     let lengths = [32, 256, 512, 1024, 2048];
-    benchmark(benchmark_sha2, &lengths, "../benchmark_outputs/sha2_sp1.csv", "byte length");
-    // benchmark(benchmark_sha3, &lengths, "../benchmark_outputs/sha3_sp1.csv", "byte length");
+    benchmark(benchmark_sha2, &lengths, "../benchmark_outputs/sha2_sp1.csv", "n");
+    // benchmark(benchmark_sha3, &lengths, "../benchmark_outputs/sha3_sp1.csv", "n");
 
     // let ns = [100, 1000, 10000, 50000];
     // benchmark(bench_fibonacci, &ns, "../benchmark_outputs/fibonacci_sp1.csv", "n");

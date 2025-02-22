@@ -7,7 +7,7 @@ type BenchResult = (Duration, usize, usize);
 fn main() {
     // let iters = [230, 460, 920, 1840, 3680];
     let iters = [230, 250];
-    benchmark(benchmark_sha3_chain, &iters, "../benchmark_outputs/sha3_chain_jolt.csv", "iters");
+    benchmark(benchmark_sha3_chain, &iters, "../benchmark_outputs/sha3_chain_jolt.csv", "n");
 }
 
 fn benchmark_sha3_chain(iters: u32) -> BenchResult {

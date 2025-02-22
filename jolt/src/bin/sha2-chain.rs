@@ -11,7 +11,7 @@ fn main() {
         benchmark_sha2_chain,
         &iters,
         "../benchmark_outputs/sha2_chain_jolt.csv",
-        "iters",
+        "n",
     );
 
 }
