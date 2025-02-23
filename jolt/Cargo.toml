@@ -22,6 +22,15 @@ lto = "fat"
 [dependencies]
 jolt = { package = "jolt-sdk", git = "https://github.com/a16z/jolt", features = ["host"] }
 utils = { path = "../utils" }
+hex = "0.4.3"
+k256 = { version = "=0.13.3", features = [
+  "arithmetic",
+  "serde",
+  "expose-field",
+  "std",
+  "ecdsa",
+], default-features = false }
+getrandom = { version = "0.2", features = ["custom"] }
 
 sha2-chain-guest = { path = "./sha2-chain-guest" }
 sha3-chain-guest = { path = "./sha3-chain-guest" }
