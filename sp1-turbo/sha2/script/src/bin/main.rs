@@ -25,7 +25,7 @@ fn main() {
         bench_sha2,
         &lengths,
         "../benchmark_outputs/sha2_sp1turbo.csv",
-        "byte length",
+        "n",
     );
 }
 

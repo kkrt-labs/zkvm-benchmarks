@@ -607,6 +607,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f46ad14479a25103f283c0f10005961cf086d8dc42205bb44c46ac563475dca6"
 
 [[package]]
+name = "cmake"
+version = "0.1.54"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e7caa3f9de89ddbe2c607f4101924c5abec803763ae9534e4f4d7d8f84aa81f0"
+dependencies = [
+ "cc",
+]
+
+[[package]]
 name = "cobs"
 version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1362,6 +1371,49 @@ dependencies = [
 ]
 
 [[package]]
+name = "icicle-bn254"
+version = "3.2.0"
+source = "git+https://github.com/ingonyama-zk/icicle-jolt.git?rev=ed93e21#ed93e21cbb405822b0aa1b58b5dc6c7837a04108"
+dependencies = [
+ "cmake",
+ "icicle-core",
+ "icicle-hash",
+ "icicle-runtime",
+]
+
+[[package]]
+name = "icicle-core"
+version = "3.2.0"
+source = "git+https://github.com/ingonyama-zk/icicle-jolt.git?rev=ed93e21#ed93e21cbb405822b0aa1b58b5dc6c7837a04108"
+dependencies = [
+ "hex",
+ "icicle-runtime",
+ "once_cell",
+ "rand 0.8.5",
+ "rayon",
+]
+
+[[package]]
+name = "icicle-hash"
+version = "3.2.0"
+source = "git+https://github.com/ingonyama-zk/icicle-jolt.git?rev=ed93e21#ed93e21cbb405822b0aa1b58b5dc6c7837a04108"
+dependencies = [
+ "cmake",
+ "icicle-core",
+ "icicle-runtime",
+ "rand 0.8.5",
+]
+
+[[package]]
+name = "icicle-runtime"
+version = "3.2.0"
+source = "git+https://github.com/ingonyama-zk/icicle-jolt.git?rev=ed93e21#ed93e21cbb405822b0aa1b58b5dc6c7837a04108"
+dependencies = [
+ "cmake",
+ "once_cell",
+]
+
+[[package]]
 name = "icu_collections"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1592,7 +1644,10 @@ dependencies = [
  "bigmem-guest",
  "ecdsa-guest",
  "fibonacci-guest",
+ "getrandom 0.2.15",
+ "hex",
  "jolt-sdk",
+ "k256",
  "sha2-chain-guest",
  "sha2-guest",
  "sha3-chain-guest",
@@ -1622,6 +1677,9 @@ dependencies = [
  "eyre",
  "fixedbitset",
  "getrandom 0.2.15",
+ "icicle-bn254",
+ "icicle-core",
+ "icicle-runtime",
  "indicatif",
  "itertools 0.10.5",
  "memory-stats",

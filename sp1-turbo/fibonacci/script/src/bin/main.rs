@@ -23,7 +23,8 @@ type BenchResult = (Duration, usize, usize);
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
-    if args.iter().any(|arg| arg == "--once") {
+    let is_once = args.iter().any(|arg| arg == "--once");
+    if is_once {
         println!("Profile mode activated: executing bench_fib(100) only...");
         sp1_sdk::utils::setup_logger();
         dotenv::dotenv().ok();
@@ -42,12 +43,21 @@ fn main() {
             .expect("failed to generate proof");
     } else {
         let lengths = [10, 50, 90];
-        benchmark(
-            bench_fib,
-            &lengths,
-            "../benchmark_outputs/fib_sp1turbo.csv",
-            "n",
-        );
+        if std::env::var("SP1_PROVER").unwrap_or_default() == "cuda" {
+            benchmark(
+                bench_fib,
+                &lengths,
+                "../benchmark_outputs/fib_sp1turbo_gpu.csv",
+                "n",
+            );
+        } else {
+            benchmark(
+                bench_fib,
+                &lengths,
+                "../benchmark_outputs/fib_sp1turbo.csv",
+                "n",
+            );
+        }
     }
 }
 

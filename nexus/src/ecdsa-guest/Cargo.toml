@@ -6,12 +6,10 @@ edition = "2021"
 [dependencies]
 nexus-rt = { git = "https://github.com/nexus-xyz/nexus-zkvm.git", tag = "0.2.3", version = "0.2.3" }
 postcard = { version = "=1.0.8", default-features = false, features = ["alloc"] }
-hex = "0.4.3"
 k256 = { version = "=0.13.3", features = [
   "arithmetic",
   "serde",
   "expose-field",
-  "std",
   "ecdsa",
 ], default-features = false }
 getrandom = { version = "0.2", features = ["custom"] }

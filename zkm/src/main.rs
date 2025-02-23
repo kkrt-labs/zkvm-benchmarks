@@ -71,13 +71,13 @@ fn main() {
         //     benchmark_sha2,
         //     &lengths,
         //     "../benchmark_outputs/sha2_zkm.csv",
-        //     "byte length",
+        //     "n",
         // );
         // benchmark(
         //     benchmark_sha3,
         //     &lengths,
         //     "../benchmark_outputs/sha3_zkm.csv",
-        //     "byte length",
+        //     "n",
         // );
 
         // let ns = [100, 1000, 10000, 50000];

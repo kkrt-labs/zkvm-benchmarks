@@ -25,7 +25,7 @@ fn main() {
         bench_ecdsa,
         &lengths,
         "../benchmark_outputs/ecdsa_sp1turbo.csv",
-        "byte length",
+        "n",
     );
 }
 

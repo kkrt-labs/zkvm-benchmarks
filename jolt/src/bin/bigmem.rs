@@ -5,8 +5,14 @@ use utils::benchmark;
 type BenchResult = (Duration, usize, usize);
 
 fn main() {
+    let csv_file = format!(
+        "../benchmark_outputs/bigmem_jolt{}{}.csv",
+        if cfg!(feature = "icicle") { "_gpu" } else { "" },
+        ""
+    );
+
     let values = [5];
-    benchmark(benchmark_bigmem, &values, "../benchmark_outputs/bigmem_jolt.csv", "value");
+    benchmark(benchmark_bigmem, &values, &csv_file, "value");
 }
 
 fn benchmark_bigmem(value: u32) -> BenchResult {

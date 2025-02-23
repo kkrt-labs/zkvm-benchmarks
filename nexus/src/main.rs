@@ -4,6 +4,12 @@ use std::{
 };
 use utils::benchmark;
 
+use k256::{
+    ecdsa::Signature,
+    elliptic_curve::sec1::EncodedPoint,
+    Secp256k1,
+};
+
 use nexus_sdk::{
     compile::CompileOpts,
     nova::seq::{Generate, Nova, PP},
@@ -14,18 +20,22 @@ const FIB_PACKAGE: &str = "fibonacci-guest";
 const SHA2_PACKAGE: &str = "sha2-guest";
 const ECDSA_PACKAGE: &str = "ecdsa-guest";
 
+const MESSAGE: &[u8] = include_bytes!("../../helper/ecdsa_signature/message.txt");
+const KEY: &[u8] = include_bytes!("../../helper/ecdsa_signature/verifying_key.txt");
+const SIGNATURE: &[u8] = include_bytes!("../../helper/ecdsa_signature/signature.txt");
+
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     if args.iter().any(|arg| arg == "--once") {
         once_fib();
     } else {
-        // let lengths = [1];
-        // benchmark(
-        //     benchmark_ecdsa_verify,
-        //     &lengths,
-        //     "../benchmark_outputs/ecdsa_nexus.csv",
-        //     "byte length",
-        // );
+        let lengths = [1];
+        benchmark(
+            benchmark_ecdsa_verify,
+            &lengths,
+            "../benchmark_outputs/ecdsa_nexus.csv",
+            "n",
+        );
 
         // let ns = [10, 50, 90];
         // benchmark(
@@ -36,7 +46,7 @@ fn main() {
         // );
 
         let lengths = [32, 256, 512, 1024];
-        benchmark(benchmark_sha2, &lengths, "../benchmark_outputs/sha2_nexus.csv", "byte length");
+        // benchmark(benchmark_sha2, &lengths, "../benchmark_outputs/sha2_nexus.csv", "n");
     }
 }
 
@@ -118,13 +128,23 @@ fn benchmark_ecdsa_verify(_length: usize) -> (Duration, usize, usize) {
     let mut opts = CompileOpts::new(ECDSA_PACKAGE);
     opts.set_memlimit(8); // use an 8mb memory
 
+    let message = hex::decode(MESSAGE).expect("Failed to decode hex of 'message'");
+
+    let encoded_point = EncodedPoint::<Secp256k1>::from_bytes(
+        &hex::decode(KEY).expect("Failed to decode hex of 'verifying_key'"),
+    )
+    .expect("Invalid encoded verifying_key bytes");
+
+    let bytes = hex::decode(SIGNATURE).expect("Failed to decode hex of 'signature'");
+    let signature = Signature::from_slice(&bytes).expect("Invalid signature bytes");
+
     println!("Compiling guest program...");
     let prover: Nova<Local> = Nova::compile(&opts).expect("failed to compile guest program");
 
     println!("Proving execution of vm...");
     let start = Instant::now();
     let proof = prover
-        .prove_with_input::<()>(&pp, &())
+        .prove_with_input::<(EncodedPoint<Secp256k1>, Vec<u8>, Signature)>(&pp, &(encoded_point, message, signature))
         .expect("failed to prove program");
     let end = Instant::now();
     println!(">>>>> Logging\n{}<<<<<", proof.logs().join(""));
