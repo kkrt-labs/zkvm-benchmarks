@@ -142,6 +142,17 @@ checksum = "ace50bade8e6234aa140d9a2f552bbee1db4d353f69b8217bc503490fc1a9f26"
 [[package]]
 name = "bellpepper"
 version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9ae286c2cb403324ab644c7cc68dceb25fe52ca9429908a726d7ed272c1edf7b"
+dependencies = [
+ "bellpepper-core",
+ "byteorder",
+ "ff",
+]
+
+[[package]]
+name = "bellpepper"
+version = "0.4.1"
 source = "git+https://github.com/argumentcomputer/bellpepper?branch=dev#d0225bf6cb2bb9abaff28ea96a3497f9829815f8"
 dependencies = [
  "bellpepper-core",
@@ -273,7 +284,7 @@ checksum = "7a8a8ed6fefbeef4a8c7b460e4110e12c5e22a5b7cf32621aae6ad650c4dcf29"
 dependencies = [
  "blst",
  "byte-slice-cast",
- "ec-gpu 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ec-gpu",
  "ff",
  "group",
  "pairing",
@@ -508,11 +519,6 @@ name = "ec-gpu"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bd63582de2b59ea1aa48d7c1941b5d87618d95484397521b3acdfa0e1e9f5e45"
-
-[[package]]
-name = "ec-gpu"
-version = "0.2.0"
-source = "git+https://github.com/lurk-lab/ec-gpu.git?branch=dev#6c0b962c8c65b4b4013887b9ae0d3d1f2a792ccd"
 
 [[package]]
 name = "either"
@@ -1118,10 +1124,11 @@ dependencies = [
 [[package]]
 name = "pasta_curves"
 version = "0.5.1"
-source = "git+https://github.com/lurk-lab/pasta_curves?branch=dev#b96450f1dc76a3e5f338a5cef31fbb46787d39af"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d3e57598f73cc7e1b2ac63c79c517b31a0877cd7c402cdcaa311b5208de7a095"
 dependencies = [
  "blake2b_simd",
- "ec-gpu 0.2.0 (git+https://github.com/lurk-lab/ec-gpu.git?branch=dev)",
+ "ec-gpu",
  "ff",
  "group",
  "hex",
@@ -1149,7 +1156,7 @@ name = "poseidon_sponge"
 version = "13.0.0"
 source = "git+https://github.com/Forpee/poseidon_sponge?branch=main#a30e38cc257e0ec47bb2646b46d11f154ca5b4b7"
 dependencies = [
- "bellpepper 0.4.1 (git+https://github.com/lurk-lab/bellpepper?branch=dev)",
+ "bellpepper 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "bellpepper-core",
  "blake2s_simd",
  "blstrs",
