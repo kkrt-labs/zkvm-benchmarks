@@ -1,0 +1,14 @@
+[package]
+version = "0.1.0"
+name = "ecdsa-bench"
+edition = "2021"
+
+[dependencies]
+zkm-runtime = { workspace= true }
+k256 = { version = "=0.13.3", features = [
+  "arithmetic",
+  "serde",
+  "expose-field",
+  "std",
+  "ecdsa",
+], default-features = false }

@@ -1,0 +1,7 @@
+[package]
+version = "0.1.0"
+name = "bigmem"
+edition = "2021"
+
+[dependencies]
+zkm-runtime = { workspace= true }
