@@ -1,9 +1,11 @@
-
-use std::convert::Infallible;
 use serde::{Deserialize, Serialize};
+use std::convert::Infallible;
 
 use revm::{
-    context::AccessList, primitives::{Address, Bytes, B256, U256}, state::{AccountInfo, Bytecode}, Database, DatabaseRef
+    context::AccessList,
+    primitives::{Address, Bytes, B256, U256},
+    state::{AccountInfo, Bytecode},
+    Database, DatabaseRef,
 };
 
 #[derive(Serialize, Deserialize)]
@@ -73,7 +75,7 @@ pub struct BlockInfo {
     pub difficulty: U256,
     pub gas_limit: u64,
     pub basefee: u64,
-    pub transactions: Vec<TransactionInfo>
+    pub transactions: Vec<TransactionInfo>,
 }
 
 #[derive(Serialize, Deserialize, Clone)]

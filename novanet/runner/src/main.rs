@@ -1,17 +1,14 @@
-use std::path::PathBuf;
+use std::{env, path::PathBuf, process::Command, time::Duration};
 use zk_engine::{
     nova::{
         provider::{ipa_pc, Bn256EngineIPA},
         spartan,
         traits::Dual,
-    },
-    {
-        error::ZKWASMError,
-        utils::logging::init_logger,
-        wasm_ctx::{WASMArgsBuilder, WASMCtx},
-        wasm_snark::{StepSize, WasmSNARK},
-    },
+    }, utils::logging::init_logger, wasm_ctx::{WASMArgsBuilder, WASMCtx, ZKWASMCtx}, wasm_snark::{StepSize, WasmSNARK}
 };
+
+use utils::{benchmark, size};
+type BenchResult = (Duration, usize, usize);
 
 // Curve Cycle to prove/verify on
 pub type E = Bn256EngineIPA;
@@ -22,59 +19,160 @@ pub type S2 = spartan::batched::BatchedRelaxedR1CSSNARK<Dual<E>, EE2>;
 
 use clap::Parser;
 
-/// コマンドライン引数を管理するための構造体
-#[derive(Parser, Debug)]
+
+#[derive(Parser, Debug, Clone)]
 #[command(name = "zkwasm-cli")]
 #[command(about = "Example CLI to prove and verify WASM execution", long_about = None)]
 struct Cli {
-    /// 実行する .wat または .wasm のファイルパス
-    #[arg(short, long, value_name = "FILE")]
-    file_path: PathBuf,
-
-    /// 呼び出したい関数名
     #[arg(short, long)]
-    invoke: String,
+    guest: String,
 
-    /// WASM関数に渡す引数（複数指定可）
     #[arg(short, long, num_args = 0..)]
-    func_args: Vec<String>,
+    benchmark_args: Vec<String>,
 
-    /// Step size（WASM 実行を証明する際の1ステップあたりの最大命令数）
     #[arg(short = 's', long, default_value = "10")]
-    step_size: usize,
+    execution_step_size: usize,
+
+    #[arg(short = 's', long, default_value = "10")]
+    memory_step_size: Option<usize>,
+
+    #[arg(short, long)]
+    compress: bool,
 }
 
-fn main() -> Result<(), ZKWASMError> {
+fn build_guest(package_name: &str) {
+    let output = Command::new("cargo")
+        .env("MODEL", "e5small")
+        .args(&[
+            "build",
+            "--release",
+            "--target",
+            "wasm32-unknown-unknown",
+            "--package",
+            package_name,
+        ])
+        .output()
+        .expect("Failed to build WASM package");
 
+    if !output.status.success() {
+        panic!(
+            "Building WASM package failed:\n{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+
+    println!("WASM build completed.");
+    println!("Current directory: {:?}", env::current_dir().unwrap());
+
+    let output = Command::new("wasm2wat")
+        .arg(format!("target/wasm32-unknown-unknown/release/{}.wasm", package_name))
+        .output() // Captures both stdout and stderr
+        .expect("Failed to run candid-extractor");
+
+    if !output.status.success() {
+        panic!(
+            "Candid extraction failed:\n{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+}
+
+fn main() {
     let cli = Cli::parse();
 
+    build_guest(&cli.guest);
     init_logger();
 
-    // Specify step size.
-    //
-    // Here we choose `10` as the step size because the wasm execution of fib(16) is 253 opcodes.
-    // meaning zkWASM will run for 26 steps (rounds up).
-    let step_size = StepSize::new(cli.step_size);
+    benchmark(
+        generate(cli.clone()),
+        &cli.benchmark_args,
+        &format!("../benchmark_outputs/{}_novanet_{}_compressing.csv", cli.guest, if cli.compress {"with"} else {"without"}),
+        &format!("{}_arg", cli.guest),
+    );
+}
 
-    // Produce setup material
-    let pp = WasmSNARK::<E, S1, S2>::setup(step_size);
+fn generate(cli: Cli) -> impl Fn(String) -> BenchResult {
 
-    // Specify arguments to the WASM and use it to build a `WASMCtx`
-    let wasm_args = WASMArgsBuilder::default()
-        .file_path(PathBuf::from(cli.file_path))
-        .unwrap()
-        .invoke(&cli.invoke)
-        .func_args(cli.func_args)
-        .build();
-    let wasm_ctx = WASMCtx::new(wasm_args);
+    move |n: String| {
 
-    // Prove wasm execution of fib.wat::fib(16)
-    let (snark, instance) = WasmSNARK::<E, S1, S2>::prove(&pp, &wasm_ctx, step_size)?;
+        let func_args = vec![n];
 
-    // Verify the proof
-    snark.verify(&pp, &instance)?;
+        let mut step_size = StepSize::new(cli.execution_step_size);
 
-    println!("Success!");
+        if let Some(ms) = cli.memory_step_size {
+            step_size = step_size.set_memory_step_size(ms);
+        }
+        
+        // Produce setup material
+        let pp = WasmSNARK::<E, S1, S2>::setup(step_size);
+    
+        #[cfg(not(test))]
+        let wat_path = format!(
+            "target/wasm32-unknown-unknown/release/{}.wat",
+            cli.guest
+        );
+    
+        #[cfg(test)]
+        let wat_path = "../fibonacci/fib.wat";
+    
+        // Specify arguments to the WASM and use it to build a `WASMCtx`
+        let wasm_args = WASMArgsBuilder::default()
+            .file_path(PathBuf::from(wat_path))
+            .unwrap()
+            .invoke(&cli.guest)
+            .func_args(func_args)
+            .build();
+        let wasm_ctx = WASMCtx::new(wasm_args);
+    
+        // Prove wasm execution
+        let start = std::time::Instant::now();
+        let (mut snark, instance) = WasmSNARK::<E, S1, S2>::prove(&pp, &wasm_ctx, step_size).expect("Failed in prove");
+    
+        // Compress the proof
+        if cli.compress {
+            snark = snark.compress(&pp, &instance).expect("Failed in compress");
+        }
 
-    Ok(())
+        // Verify the proof
+        snark.verify(&pp, &instance).expect("Failed in verify");
+    
+        let end = std::time::Instant::now();
+        let duration = end.duration_since(start);
+    
+        // Get execution trace length
+        let (execution_trace,_, _) = wasm_ctx.execution_trace().expect("Failed in execution_trace");
+    
+    
+        println!("Success!");
+    
+        (
+            duration,
+            size(&snark),
+            execution_trace.len(),
+        )
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_fib_without_memory_accessing() {
+        let cli = Cli {
+            guest: String::from("fib"),
+            benchmark_args: vec![String::from("16"), String::from("17")],
+            execution_step_size: 10,
+            memory_step_size: None,
+            compress: true,
+        };
+
+        // run(cli);
+        benchmark(
+            generate(cli.clone()),
+            &cli.benchmark_args,
+            &format!("../../benchmark_outputs/test_{}_novanet_{}_compressing.csv", cli.guest, if cli.compress {"with"} else {"without"}),
+            &format!("{}_arg", cli.guest),
+        );
+    }
 }

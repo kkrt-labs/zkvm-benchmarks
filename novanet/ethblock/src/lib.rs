@@ -1,17 +1,32 @@
+use std::cell::RefCell;
 
+use ethblock_utils::{BlockInfo, DummyDB};
+use getrandom::register_custom_getrandom;
 use revm::{primitives::TxKind, Context, ExecuteCommitEvm, MainBuilder, MainContext};
 use revm_database::{CacheDB, StateBuilder};
-use ethblock_utils::{BlockInfo, DummyDB};
+
+use rand::{rngs::SmallRng, RngCore, SeedableRng};
+
+/* wasm32-unknown-unknown でrandを使用する */
+thread_local! {
+    pub static RNG: RefCell<SmallRng> = RefCell::new(SmallRng::seed_from_u64(123456789));
+}
+fn custom_getrandom(buf: &mut [u8]) -> Result<(), getrandom::Error> {
+    RNG.with(|rng| rng.borrow_mut().fill_bytes(buf));
+    Ok(())
+}
+register_custom_getrandom!(custom_getrandom);
 
 const BYTES: &[u8] = include_bytes!("../../../sp1-turbo/block_state_caches/block_10889449.bin");
 
-pub fn trace_block(num_txs: usize) -> bool {
-
+#[no_mangle]
+pub fn ethblock(num_txs: usize) -> bool {
     // Params
     let chain_id: u64 = 1;
     // let block_number = 10889449;
 
-    let (block_info, cache_db): (BlockInfo, CacheDB<DummyDB>) = bincode::deserialize(BYTES).unwrap();
+    let (block_info, cache_db): (BlockInfo, CacheDB<DummyDB>) =
+        bincode::deserialize(BYTES).unwrap();
 
     let mut state = StateBuilder::new_with_database(cache_db).build();
     let ctx = Context::mainnet()
