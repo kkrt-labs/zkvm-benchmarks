@@ -4,8 +4,4 @@ name = "fibonacci"
 edition = "2021"
 
 [dependencies]
-# zk-engine = { git = "https://github.com/ICME-Lab/zkEngine_dev", branch= "main" }
-zk-engine = {path = "../../../zkEngine_dev"}
-
-# [patch.crates-io]
-# pasta_curves = { git = "https://github.com/lurk-lab/pasta_curves", branch = "dev" }
+zk-engine = { git = "https://github.com/ICME-Lab/zkEngine_dev", branch= "main" }

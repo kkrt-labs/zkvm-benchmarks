@@ -1,5 +1,6 @@
 [workspace]
 members = [
-  "fibonacci"
+  "fibonacci",
+  "runner"
 ]
 resolver = "2"
