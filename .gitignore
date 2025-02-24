@@ -14,3 +14,6 @@ sp1-turbo/traces/*
 !sp1-turbo/traces/.gitkeep
 sp1-turbo/block_state_caches/*
 !sp1-turbo/block_state_caches/.gitkeep
+
+helper/block_state_caches/*
+!helper/block_state_caches/.gitkeep

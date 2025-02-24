@@ -6,7 +6,7 @@ edition = "2021"
 [dependencies]
 alloy-sol-types = { workspace = true }
 sp1-zkvm = "4.0.0"
-ethblock-lib = { path = "../lib" }
+ethblock-lib = {path = "../lib"}
 
 k256 = { version = "=0.13.3", features = [
   "arithmetic",

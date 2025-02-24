@@ -11,7 +11,7 @@ revm-database-interface = {git = "https://github.com/bluealloy/revm", features =
 revm-inspector = {git = "https://github.com/bluealloy/revm", features = ["serde", "serde-json", "std" ]}
 
 # util
-ethblock-utils = {path = "../utils"}
+ethblock-utils = {path = "../../../ethblock-utils"}
 
 # serialize
 bincode = "1.3.3"
