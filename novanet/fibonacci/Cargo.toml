@@ -3,5 +3,8 @@ version = "0.1.0"
 name = "fibonacci"
 edition = "2021"
 
+[lib]
+crate-type = ["cdylib"] # compile wasm without main
+
 [dependencies]
 zk-engine = { git = "https://github.com/ICME-Lab/zkEngine_dev", branch= "main" }

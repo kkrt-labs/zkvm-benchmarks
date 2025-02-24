@@ -3,9 +3,9 @@ use revm::{primitives::TxKind, Context, ExecuteCommitEvm, MainBuilder, MainConte
 use revm_database::{CacheDB, StateBuilder};
 use ethblock_utils::{BlockInfo, DummyDB};
 
-const BYTES: &[u8] = include_bytes!("../../../block_state_caches/block_10889449.bin");
+const BYTES: &[u8] = include_bytes!("../../../sp1-turbo/block_state_caches/block_10889449.bin");
 
-pub fn trace_block() -> bool {
+pub fn trace_block(num_txs: usize) -> bool {
 
     // Params
     let chain_id: u64 = 1;
@@ -31,7 +31,7 @@ pub fn trace_block() -> bool {
 
     let mut evm = ctx.build_mainnet();
 
-    for tx in block_info.transactions {
+    for tx in block_info.transactions.into_iter().take(num_txs) {
         evm.modify_tx(|etx| {
             etx.caller = tx.from;
             etx.gas_limit = tx.gas_limit;

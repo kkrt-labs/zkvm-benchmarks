@@ -1,6 +1,8 @@
 [workspace]
 members = [
   "fibonacci",
+  "ethblock",
+  "utils", # todo sp1-turboと共通のものを使う。
   "runner"
 ]
 resolver = "2"
