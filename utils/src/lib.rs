@@ -20,7 +20,6 @@ where
     write_csv(file, input_name, inputs, &results);
 }
 
-
 pub fn write_csv<T: Display>(
     file: &str,
     input_name: &str,
