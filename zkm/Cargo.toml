@@ -6,13 +6,13 @@ edition = "2021"
 
 [dependencies]
 utils = { path = "../utils" }
-zkm-prover = { git = "https://github.com/zkMIPS/zkm", branch = "main", default-features = false }
-zkm-emulator = { git = "https://github.com/zkMIPS/zkm", branch = "main", default-features = false }
+zkm-build = { git = "https://github.com/zkMIPS/zkm", rev = "262318f", default-features = false }
+zkm-prover = { git = "https://github.com/zkMIPS/zkm", rev = "262318f", default-features = false }
+zkm-emulator = { git = "https://github.com/zkMIPS/zkm", rev = "262318f", default-features = false }
 plonky2 = { git = "https://github.com/zkMIPS/plonky2.git", branch = "zkm_dev" }
 #starky = { git = "https://github.com/zkMIPS/plonky2.git", branch = "zkm_dev" }
 plonky2_util = { git = "https://github.com/zkMIPS/plonky2.git", branch = "zkm_dev" }
 plonky2_maybe_rayon = { git = "https://github.com/zkMIPS/plonky2.git", branch = "zkm_dev" }
-plonky2x = { git = "https://github.com/zkMIPS/succinctx.git", package = "plonky2x", branch = "zkm" }
 
 log = { version = "0.4.14", default-features = false }
 serde = { version = "1.0.144", features = ["derive"] }
@@ -20,4 +20,46 @@ serde_json = "1.0"
 byteorder = "1.5.0"
 hex = "0.4"
 env_logger = "0.11.5"
-anyhow = { version = "1.0.83" }
+k256 = { version = "=0.13.3", features = [
+  "arithmetic",
+  "serde",
+  "expose-field",
+  "std",
+  "ecdsa",
+], default-features = false }
+
+[build-dependencies]
+zkm-build = { git = "https://github.com/zkMIPS/zkm", rev = "262318f", default-features = false }
+
+
+[[bin]]
+name = "fibo"
+path = "src/bin/fibonacci.rs"
+
+[[bin]]
+name = "bigmem"
+path = "src/bin/bigmem.rs"
+
+[[bin]]
+name = "sha2"
+path = "src/bin/sha2.rs"
+
+[[bin]]
+name = "sha3"
+path = "src/bin/sha3.rs"
+
+[[bin]]
+name = "sha2-chain"
+path = "src/bin/sha2_chain.rs"
+
+[[bin]]
+name = "sha3-chain"
+path = "src/bin/sha3_chain.rs"
+
+[[bin]]
+name = "ecdsa"
+path = "src/bin/ecdsa.rs"
+
+[[bin]]
+name = "all"
+path = "src/main.rs"

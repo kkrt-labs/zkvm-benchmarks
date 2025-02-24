@@ -33,8 +33,20 @@ bench-sp1-turbo-gpu:
 	SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p fibonacci-script
 
 bench-zkm:
-	make build-zkm
-	cd zkm && RUSTFLAGS="-C target-cpu=native" cargo run --release
+	# rust toolchain path: ~/.zkm-toolchain/rust-toolchain-x86-64-unknown-linux-gnu-20241217/bin
+	cd zkm && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --bin fibo --release && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --bin sha2 --release
+
+bench-zkm-ecdsa:
+	# rust toolchain path: ~/.zkm-toolchain/rust-toolchain-x86-64-unknown-linux-gnu-20241217/bin
+	cd zkm && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --bin ecdsa --release
+
+bench-zkm2:
+	cd zkm2 && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --bin fibonacci --release && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --bin sha2 --release
 
 build-sp1:
 	cd sp1/fibonacci && cargo prove build
@@ -55,15 +67,6 @@ bench-risczero-gpu:
 	RUSTFLAGS="-C target-cpu=native" cargo run --release -F cuda -- --out ../benchmark_outputs/fib_risczero_gpu.csv fibonacci && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release -F cuda -- --out ../benchmark_outputs/sha2_risczero_gpu.csv big-sha2 && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release -F cuda -- --out ../benchmark_outputs/ecdsa_risczero_gpu.csv ecdsa-verify
-
-build-zkm:
-	cd zkm/fibonacci && cargo build --target=mips-unknown-linux-musl --release
-	cd zkm/sha2 && cargo build --target=mips-unknown-linux-musl --release
-	cd zkm/sha3 && cargo build --target=mips-unknown-linux-musl --release
-	cd zkm/bigmem && cargo build --target=mips-unknown-linux-musl --release
-	cd zkm/sha2-chain && cargo build --target=mips-unknown-linux-musl --release
-	cd zkm/sha3-chain && cargo build --target=mips-unknown-linux-musl --release
-	cd zkm/ecdsa && cargo build --target=mips-unknown-linux-musl --release
 
 bench-powdr:
 	cd powdr && RUSTFLAGS='-C target-cpu=native' cargo run --release

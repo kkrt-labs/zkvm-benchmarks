@@ -1,0 +1,19 @@
+[workspace]
+members = [
+  "bigmem",
+  "fibonacci",
+  "sha2",
+  "sha2-chain",
+  "sha3",
+  "sha3-chain",
+]
+resolver = "2"
+
+[workspace.dependencies]
+zkm2-zkvm = { path = "../../../zkm2/crates/zkvm/entrypoint" }
+serde = "1.0.204"
+serde_json = "1.0.132"
+
+[workspace.package]
+version = "1.1.0"
+edition = "2021"
