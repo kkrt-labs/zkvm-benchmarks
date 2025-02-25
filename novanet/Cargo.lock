@@ -1018,7 +1018,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "fibonacci"
+name = "fib"
 version = "0.1.0"
 dependencies = [
  "zk-engine",

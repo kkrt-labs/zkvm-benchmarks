@@ -99,8 +99,8 @@ fn main() {
     benchmark(
         generate(cli.clone()),
         &cli.benchmark_args,
-        &format!("../benchmark_outputs/{}_novanet_{}_compressing.csv", cli.guest, if cli.compress {"with"} else {"without"}),
-        &format!("{}_arg", cli.guest),
+        &format!("../benchmark_outputs/{}_novanet-{}-compressing.csv", cli.guest, if cli.compress {"with"} else {"without"}),
+        "n",
     );
 }
 
@@ -115,10 +115,10 @@ fn generate(cli: Cli) -> impl Fn(String) -> BenchResult {
         if let Some(ms) = cli.memory_step_size {
             step_size = step_size.set_memory_step_size(ms);
         }
-        
+
         // Produce setup material
         let pp = WasmSNARK::<E, S1, S2>::setup(step_size);
-        
+
         let wat_path  = if let Some(wat_path) = cli.wat.clone() {
             wat_path
         } else {
@@ -138,11 +138,11 @@ fn generate(cli: Cli) -> impl Fn(String) -> BenchResult {
             .func_args(func_args)
             .build();
         let wasm_ctx = WASMCtx::new(wasm_args);
-    
+
         // Prove wasm execution
         let start = std::time::Instant::now();
         let (mut snark, instance) = WasmSNARK::<E, S1, S2>::prove(&pp, &wasm_ctx, step_size).expect("Failed in prove");
-    
+
         // Compress the proof
         if cli.compress {
             snark = snark.compress(&pp, &instance).expect("Failed in compress");
@@ -150,16 +150,16 @@ fn generate(cli: Cli) -> impl Fn(String) -> BenchResult {
 
         // Verify the proof
         snark.verify(&pp, &instance).expect("Failed in verify");
-    
+
         let end = std::time::Instant::now();
         let duration = end.duration_since(start);
-    
+
         // Get execution trace length
         let (execution_trace,_, _) = wasm_ctx.execution_trace().expect("Failed in execution_trace");
-    
-    
+
+
         println!("Success!");
-    
+
         (
             duration,
             size(&snark),

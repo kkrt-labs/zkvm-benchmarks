@@ -91,6 +91,12 @@ cargo openvm --version
 ### Install Novanet
 
 Novanet (zkEngine) requires the wasm2wat tool to build a guest programs into WebAssembly Text Fromat.
+https://github.com/WebAssembly/wabt?tab=readme-ov-file#installing-prebuilt-binaries
+
+and install wasm32 target:
+```bash
+rustup target add wasm32-unknown-unknown
+```
 
 #### MacOS
 ```bash

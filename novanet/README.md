@@ -3,14 +3,14 @@ RUST_LOG=debug cargo run --release -p runner --  --guest "ethblock" --benchmark-
 ```
 Examples
 ```bash
-RUST_LOG=debug cargo run --release -p runner --  --guest "fibonacci" --benchmark-args 16 32
+RUST_LOG=debug cargo run --release -p runner --  --guest "fib" --benchmark-args 16 32
 ```
 ```bash
-RUST_LOG=debug cargo run --release -p runner --  --guest "fibonacci" --benchmark-args 16 32 --compress
+RUST_LOG=debug cargo run --release -p runner --  --guest "fib" --benchmark-args 16 32 --compress
 ```
 ```bash
-RUST_LOG=debug cargo run --release -p runner --  --guest "fib" --benchmark-args 16 32 --wat fibonacci/fib.wat
+RUST_LOG=debug cargo run --release -p runner --  --guest "fib" --benchmark-args 16 32 --wat fib/fib.wat
 ```
 ```bash
-RUST_LOG=debug cargo run --release -p runner --  --guest "fibonacci" --benchmark-args 16 32 --compress --execution-step-size 100 --memory-step-size 1000
+RUST_LOG=debug cargo run --release -p runner --  --guest "fib" --benchmark-args 16 32 --compress --execution-step-size 100 --memory-step-size 1000
 ```
