@@ -2,12 +2,15 @@ use std::{fmt::Display, fs::File, io::Write, time::Duration};
 
 use serde::Serialize;
 
-pub fn benchmark<T: Display + Clone>(
-    func: fn(T) -> (Duration, usize, usize),
+pub fn benchmark<T: Display + Clone, F>(
+    func: F,
     inputs: &[T],
     file: &str,
     input_name: &str,
-) {
+)
+where
+    F: Fn(T) -> (Duration, usize, usize),
+{
     let mut results = Vec::new();
     for input in inputs {
         let (duration, size, cycles) = func(input.clone());

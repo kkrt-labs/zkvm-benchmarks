@@ -16,20 +16,20 @@ use std::time::Duration;
 use utils::{benchmark, size};
 
 /// The ELF (executable and linkable format) file for the Succinct RISC-V zkVM.
-pub const ECDSA_ELF: &[u8] = include_elf!("ethblock-program");
+pub const EVM_ELF: &[u8] = include_elf!("ethblock-program");
 type BenchResult = (Duration, usize, usize);
 
 fn main() {
     let lengths = [1];
     benchmark(
-        bench_ecdsa,
+        bench_evm,
         &lengths,
         "../benchmark_outputs/ethblock_sp1turbo.csv",
-        "byte length",
+        "ethblock_arg",
     );
 }
 
-fn bench_ecdsa(_dummy: usize) -> BenchResult {
+fn bench_evm(num_txs: usize) -> BenchResult {
     // Setup the logger.
     sp1_sdk::utils::setup_logger();
     dotenv::dotenv().ok();
@@ -38,17 +38,18 @@ fn bench_ecdsa(_dummy: usize) -> BenchResult {
     let client = ProverClient::from_env();
 
     // Setup the inputs.
-    let stdin = SP1Stdin::new();
+    let mut stdin = SP1Stdin::new();
+    stdin.write(&num_txs);
 
     // Execute the program
-    let (_, report) = client.execute(ECDSA_ELF, &stdin).run().unwrap();
+    let (_, report) = client.execute(EVM_ELF, &stdin).run().unwrap();
     println!("Program executed successfully.");
 
     // Record the number of cycles executed.
     println!("Number of cycles: {}", report.total_instruction_count());
 
     // Setup the program for proving.
-    let (pk, vk) = client.setup(ECDSA_ELF);
+    let (pk, vk) = client.setup(EVM_ELF);
 
     let start = std::time::Instant::now();
     // Generate the proof

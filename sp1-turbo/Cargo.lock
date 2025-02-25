@@ -2022,7 +2022,9 @@ name = "ethblock-utils"
 version = "0.1.0"
 dependencies = [
  "alloy-eip2930",
+ "bincode",
  "revm",
+ "revm-database",
  "serde",
 ]
 

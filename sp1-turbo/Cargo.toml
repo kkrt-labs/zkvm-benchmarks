@@ -10,7 +10,7 @@ members = [
   "ecdsa/program",
   "ecdsa/script",
   "ethblock/helper",
-  "ethblock/utils",
+  # "ethblock/utils",
   "ethblock/lib",
   "ethblock/program",
   "ethblock/script",

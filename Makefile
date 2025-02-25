@@ -80,6 +80,11 @@ bench-openvm:
 bench-nexus:
 	cd nexus && RUSTFLAGS="-C target-cpu=native" cargo run --release
 
+bench-novanet:
+	cd novanet && \
+	RUSTFLAGS="-C target-cpu=native" RUST_LOG=debug cargo run --release -p runner --  --guest "fib" --benchmark-args 10 50 90 && \
+	RUSTFLAGS="-C target-cpu=native" RUST_LOG=debug cargo run --release -p runner --  --guest "fib" --benchmark-args 10 50 90 --compress
+
 perf-all:
 	make perf-sp1turbo
 

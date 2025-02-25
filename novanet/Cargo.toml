@@ -1,0 +1,7 @@
+[workspace]
+members = [
+  "fib",
+  "ethblock",
+  "runner"
+]
+resolver = "2"
