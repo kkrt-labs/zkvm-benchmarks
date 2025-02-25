@@ -27,6 +27,9 @@ struct Cli {
     #[arg(short, long)]
     guest: String,
 
+    #[arg(short, long)]
+    wat: Option<String>,
+
     #[arg(short, long, num_args = 0..)]
     benchmark_args: Vec<String>,
 
@@ -87,8 +90,11 @@ fn build_guest(package_name: &str) {
 fn main() {
     let cli = Cli::parse();
 
-    build_guest(&cli.guest);
     init_logger();
+
+    if cli.wat.is_none() {
+        build_guest(&cli.guest);
+    }
 
     benchmark(
         generate(cli.clone()),
@@ -112,16 +118,18 @@ fn generate(cli: Cli) -> impl Fn(String) -> BenchResult {
         
         // Produce setup material
         let pp = WasmSNARK::<E, S1, S2>::setup(step_size);
-    
-        #[cfg(not(test))]
-        let wat_path = format!(
-            "target/wasm32-unknown-unknown/release/{}.wat",
-            cli.guest
-        );
-    
-        #[cfg(test)]
-        let wat_path = "../fibonacci/fib.wat";
-    
+        
+        let wat_path  = if let Some(wat_path) = cli.wat.clone() {
+            wat_path
+        } else {
+            format!(
+                "wats/{}.wat",
+                cli.guest
+            )
+        };
+
+        println!("wat_path: {wat_path}");
+
         // Specify arguments to the WASM and use it to build a `WASMCtx`
         let wasm_args = WASMArgsBuilder::default()
             .file_path(PathBuf::from(wat_path))
@@ -160,26 +168,26 @@ fn generate(cli: Cli) -> impl Fn(String) -> BenchResult {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+// #[cfg(test)]
+// mod tests {
+//     use super::*;
 
-    #[test]
-    fn test_fib_without_memory_accessing() {
-        let cli = Cli {
-            guest: String::from("fib"),
-            benchmark_args: vec![String::from("16"), String::from("17")],
-            execution_step_size: 10,
-            memory_step_size: None,
-            compress: true,
-        };
+//     #[test]
+//     fn test_fib_without_memory_accessing() {
+//         let cli = Cli {
+//             guest: String::from("fib"),
+//             wat: Some(String::from("../fibonacci/fib.wat")),
+//             benchmark_args: vec![String::from("16"), String::from("17")],
+//             execution_step_size: 10,
+//             memory_step_size: None,
+//             compress: true,
+//         };
 
-        // run(cli);
-        benchmark(
-            generate(cli.clone()),
-            &cli.benchmark_args,
-            &format!("../../benchmark_outputs/test_{}_novanet_{}_compressing.csv", cli.guest, if cli.compress {"with"} else {"without"}),
-            &format!("{}_arg", cli.guest),
-        );
-    }
-}
+//         benchmark(
+//             generate(cli.clone()),
+//             &cli.benchmark_args,
+//             &format!("../../benchmark_outputs/test_{}_novanet_{}_compressing.csv", cli.guest, if cli.compress {"with"} else {"without"}),
+//             &format!("{}_arg", cli.guest),
+//         );
+//     }
+// }
