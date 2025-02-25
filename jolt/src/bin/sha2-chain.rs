@@ -7,7 +7,7 @@ type BenchResult = (Duration, usize, usize);
 fn main() {
     let csv_file = format!(
         "../benchmark_outputs/sha2_chain_jolt{}{}.csv",
-        if cfg!(feature = "icicle") { "_gpu" } else { "" },
+        if cfg!(feature = "icicle") { "-gpu" } else { "" },
         ""
     );
     // let iters = [230, 460, 920, 1840, 3680];

@@ -7,7 +7,7 @@ type BenchResult = (Duration, usize, usize);
 fn main() {
     let csv_file = format!(
         "../benchmark_outputs/sha3_jolt{}{}.csv",
-        if cfg!(feature = "icicle") { "_gpu" } else { "" },
+        if cfg!(feature = "icicle") { "-gpu" } else { "" },
         ""
     );
     let lengths = [32, 256, 512, 1024, 2048];

@@ -8,7 +8,7 @@ fn main() {
     let ns = [10, 50, 90];
     let csv_file = format!(
         "../benchmark_outputs/fib_jolt{}{}.csv",
-        if cfg!(feature = "icicle") { "_gpu" } else { "" },
+        if cfg!(feature = "icicle") { "-gpu" } else { "" },
         ""
     );
 

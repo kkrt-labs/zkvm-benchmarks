@@ -14,9 +14,9 @@ bench-jolt:
 
 bench-jolt-gpu:
 	cd jolt && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci -F icicle && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2 -F icicle && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin ecdsa -F icicle
+	ICICLE_BACKEND_INSTALL_DIR=$(pwd)/target/release/deps/icicle/lib/backend RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci -F icicle && \
+	ICICLE_BACKEND_INSTALL_DIR=$(pwd)/target/release/deps/icicle/lib/backend RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2 -F icicle && \
+	ICICLE_BACKEND_INSTALL_DIR=$(pwd)/target/release/deps/icicle/lib/backend RUSTFLAGS="-C target-cpu=native" cargo run --release --bin ecdsa -F icicle
 
 bench-sp1:
 	make build-sp1
