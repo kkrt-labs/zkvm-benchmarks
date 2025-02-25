@@ -1,4 +1,4 @@
-use std::{env, path::PathBuf, process::Command, time::Duration};
+use std::{env, fs::File, path::PathBuf, process::Command, time::Duration};
 use zk_engine::{
     nova::{
         provider::{ipa_pc, Bn256EngineIPA},
@@ -41,6 +41,8 @@ struct Cli {
 }
 
 fn build_guest(package_name: &str) {
+    println!("Current directory: {:?}", env::current_dir().unwrap());
+
     let output = Command::new("cargo")
         .env("MODEL", "e5small")
         .args(&[
@@ -62,12 +64,15 @@ fn build_guest(package_name: &str) {
     }
 
     println!("WASM build completed.");
-    println!("Current directory: {:?}", env::current_dir().unwrap());
+
+    let output_file =
+        File::create(format!("wats/{}.wat", package_name)).expect("Failed to create output file");
 
     let output = Command::new("wasm2wat")
         .arg(format!("target/wasm32-unknown-unknown/release/{}.wasm", package_name))
+        .stdout(output_file.try_clone().unwrap()) // Redirect standard output to the file
         .output() // Captures both stdout and stderr
-        .expect("Failed to run candid-extractor");
+        .expect("Failed to run wasm2wat");
 
     if !output.status.success() {
         panic!(
@@ -75,6 +80,8 @@ fn build_guest(package_name: &str) {
             String::from_utf8_lossy(&output.stderr)
         );
     }
+
+    println!("Generated WAT file.");
 }
 
 fn main() {

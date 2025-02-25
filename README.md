@@ -9,6 +9,7 @@ Supported zkVMs:
 - Powdr (WIP)
 - RISC Zero
 - SP1
+- Novanet (WIP)
 
 Want to support in the future:
 
@@ -86,6 +87,23 @@ rustflags = ["--cfg", 'target_os="zkvm"',"-C", "target-feature=+crt-static", "-C
 cargo +nightly install --git http://github.com/openvm-org/openvm.git cargo-openvm
 cargo openvm --version
 ```
+
+### Install Novanet
+
+Novanet (zkEngine) requires the wasm2wat tool to build a guest programs into WebAssembly Text Fromat.
+
+#### MacOS
+```bash
+brew install wabt
+```
+
+#### Linux
+```bash
+sudo apt install wabt
+```
+
+#### Others
+Please build `wabt` from [here](https://github.com/WebAssembly/wabt) on your own.
 
 ## Running
 
