@@ -82,8 +82,8 @@ bench-nexus:
 
 bench-novanet:
 	cd novanet && \
-	RUSTFLAGS="-C target-cpu=native" RUST_LOG=debug cargo run --release -p runner --  --guest "fib" --benchmark-args 10 50 90 && \
-	RUSTFLAGS="-C target-cpu=native" RUST_LOG=debug cargo run --release -p runner --  --guest "fib" --benchmark-args 10 50 90 --compress
+	RUSTFLAGS="-C target-cpu=native" RUST_LOG=debug cargo run --release -p runner --  --guest "fib" --benchmark-args 10 50 90 --wat fib/fib.wat && \
+	RUSTFLAGS="-C target-cpu=native" RUST_LOG=debug cargo run --release -p runner --  --guest "fib" --benchmark-args 10 50 90 --compress --wat fib/fib.wat
 
 perf-all:
 	make perf-sp1turbo
