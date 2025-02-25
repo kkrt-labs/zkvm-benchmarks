@@ -29,6 +29,17 @@ fn main() {
     if args.iter().any(|arg| arg == "--once") {
         once_fib();
     } else {
+        let ns = [10, 50, 90];
+        benchmark(
+            benchmark_fib,
+            &ns,
+            "../benchmark_outputs/fib_nexus.csv",
+            "n",
+        );
+
+        let lengths = [32, 256, 512, 1024];
+        benchmark(benchmark_sha2, &lengths, "../benchmark_outputs/sha2_nexus.csv", "n");
+
         let lengths = [1];
         benchmark(
             benchmark_ecdsa_verify,
@@ -36,17 +47,6 @@ fn main() {
             "../benchmark_outputs/ecdsa_nexus.csv",
             "n",
         );
-
-        // let ns = [10, 50, 90];
-        // benchmark(
-        //     benchmark_fib,
-        //     &ns,
-        //     "../benchmark_outputs/fib_nexus.csv",
-        //     "n",
-        // );
-
-        let lengths = [32, 256, 512, 1024];
-        // benchmark(benchmark_sha2, &lengths, "../benchmark_outputs/sha2_nexus.csv", "n");
     }
 }
 
