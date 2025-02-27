@@ -67,6 +67,18 @@ curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/zkMIPS/to
 source ~/.zkm-toolchain/env
 ```
 
+When Open SSL error occurs:
+
+```bash
+wget https://github.com/openssl/openssl/releases/download/openssl-3.3.2/openssl-3.3.2.tar.gz -O openssl-3.3.2.tar.gz
+tar -xvzf openssl-3.3.2.tar.gz
+cd openssl-3.3.2
+./config --prefix=/usr zlib-dynamic --openssldir=/etc/ssl shared
+make test
+sudo make install
+export LD_LIBRARY_PATH=/usr/lib64:$LD_LIBRARY_PATH
+```
+
 ### Install zkm2
 
 ```bash

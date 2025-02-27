@@ -34,12 +34,14 @@ bench-sp1-turbo-gpu:
 
 bench-zkm:
 	# rust toolchain path: ~/.zkm-toolchain/rust-toolchain-x86-64-unknown-linux-gnu-20241217/bin
+	. ~/.zkm-toolchain/env && \
 	cd zkm && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --bin fibo --release && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --bin sha2 --release
 
 bench-zkm-ecdsa:
 	# rust toolchain path: ~/.zkm-toolchain/rust-toolchain-x86-64-unknown-linux-gnu-20241217/bin
+	. ~/.zkm-toolchain/env && \
 	cd zkm && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --bin ecdsa --release
 

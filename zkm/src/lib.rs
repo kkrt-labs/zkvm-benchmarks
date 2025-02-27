@@ -37,7 +37,7 @@ const KEY: &[u8] = include_bytes!("../../helper/ecdsa_signature/verifying_key.tx
 const SIGNATURE: &[u8] = include_bytes!("../../helper/ecdsa_signature/signature.txt");
 
 const DEGREE_BITS_RANGE: [Range<usize>; 12] = [
-    10..21,
+    10..22,
     12..22,
     11..21,
     8..21,
@@ -248,7 +248,7 @@ pub fn benchmark_ecdsa(_length: usize) -> BenchResult {
     let duration = end.duration_since(start);
     println!("benchmark_sha2 end, duration: {:?}", duration.as_secs_f64());
 
-    let _is_ok =  state.read_public_values::<[u8; 32]>();
+    // let _is_ok =  state.read_public_values::<[u8; 32]>();
 
     (duration, size, total_steps)
 }
