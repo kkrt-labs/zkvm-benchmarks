@@ -1,10 +1,13 @@
 bench-all:
-	#make bench-jolt
-	make bench-sp1
+	make bench-jolt
+	make bench-jolt-gpu
+	make bench-sp1-turbo
+	make bench-sp1-turbo-gpu
 	make bench-risczero
+	make bench-risczero-gpu
 	make bench-zkm
-	make bench-powdr
 	make bench-openvm
+	make bench-novanet
 
 bench-jolt:
 	cd jolt && \
@@ -37,12 +40,7 @@ bench-zkm:
 	. ~/.zkm-toolchain/env && \
 	cd zkm && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --bin fibo --release && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --bin sha2 --release
-
-bench-zkm-ecdsa:
-	# rust toolchain path: ~/.zkm-toolchain/rust-toolchain-x86-64-unknown-linux-gnu-20241217/bin
-	. ~/.zkm-toolchain/env && \
-	cd zkm && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --bin sha2 --release && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --bin ecdsa --release
 
 bench-zkm2:
