@@ -7,6 +7,7 @@ edition = "2021"
 members = [
     "fibonacci-guest",
     "sha2-guest",
+    "ecdsa-guest",
 ]
 
 [profile.release]
@@ -37,6 +38,7 @@ getrandom = { version = "0.2", features = ["custom"] }
 
 fibonacci-guest = { path = "./fibonacci-guest" }
 sha2-guest = { path = "./sha2-guest" }
+ecdsa-guest = { path = "./ecdsa-guest" }
 
 [features]
 default = []

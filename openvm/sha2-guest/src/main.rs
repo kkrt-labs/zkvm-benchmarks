@@ -18,6 +18,6 @@ openvm::entry!(main);
 
 pub fn main() {
     let input: Vec<u8> = read();
-    let output = (&black_box(input));
+    let output = sha256(&black_box(input));
 }
 // ANCHOR_END: main

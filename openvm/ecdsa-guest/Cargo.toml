@@ -1,0 +1,21 @@
+[package]
+name = "ecdsa-guest"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+openvm = { git = "https://github.com/openvm-org/openvm.git" }
+hex = "0.4.3"
+serde = "1.0.26"
+k256 = { version = "=0.13.3", features = [
+  "arithmetic",
+  "serde",
+  "expose-field",
+  "std",
+  "ecdsa",
+], default-features = false }
+getrandom = { version = "0.2", features = ["custom"] }
+
+[features]
+default = []
+std = ["openvm/std"]

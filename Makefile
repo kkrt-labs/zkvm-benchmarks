@@ -75,7 +75,8 @@ bench-powdr:
 
 bench-openvm:
 	cd openvm && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2
+	RUST_BACKTRACE=1 RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci && \
+	RUST_BACKTRACE=1 RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2
 
 bench-nexus:
 	cd nexus && RUSTFLAGS="-C target-cpu=native" cargo run --release
