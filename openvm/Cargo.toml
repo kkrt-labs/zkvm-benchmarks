@@ -1,10 +1,40 @@
 [package]
-name = "openvm-example-fibonacci"
+name = "openvm-benchmarks"
 version = "0.1.0"
 edition = "2021"
 
+[workspace]
+members = [
+    "fibonacci-guest",
+]
+
+[profile.release]
+debug = 1
+codegen-units = 1
+lto = "fat"
+
 [dependencies]
 openvm = { git = "https://github.com/openvm-org/openvm.git" }
+openvm-build = { git = "https://github.com/openvm-org/openvm.git" }
+openvm-sdk = { git = "https://github.com/openvm-org/openvm.git" }
+openvm-stark-sdk = { git = "https://github.com/openvm-org/stark-backend.git", rev = "bc364134b8315c27bfd29c6e77ac79fe77090137", default-features = false }
+openvm-native-recursion = { git = "https://github.com/openvm-org/openvm.git" }
+openvm-transpiler = { git = "https://github.com/openvm-org/openvm.git" }
+
+utils = { path = "../utils" }
+eyre = "0.6.12"
+serde = "1.0.26"
+hex = "0.4.3"
+k256 = { version = "=0.13.3", features = [
+  "arithmetic",
+  "serde",
+  "expose-field",
+  "std",
+  "ecdsa",
+], default-features = false }
+getrandom = { version = "0.2", features = ["custom"] }
+
+fibonacci-guest = { path = "./fibonacci-guest" }
 
 [features]
 default = []
