@@ -2,28 +2,28 @@ This repo is used for academic workshop, with the title "Benchmarking zkVMs: Eff
 
 # zkVM Benchmarks
 
-Supported zkVMs:
+See bench result [here](./benchmark_outputs)
 
-- Jolt
-- Nexus (WIP)
-- Powdr (WIP)
-- RISC Zero
-- SP1
-- Novanet (WIP)
+## Current status
 
-Want to support in the future:
+We are so welcome to your contribution!
 
-- Ceno: insufficient impelentation, such as non-supporting recursion, [guest programs](https://github.com/orgs/scroll-tech/projects/20), etc.
-- zkWASM (in the future)
-- Open VM (in the future)
-- Valida: [The repo is currently private, and the latest docker image is not available.](https://github.com/lita-xyz/valida-releases)
-- Snarkify?
-
-Don't support:
-
-- Cairo VM: doesn't support Rust yet
-- Miden VM: doesn't support Rust yet
-- ...
+||Fibonacci|SHA2|ECDSA|Revm|Notes|
+|-|-|-|-|-|-|
+|[Jolt](./jolt/)|✅|✅|✅|❌||
+|[Nexus](./nexus/)|✅|✅|✅|❌||
+|[Novanet](./novanet/)|✅|❌|❌|✅||
+|[OpenVM](./openvm/)|✅|✅|❌|❌||
+|[Powdr](./powdr/)|❌|❌|❌|❌||
+|[RISC Zero](./risczero)|✅|✅|✅|❌||
+|[RISC Zero (GPU)](./risczero)|✅|✅|✅|❌||
+|[SP1](./sp1-turbo)|✅|✅|✅|✅||
+|[SP1 (GPU)](./sp1-turbo)|✅|✅|✅|✅||
+|[ZKM](./zkm)|✅|✅|✅|❌||
+|Ceno|||||[No SDK yet](https://github.com/orgs/scroll-tech/projects/20)|
+|zkWASM||||||
+|Valida|||||[The repo is currently private, and the latest docker image is not available.](https://github.com/lita-xyz/valida-releases)|
+|Snarkify||||||
 
 ## Installation
 
@@ -154,4 +154,6 @@ _This code is being provided as is. No guarantee, representation or warranty is 
 
 If you want to add new zkVM schemes for this benchmark, please follow them:
 
-...
+1. Submit issue
+2. Assign
+3. Create PR
