@@ -21,24 +21,25 @@ type BenchResult = (Duration, usize, usize);
 
 #[allow(unused_variables, unused_doc_comments)]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-  let ns = [10, 50, 90];
-  benchmark(
-    benchmark_fib,
-    &ns,
-    "../benchmark_outputs/fib_openvm.csv",
-    "n",
-  );
+    let lengths = [32, 256, 512, 1024, 2048];
+    benchmark(
+      benchmark_sha2,
+      &lengths,
+      "../benchmark_outputs/sha2_openvm.csv",
+      "n",
+    );
 
     Ok(())
 }
 
-fn benchmark_fib(n: u32) -> BenchResult {
+fn benchmark_sha2(num_bytes: usize) -> BenchResult {
       // ANCHOR: vm_config
       let vm_config = SdkVmConfig::builder()
       .system(Default::default())
       .rv32i(Default::default())
       .rv32m(Default::default())
       .io(Default::default())
+      .sha256(Default::default())
       .build();
   // ANCHOR_END: vm_config
 
@@ -56,7 +57,7 @@ fn benchmark_fib(n: u32) -> BenchResult {
 
   // 2a. Build the ELF with guest options and a target filter.
   let guest_opts = GuestOptions::default();
-  let target_path = "fibonacci-guest";
+  let target_path = "sha2-guest";
   let elf = sdk.build(guest_opts, target_path, &Default::default()).unwrap();
   // ANCHOR_END: build
 
@@ -67,8 +68,9 @@ fn benchmark_fib(n: u32) -> BenchResult {
 
   // ANCHOR: execution
   // 4. Format your input into StdIn
+  let input = vec![5u8; num_bytes];
   let mut stdin = StdIn::default();
-  stdin.write(&n);
+  stdin.write(&input);
 
   // 5. Run the program
   let output = sdk.execute(exe.clone(), vm_config.clone(), stdin.clone()).unwrap();

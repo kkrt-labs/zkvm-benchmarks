@@ -6,6 +6,7 @@ edition = "2021"
 [workspace]
 members = [
     "fibonacci-guest",
+    "sha2-guest",
 ]
 
 [profile.release]
@@ -35,6 +36,7 @@ k256 = { version = "=0.13.3", features = [
 getrandom = { version = "0.2", features = ["custom"] }
 
 fibonacci-guest = { path = "./fibonacci-guest" }
+sha2-guest = { path = "./sha2-guest" }
 
 [features]
 default = []
