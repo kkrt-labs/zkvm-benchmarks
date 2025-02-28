@@ -26,14 +26,22 @@ We are so welcome to your contribution!
 |Valida|||||[The repo is currently private, and the latest docker image is not available.](https://github.com/lita-xyz/valida-releases)|
 |Snarkify||||||
 
+## Hardware Requirement
+
+Architecture: Linux x86_64
+(When I tried to build on my Mac/M1 using docker, some toolchains were unable to build.)
+
+||CPU Cores|RAM|GPU RAM|
+|-|-|-|-|
+|Jolt|8|100GB|8GB|
+|Nexus|8|32GB|-|
+|Novanet|8|32GB|-|
+|OpenVM|8|32GB|-|
+|RISC Zero|8|32GB|8GB|
+|SP1|8|64GB|24GB|
+|ZKM|8|80GB|-|
+
 ## Installation
-
-We highly recommend to build them on:
-- linux/x86_64
-- 64GB RAM (128GB on Jolt, 256GB on ZKM's evm proving)
-- strong CPU
-
-When I tried to build on my Mac/M1 using docker, some toolchains were unable to build.
 
 ### Install Jolt/Nexus
 
