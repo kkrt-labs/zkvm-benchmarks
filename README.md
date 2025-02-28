@@ -11,7 +11,8 @@ We are so welcome to your contribution!
 ||Fibonacci|SHA2|ECDSA|Revm|Notes|
 |-|-|-|-|-|-|
 |[Jolt](./jolt/)|✅|✅|✅|❌||
-|[Nexus](./nexus/)|✅|✅|✅|❌||
+|[Jolt (GPU)](./jolt/)|✅|✅|✅|❌|Optimization by GPU is still only partially implemented|
+|[Nexus](./nexus/)|✅|✅|✅|❌|The latest version is probably private|
 |[Novanet](./novanet/)|✅|❌|❌|✅||
 |[OpenVM](./openvm/)|✅|✅|❌|❌||
 |[Powdr](./powdr/)|❌|❌|❌|❌||
