@@ -12,17 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-pub mod big_blake2b;
-pub mod big_blake3;
-pub mod big_keccak;
-pub mod big_sha2;
-pub mod ecdsa_verify;
-pub mod ed25519_verify;
-pub mod fibonacci;
-pub mod iter_blake2b;
-pub mod iter_blake3;
-pub mod iter_keccak;
-pub mod iter_sha2;
-pub mod membership;
-pub mod sudoku;
-pub mod transfer_eth;
+use risc0_zkvm::guest::env;
+
+fn main() {
+    let iterations: usize = env::read();
+    let answer: bool = revm_utils::transfer_eth_n_times(iterations);
+    env::commit(&answer);
+}
