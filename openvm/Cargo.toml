@@ -8,6 +8,7 @@ members = [
     "fibonacci-guest",
     "sha2-guest",
     "ecdsa-guest",
+    "transfer-eth-guest"
 ]
 
 [profile.release]
