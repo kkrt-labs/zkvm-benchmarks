@@ -19,6 +19,7 @@ use nexus_sdk::{
 const FIB_PACKAGE: &str = "fibonacci-guest";
 const SHA2_PACKAGE: &str = "sha2-guest";
 const ECDSA_PACKAGE: &str = "ecdsa-guest";
+const TRANSFER_ETH_PACKAGE:  &str = "transfer-eth-guest";
 
 const MESSAGE: &[u8] = include_bytes!("../../helper/ecdsa_signature/message.txt");
 const KEY: &[u8] = include_bytes!("../../helper/ecdsa_signature/verifying_key.txt");
@@ -47,6 +48,14 @@ fn main() {
             "../benchmark_outputs/ecdsa_nexus.csv",
             "n",
         );
+
+        let lengths = [1, 10, 100];
+        benchmark(
+            benchmark_transfer_eth,
+            &lengths,
+            "../benchmark_outputs/transfer_eth_nexus.csv",
+            "num_transfers",
+        );
     }
 }
 
@@ -62,7 +71,7 @@ fn once_fib() {
     let prover: Nova<Local> = Nova::compile(&opts).expect("failed to compile guest program");
 
     println!("Proving execution of vm...");
-    let proof = prover
+    let _proof = prover
         .prove_with_input::<u32>(&pp, &n)
         .expect("failed to prove program");
     println!("  Succeeded!");
@@ -145,6 +154,33 @@ fn benchmark_ecdsa_verify(_length: usize) -> (Duration, usize, usize) {
     let start = Instant::now();
     let proof = prover
         .prove_with_input::<(EncodedPoint<Secp256k1>, Vec<u8>, Signature)>(&pp, &(encoded_point, message, signature))
+        .expect("failed to prove program");
+    let end = Instant::now();
+    println!(">>>>> Logging\n{}<<<<<", proof.logs().join(""));
+
+    print!("Verifying execution...");
+    proof.verify(&pp).expect("failed to verify proof");
+
+    println!("  Succeeded!");
+
+    (end.duration_since(start), 0x1000000, 0x1000000)
+}
+
+
+fn benchmark_transfer_eth(n: u32) -> (Duration, usize, usize) {
+    println!("Setting up Nova public parameters...");
+    let pp: PP = PP::generate().expect("failed to generate parameters");
+
+    let mut opts = CompileOpts::new(TRANSFER_ETH_PACKAGE);
+    opts.set_memlimit(8); // use an 8mb memory
+
+    println!("Compiling guest program...");
+    let prover: Nova<Local> = Nova::compile(&opts).expect("failed to compile guest program");
+
+    println!("Proving execution of vm...");
+    let start = Instant::now();
+    let proof = prover
+        .prove_with_input::<u32>(&pp, &n)
         .expect("failed to prove program");
     let end = Instant::now();
     println!(">>>>> Logging\n{}<<<<<", proof.logs().join(""));
