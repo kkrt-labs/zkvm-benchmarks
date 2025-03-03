@@ -20,12 +20,12 @@ pub const EVM_ELF: &[u8] = include_elf!("transfer-eth-program");
 type BenchResult = (Duration, usize, usize);
 
 fn main() {
-    let num_transfers = [1];
+    let num_transfers = [1, 10, 100];
     benchmark(
         bench_evm,
         &num_transfers,
-        "../benchmark_outputs/transfer_eth_sp1turbo.csv",
-        "ethblock_arg",
+        "../benchmark_outputs/ethtransfer_sp1turbo.csv",
+        "n",
     );
 }
 

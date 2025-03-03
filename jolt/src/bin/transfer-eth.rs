@@ -5,9 +5,9 @@ use utils::benchmark;
 type BenchResult = (Duration, usize, usize);
 
 fn main() {
-    let num_transfers = [1, 10, 100];
+    let num_transfers = [1, 10];
     let csv_file = format!(
-        "../benchmark_outputs/tansfer_eth_jolt{}{}.csv",
+        "../benchmark_outputs/ethtransfer_jolt{}{}.csv",
         if cfg!(feature = "icicle") { "-gpu" } else { "" },
         ""
     );
@@ -16,7 +16,7 @@ fn main() {
         benchmark_transfer_eth,
         &num_transfers,
         &csv_file,
-        "num_transfers",
+        "n",
     );
 }
 

@@ -13,13 +13,15 @@ bench-jolt:
 	cd jolt && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2 && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin ecdsa
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin ecdsa && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin transfer-eth
 
 bench-jolt-gpu:
 	cd jolt && \
 	ICICLE_BACKEND_INSTALL_DIR=$$(pwd)/target/release/deps/icicle/lib/backend RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci -F icicle && \
 	ICICLE_BACKEND_INSTALL_DIR=$$(pwd)/target/release/deps/icicle/lib/backend RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2 -F icicle && \
-	ICICLE_BACKEND_INSTALL_DIR=$$(pwd)/target/release/deps/icicle/lib/backend RUSTFLAGS="-C target-cpu=native" cargo run --release --bin ecdsa -F icicle
+	ICICLE_BACKEND_INSTALL_DIR=$$(pwd)/target/release/deps/icicle/lib/backend RUSTFLAGS="-C target-cpu=native" cargo run --release --bin ecdsa -F icicle && \
+	ICICLE_BACKEND_INSTALL_DIR=$$(pwd)/target/release/deps/icicle/lib/backend RUSTFLAGS="-C target-cpu=native" cargo run --release --bin transfer-eth -F icicle
 
 bench-sp1:
 	make build-sp1
@@ -29,7 +31,8 @@ bench-sp1-turbo:
 	cd sp1-turbo && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release -p sha2-script && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release -p fibonacci-script && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release -p ecdsa-script
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -p ecdsa-script && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -p transfer-eth-script
 
 bench-sp1-turbo-gpu:
 	cd sp1-turbo && \
@@ -38,10 +41,12 @@ bench-sp1-turbo-gpu:
 bench-zkm:
 	# rust toolchain path: ~/.zkm-toolchain/rust-toolchain-x86-64-unknown-linux-gnu-20241217/bin
 	. ~/.zkm-toolchain/env && \
+	export LD_LIBRARY_PATH=/usr/lib64:$LD_LIBRARY_PATH && \
 	cd zkm && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --bin fibo --release && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --bin sha2 --release && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --bin ecdsa --release
+	RUSTFLAGS="-C target-cpu=native" cargo run --bin ecdsa --release && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --bin transfer-eth --release
 
 bench-zkm2:
 	cd zkm2 && \
@@ -60,13 +65,15 @@ bench-risczero:
 	cd risczero && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release -- --out ../benchmark_outputs/fib_risczero.csv fibonacci && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release -- --out ../benchmark_outputs/sha2_risczero.csv big-sha2 && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release -- --out ../benchmark_outputs/ecdsa_risczero.csv ecdsa-verify
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -- --out ../benchmark_outputs/ecdsa_risczero.csv ecdsa-verify && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -- --out ../benchmark_outputs/ethtransfer_risczero.csv transfer-eth
 
 bench-risczero-gpu:
 	cd risczero && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release -F cuda -- --out ../benchmark_outputs/fib_risczero_gpu.csv fibonacci && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release -F cuda -- --out ../benchmark_outputs/sha2_risczero_gpu.csv big-sha2 && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release -F cuda -- --out ../benchmark_outputs/ecdsa_risczero_gpu.csv ecdsa-verify
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -F cuda -- --out ../benchmark_outputs/ecdsa_risczero_gpu.csv ecdsa-verify && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -F cuda -- --out ../benchmark_outputs/ethtransfer_risczero.csv transfer-eth
 
 bench-powdr:
 	cd powdr && RUSTFLAGS='-C target-cpu=native' cargo run --release
@@ -74,7 +81,9 @@ bench-powdr:
 bench-openvm:
 	cd openvm && \
 	RUST_BACKTRACE=1 RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci && \
-	RUST_BACKTRACE=1 RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2
+	RUST_BACKTRACE=1 RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2 && \
+	RUST_BACKTRACE=1 RUSTFLAGS="-C target-cpu=native" cargo run --release --bin ecdsa -F std && \
+	RUST_BACKTRACE=1 RUSTFLAGS="-C target-cpu=native" cargo run --release --bin transfer-eth -F std
 
 bench-nexus:
 	cd nexus && RUSTFLAGS="-C target-cpu=native" cargo run --release

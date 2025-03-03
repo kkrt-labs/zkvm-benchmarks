@@ -40,7 +40,8 @@ getrandom = { version = "0.2", features = ["custom"] }
 fibonacci-guest = { path = "./fibonacci-guest" }
 sha2-guest = { path = "./sha2-guest" }
 ecdsa-guest = { path = "./ecdsa-guest" }
+transfer-eth-guest = { path = "./transfer-eth-guest" }
 
 [features]
 default = []
-std = ["openvm/std"]
+std = ["openvm/std", "transfer-eth-guest/std", "ecdsa-guest/std"]

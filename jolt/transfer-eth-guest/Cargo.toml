@@ -13,3 +13,4 @@ guest = []
 [dependencies]
 jolt = { package = "jolt-sdk", git = "https://github.com/a16z/jolt", features = ["guest-std"]}
 revm-utils = {git = "https://github.com/ClankPan/revm-utils"}
+getrandom = { version = "0.2", features = ["custom"] }

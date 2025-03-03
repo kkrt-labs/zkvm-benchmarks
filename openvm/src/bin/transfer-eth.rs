@@ -22,14 +22,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
   benchmark(
     benchmark_transfer_eth,
     &ns,
-    "../benchmark_outputs/transfer_eth_openvm.csv",
-    "num_transfers",
+    "../benchmark_outputs/ethtransfer_openvm.csv",
+    "n",
   );
 
     Ok(())
 }
 
-fn benchmark_transfer_eth(n: u32) -> BenchResult {
+fn benchmark_transfer_eth(n: usize) -> BenchResult {
       // ANCHOR: vm_config
       let vm_config = SdkVmConfig::builder()
       .system(Default::default())

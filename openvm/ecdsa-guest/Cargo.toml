@@ -17,5 +17,5 @@ k256 = { version = "=0.13.3", features = [
 getrandom = { version = "0.2", features = ["custom"] }
 
 [features]
-default = []
+default = ["std"]
 std = ["openvm/std"]

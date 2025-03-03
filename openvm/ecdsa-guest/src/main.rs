@@ -23,7 +23,7 @@ openvm::entry!(main);
 
 #[derive(Serialize, Deserialize)]
 pub struct SomeStruct {
-    pub encoded_verifying_key: EncodedPoint<Secp256k1>,
+    pub encoded_verifying_key: EncodedPoint,
     pub message: Vec<u8>,
     pub signature: Signature,
 }
@@ -32,8 +32,8 @@ pub fn main() {
     let input: SomeStruct = read();
     let verifying_key: VerifyingKey = VerifyingKey::from_encoded_point(&input.encoded_verifying_key).unwrap();
     let is_ok = verifying_key.verify(&input.message, &input.signature).is_ok();
-    // if is_ok != true {
-    //     panic!();
-    // }
+    if is_ok != true {
+        panic!();
+    }
 }
 // ANCHOR_END: main

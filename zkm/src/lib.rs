@@ -29,6 +29,7 @@ const SHA3_CHAIN_ELF: &str = "./programs/sha3-chain/elf/mips-zkm-zkvm-elf";
 const SHA3_ELF: &str = "./programs/sha3/elf/mips-zkm-zkvm-elf";
 const BIGMEM_ELF: &str = "./programs/bigmem/elf/mips-zkm-zkvm-elf";
 const ECDSA_ELF: &str = "./programs/ecdsa/elf/mips-zkm-zkvm-elf";
+const ETHTRANSFER_ELF: &str = "./programs/transfer-eth/elf/mips-zkm-zkvm-elf";
 const SEG_SIZE: usize = 262144 * 8; // G
 type BenchResult = (Duration, usize, usize);
 
@@ -252,6 +253,33 @@ pub fn benchmark_ecdsa(_length: usize) -> BenchResult {
 
     (duration, size, total_steps)
 }
+
+
+pub fn benchmark_transfer_eth(n: usize) -> BenchResult {
+    let mut state = load_elf_with_patch(ETHTRANSFER_ELF, vec![]);
+    state.add_input_stream(&n);
+
+    let seg_size = SEG_SIZE;
+    let seg_path = "/tmp/zkm/eth-transfer";
+
+    let (total_steps, seg_num, mut state) = split_prog_into_segs(state, seg_path, "", seg_size);
+
+    println!("benchmark_ethtransfer start, n: {}", n);
+    let start = Instant::now();
+    let size = if seg_num == 1 {
+        let seg_file = format!("{seg_path}/{}", 0);
+        prove_single_seg_common(&seg_file, "", "", "")
+    } else {
+        prove_multi_seg_common(seg_path, "", "", "", seg_num, 0)
+    };
+    let end = Instant::now();
+    let duration = end.duration_since(start);
+    println!("benchmark_bigmem end, duration: {:?}", duration.as_secs_f64());
+
+    let _output = state.read_public_values::<u32>();
+    (duration, size, total_steps)
+}
+
 
 fn prove_single_seg_common(
     seg_file: &str,

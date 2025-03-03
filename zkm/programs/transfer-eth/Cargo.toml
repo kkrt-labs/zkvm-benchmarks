@@ -1,0 +1,8 @@
+[package]
+version = "0.1.0"
+name = "transfer-eth"
+edition = "2021"
+
+[dependencies]
+zkm-runtime = { workspace= true }
+revm-utils = {git = "https://github.com/ClankPan/revm-utils"}
