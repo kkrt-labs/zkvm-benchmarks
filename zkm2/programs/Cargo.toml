@@ -6,6 +6,7 @@ members = [
   "sha2-chain",
   "sha3",
   "sha3-chain",
+  "transfer-eth"
 ]
 resolver = "2"
 

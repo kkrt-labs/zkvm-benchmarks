@@ -9,11 +9,13 @@ members = [
   "ecdsa/lib",
   "ecdsa/program",
   "ecdsa/script",
-  "ethblock/helper",
+  # "ethblock/helper",
   # "ethblock/utils",
-  "ethblock/lib",
-  "ethblock/program",
-  "ethblock/script",
+  # "ethblock/lib",
+  # "ethblock/program",
+  # "ethblock/script",
+  "transfer-eth/program",
+  "transfer-eth/script"
 ]
 resolver = "2"
 

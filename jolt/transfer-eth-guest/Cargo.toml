@@ -1,0 +1,16 @@
+[package]
+name = "transfer-eth-guest"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "transfer-eth-guest"
+path = "src/lib.rs"
+
+[features]
+guest = []
+
+[dependencies]
+jolt = { package = "jolt-sdk", git = "https://github.com/a16z/jolt", features = ["guest-std"]}
+revm-utils = {git = "https://github.com/ClankPan/revm-utils"}
+getrandom = { version = "0.2", features = ["custom"] }

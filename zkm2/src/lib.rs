@@ -11,6 +11,7 @@ const SHA2_CHAIN_ELF: &[u8] = include_elf!("sha2-chain");
 const SHA3_CHAIN_ELF: &[u8] = include_elf!("sha3-chain");
 const SHA3_ELF: &[u8] = include_elf!("sha3-bench");
 const BIGMEM_ELF: &[u8] = include_elf!("bigmem");
+const TRANSFER_ETH_ELF: &[u8] = include_elf!("transfer-eth");
 
 pub fn init_logger() {
     std::env::set_var("RUST_LOG", "info");
@@ -147,6 +148,25 @@ pub fn bench_bigmem(value: u32) -> (Duration, usize) {
     let end = Instant::now();
     let duration = end.duration_since(start);
     println!("benchmark_bigmem end, duration: {:?}", duration.as_secs_f64());
+
+    client.verify(&proof, &vk).expect("verification failed");
+
+    (duration, size(&proof))
+}
+
+pub fn bench_transfer_eth(n: usize) -> (Duration, usize) {
+    let client = ProverClient::cpu();
+    let (pk, vk) = client.setup(TRANSFER_ETH_ELF);
+
+    let mut stdin = ZKMStdin::new();
+    stdin.write(&n);
+
+    println!("benchmark_transfer_eth start, n: {}", n);
+    let start = Instant::now();
+    let proof = client.prove(&pk, stdin).run().unwrap();
+    let end = Instant::now();
+    let duration = end.duration_since(start);
+    println!("benchmark_transfer_eth end, duration: {:?}", duration.as_secs_f64());
 
     client.verify(&proof, &vk).expect("verification failed");
 

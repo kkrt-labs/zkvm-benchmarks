@@ -25,3 +25,4 @@ pub mod iter_keccak;
 pub mod iter_sha2;
 pub mod membership;
 pub mod sudoku;
+pub mod transfer_eth;

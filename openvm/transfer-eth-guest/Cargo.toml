@@ -1,0 +1,13 @@
+[package]
+name = "transfer-eth-guest"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+openvm = { git = "https://github.com/openvm-org/openvm.git" }
+revm-utils = {git = "https://github.com/ClankPan/revm-utils"}
+getrandom = { version = "0.2", features = ["custom"] }
+
+[features]
+default = ["std"]
+std = ["openvm/std"]

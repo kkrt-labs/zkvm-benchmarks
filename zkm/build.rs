@@ -9,6 +9,7 @@ fn main() {
         "sha3",
         "sha3-chain",
         "ecdsa",
+        "transfer-eth",
     ];
     for guest in guest_paths {
         build_guest(guest);
