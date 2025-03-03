@@ -14,13 +14,13 @@ We are so welcome to your contribution!
 |[Jolt (GPU)](./jolt/)|✅|✅|✅|✅|Optimization by GPU is still only partially implemented|
 |[Nexus](./nexus/)|✅|✅|✅|❌|The latest version is probably private|
 |[Novanet](./novanet/)|✅|❌|❌|❌||
-|[OpenVM](./openvm/)|✅|✅|❌|❌||
+|[OpenVM](./openvm/)|✅|✅|✅|✅||
 |[Powdr](./powdr/)|❌|❌|❌|❌||
 |[RISC Zero](./risczero)|✅|✅|✅|✅||
 |[RISC Zero (GPU)](./risczero)|✅|✅|✅|✅||
 |[SP1](./sp1-turbo)|✅|✅|✅|✅||
 |[SP1 (GPU)](./sp1-turbo)|✅|✅|✅|✅||
-|[ZKM](./zkm)|✅|✅|✅|❌||
+|[ZKM](./zkm)|✅|✅|✅|❌|Curious compile error|
 |Ceno|||||[No SDK yet](https://github.com/orgs/scroll-tech/projects/20)|
 |zkWASM||||||
 |Valida|||||[The repo is currently private, and the latest docker image is not available.](https://github.com/lita-xyz/valida-releases)|
