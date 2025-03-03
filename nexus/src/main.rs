@@ -49,12 +49,12 @@ fn main() {
             "n",
         );
 
-        let lengths = [1, 10, 100];
+        let lengths = [1, 10];
         benchmark(
             benchmark_transfer_eth,
             &lengths,
-            "../benchmark_outputs/transfer_eth_nexus.csv",
-            "num_transfers",
+            "../benchmark_outputs/ethtransfer_nexus.csv",
+            "n",
         );
     }
 }
@@ -167,7 +167,7 @@ fn benchmark_ecdsa_verify(_length: usize) -> (Duration, usize, usize) {
 }
 
 
-fn benchmark_transfer_eth(n: u32) -> (Duration, usize, usize) {
+fn benchmark_transfer_eth(n: usize) -> (Duration, usize, usize) {
     println!("Setting up Nova public parameters...");
     let pp: PP = PP::generate().expect("failed to generate parameters");
 
@@ -180,7 +180,7 @@ fn benchmark_transfer_eth(n: u32) -> (Duration, usize, usize) {
     println!("Proving execution of vm...");
     let start = Instant::now();
     let proof = prover
-        .prove_with_input::<u32>(&pp, &n)
+        .prove_with_input::<usize>(&pp, &n)
         .expect("failed to prove program");
     let end = Instant::now();
     println!(">>>>> Logging\n{}<<<<<", proof.logs().join(""));

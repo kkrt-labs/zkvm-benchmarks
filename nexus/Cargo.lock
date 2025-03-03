@@ -4271,6 +4271,7 @@ dependencies = [
 name = "transfer-eth-guest"
 version = "0.1.0"
 dependencies = [
+ "getrandom 0.2.15",
  "nexus-rt",
  "postcard",
  "revm-utils",
