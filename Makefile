@@ -70,10 +70,10 @@ bench-risczero:
 
 bench-risczero-gpu:
 	cd risczero && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release -F cuda -- --out ../benchmark_outputs/fib_risczero_gpu.csv fibonacci && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release -F cuda -- --out ../benchmark_outputs/sha2_risczero_gpu.csv big-sha2 && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release -F cuda -- --out ../benchmark_outputs/ecdsa_risczero_gpu.csv ecdsa-verify && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release -F cuda -- --out ../benchmark_outputs/ethtransfer_risczero.csv transfer-eth
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -F cuda -- --out ../benchmark_outputs/fib_risczero-gpu.csv fibonacci && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -F cuda -- --out ../benchmark_outputs/sha2_risczero-gpu.csv big-sha2 && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -F cuda -- --out ../benchmark_outputs/ecdsa_risczero-gpu.csv ecdsa-verify && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -F cuda -- --out ../benchmark_outputs/ethtransfer_risczero-gpu.csv transfer-eth
 
 bench-powdr:
 	cd powdr && RUSTFLAGS='-C target-cpu=native' cargo run --release
