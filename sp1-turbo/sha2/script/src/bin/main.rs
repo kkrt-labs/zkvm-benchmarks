@@ -21,12 +21,22 @@ type BenchResult = (Duration, usize, usize);
 
 fn main() {
     let lengths = [32, 256, 512, 1024, 2048];
-    benchmark(
-        bench_sha2,
-        &lengths,
-        "../benchmark_outputs/sha2_sp1turbo.csv",
-        "n",
-    );
+    if std::env::var("SP1_PROVER").unwrap_or_default() == "cuda" {
+        benchmark(
+            bench_sha2,
+            &lengths,
+            "../benchmark_outputs/sha2_sp1turbo-gpu.csv",
+            "n",
+        );
+    } else {
+        benchmark(
+            bench_sha2,
+            &lengths,
+            "../benchmark_outputs/sha2_sp1turbo.csv",
+            "n",
+        );
+    }
+
 }
 
 fn bench_sha2(num_bytes: usize) -> BenchResult {

@@ -21,12 +21,22 @@ type BenchResult = (Duration, usize, usize);
 
 fn main() {
     let num_transfers = [1, 10, 100];
-    benchmark(
-        bench_evm,
-        &num_transfers,
-        "../benchmark_outputs/ethtransfer_sp1turbo.csv",
-        "n",
-    );
+
+    if std::env::var("SP1_PROVER").unwrap_or_default() == "cuda" {
+        benchmark(
+            bench_evm,
+            &num_transfers,
+            "../benchmark_outputs/ethtransfer_sp1turbo-gpu.csv",
+            "n",
+        );
+    } else {
+        benchmark(
+            bench_evm,
+            &num_transfers,
+            "../benchmark_outputs/ethtransfer_sp1turbo.csv",
+            "n",
+        );
+    }
 }
 
 fn bench_evm(num_txs: usize) -> BenchResult {

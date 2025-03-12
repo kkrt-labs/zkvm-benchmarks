@@ -12,7 +12,7 @@ We are so welcome to your contribution!
 |-|-|-|-|-|-|
 |[Jolt](./jolt/)|✅|✅|✅|✅||
 |[Jolt (GPU)](./jolt/)|✅|✅|✅|✅|Optimization by GPU is still only partially implemented|
-|[Nexus](./nexus/)|✅|✅|✅|❌|The latest version is probably private|
+|[Nexus](./nexus/)|✅|✅|✅|❌||
 |[Novanet](./novanet/)|✅|❌|❌|❌||
 |[OpenVM](./openvm/)|✅|✅|✅|✅||
 |[Powdr](./powdr/)|❌|❌|❌|❌||

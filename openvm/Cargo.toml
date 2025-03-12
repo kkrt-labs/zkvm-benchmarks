@@ -20,7 +20,7 @@ lto = "fat"
 openvm = { git = "https://github.com/openvm-org/openvm.git" }
 openvm-build = { git = "https://github.com/openvm-org/openvm.git" }
 openvm-sdk = { git = "https://github.com/openvm-org/openvm.git" }
-openvm-stark-sdk = { git = "https://github.com/openvm-org/stark-backend.git", rev = "bc364134b8315c27bfd29c6e77ac79fe77090137", default-features = false }
+openvm-stark-sdk = { git = "https://github.com/openvm-org/stark-backend.git", rev = "c662bccdfafaa36fa19ab0a96ff3a0947f8331d0", default-features = false }
 openvm-native-recursion = { git = "https://github.com/openvm-org/openvm.git" }
 openvm-transpiler = { git = "https://github.com/openvm-org/openvm.git" }
 

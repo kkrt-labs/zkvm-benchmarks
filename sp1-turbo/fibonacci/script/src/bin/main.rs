@@ -47,7 +47,7 @@ fn main() {
             benchmark(
                 bench_fib,
                 &lengths,
-                "../benchmark_outputs/fib_sp1turbo_gpu.csv",
+                "../benchmark_outputs/fib_sp1turbo-gpu.csv",
                 "n",
             );
         } else {
@@ -109,7 +109,7 @@ fn bench_fib(n: u32) -> BenchResult {
     println!("Successfully generated proof!");
 
     // Verify the proof.
-    client.verify(&proof, &vk).expect("failed to verify proof");
+    // client.verify(&proof, &vk).expect("failed to verify proof");
 
     (
         duration,

@@ -276,7 +276,7 @@ pub fn benchmark_transfer_eth(n: usize) -> BenchResult {
     let duration = end.duration_since(start);
     println!("benchmark_bigmem end, duration: {:?}", duration.as_secs_f64());
 
-    let _output = state.read_public_values::<u32>();
+    // let _output = state.read_public_values::<u32>();
     (duration, size, total_steps)
 }
 

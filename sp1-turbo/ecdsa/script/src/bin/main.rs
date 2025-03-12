@@ -21,12 +21,21 @@ type BenchResult = (Duration, usize, usize);
 
 fn main() {
     let lengths = [1];
-    benchmark(
-        bench_ecdsa,
-        &lengths,
-        "../benchmark_outputs/ecdsa_sp1turbo.csv",
-        "n",
-    );
+    if std::env::var("SP1_PROVER").unwrap_or_default() == "cuda" {
+        benchmark(
+            bench_ecdsa,
+            &lengths,
+            "../benchmark_outputs/ecdsa_sp1turbo-gpu.csv",
+            "n",
+        );
+    } else {
+        benchmark(
+            bench_ecdsa,
+            &lengths,
+            "../benchmark_outputs/ecdsa_sp1turbo.csv",
+            "n",
+        );
+    }
 }
 
 fn bench_ecdsa(_dummy: usize) -> BenchResult {
