@@ -3,10 +3,38 @@ import pandas as pd
 import numpy as np
 import glob
 import os
+from matplotlib.patches import Patch
 
-# Common constants and settings
-FIXED_ORDER = ["jolt", "jolt-gpu", "risczero", "risczero-gpu", "sp1turbo", "sp1turbo-gpu",
-               "zkm", "openvm", "nexus", "novanet"]
+# Group projects by architecture type
+ARCHITECTURE_GROUPS = {
+    "vRAM Style Architecture": {
+        "projects": ["sp1turbo", "sp1turbo-gpu", "risczero", "risczero-gpu", "zkm", "novanet"],
+        "color": "lightblue"  # Background color for the group
+    },
+    "Modular Style Architecture": {
+        "projects": ["openvm", "jolt", "jolt-gpu", "nexus"],
+        "color": "lightyellow"  # Background color for the group
+    }
+}
+
+# Classification of proof systems
+PROOF_SYSTEMS = {
+    "sp1turbo": "FRI-STARK",
+    "sp1turbo-gpu": "FRI-STARK",
+    "risczero": "FRI-STARK",
+    "risczero-gpu": "FRI-STARK",
+    "zkm": "FRI-STARK",
+    "novanet": "Nebula",
+    "jolt": "Lasso Lookup",
+    "jolt-gpu": "Lasso Lookup",
+    "openvm": "FRI-STARK",
+    "nexus": "Nova"
+}
+
+# Display order is organized according to architecture groups
+FIXED_ORDER = []
+for group_name, group_info in ARCHITECTURE_GROUPS.items():
+    FIXED_ORDER.extend(group_info["projects"])
 
 PROJECT_COLORS = {
     "jolt": "skyblue",
@@ -27,12 +55,12 @@ PROJECT_MARKERS = {
     "jolt-gpu": "o",
     "risczero": "s",
     "risczero-gpu": "s",
-    "sp1turbo": "^",
-    "sp1turbo-gpu": "^",
-    "zkm": "d",
-    "openvm": "p",
-    "nexus": "*",
-    "novanet": "X",
+    "sp1turbo": "s",
+    "sp1turbo-gpu": "s",
+    "zkm": "s",
+    "openvm": "o",
+    "nexus": "o",
+    "novanet": "s",
 }
 
 # Settings for each metric
@@ -51,14 +79,14 @@ METRICS_CONFIG = {
     },
     "proof_size": {
         "title": "Proof Size",
-        "y_label": "Proof Size (kb)",
+        "y_label": "Proof Size (MB)",
         "column_names": {
             'n': 'proof size (bytes)',
             'size': 'proof_bytes'
         },
         "conversion_factors": {
-            'n': 1000,  # from bytes to kb
-            'size': 1000  # from bytes to kb
+            'n': 1000 * 1000,  # from bytes to MB
+            'size': 1000 * 1000  # from bytes to MB
         }
     },
     "peak_memory": {
@@ -149,7 +177,7 @@ def collect_data(program, n_values, metrics):
                 print(f"Error processing file {file}: {e}")
                 continue
 
-    # Create a list of existing projects
+    # Create a list of existing projects, ordered by FIXED_ORDER
     existing_projects = []
     for proj in FIXED_ORDER:
         if any(proj in all_data[prog] for prog in programs):
@@ -190,27 +218,40 @@ def plot_n_line_graph(program="ethtransfer", n_values=[1, 10, 100], metrics="pro
         return
 
     # Graph settings
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize=(12, 8))
 
-    # Plot a line graph for each project
-    for proj in existing_projects:
-        if proj not in all_data[program]:
-            continue
+    # Dictionary for creating legends by group
+    group_handles = {}
 
-        # Get data values for each n value
-        x_data = []
-        y_data = []
+    # Plot a line graph for each project, grouped by architecture type
+    for arch_group, group_info in ARCHITECTURE_GROUPS.items():
+        # Filter only the projects belonging to this group
+        group_projects = [p for p in existing_projects if p in group_info["projects"]]
 
-        for n in n_values:
-            if n in all_data[program][proj]:
-                x_data.append(n)
-                y_data.append(all_data[program][proj][n])
+        # Save the legend handles for this group
+        group_handles[arch_group] = []
 
-        if len(x_data) > 0:  # Only plot if data is available
-            color = PROJECT_COLORS.get(proj, "gray")
-            marker = PROJECT_MARKERS.get(proj, "o")
-            plt.plot(x_data, y_data, marker=marker, linestyle='-', linewidth=2,
-                    label=proj, color=color, markersize=8)
+        for proj in group_projects:
+            if proj not in all_data[program]:
+                continue
+
+            # Get data values for each n value
+            x_data = []
+            y_data = []
+
+            for n in n_values:
+                if n in all_data[program][proj]:
+                    x_data.append(n)
+                    y_data.append(all_data[program][proj][n])
+
+            if len(x_data) > 0:  # Only plot if data is available
+                color = PROJECT_COLORS.get(proj, "gray")
+                marker = PROJECT_MARKERS.get(proj, "o")
+                line, = plt.plot(x_data, y_data, marker=marker, linestyle='-', linewidth=2,
+                                  label=f"{proj} ({PROOF_SYSTEMS.get(proj, '')})", color=color, markersize=8)
+
+                # Add to group legend
+                group_handles[arch_group].append(line)
 
     # Set the x-axis to logarithmic scale
     plt.xscale('log')
@@ -227,9 +268,21 @@ def plot_n_line_graph(program="ethtransfer", n_values=[1, 10, 100], metrics="pro
     plt.xlabel("Input Size (n)")
     plt.ylabel(y_label)
 
-    # Show legend (with border, placed at upper right)
-    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.,
-              frameon=True, shadow=True)
+    # Create legends for groups
+    legend_elements = []
+
+    # Add group headers and each project's handle
+    for group_name, handles in group_handles.items():
+        if handles:  # Only if projects are plotted in the graph
+            # Add the group header
+            legend_elements.append(Patch(facecolor='white', edgecolor='white',
+                                         label=f"\n{group_name}"))
+            # Add projects within the group
+            legend_elements.extend(handles)
+
+    # Show legend with grouping
+    plt.legend(handles=legend_elements, bbox_to_anchor=(1.05, 1), loc='upper left',
+               borderaxespad=0., frameon=True, shadow=True)
 
     plt.tight_layout()
     plt.show()
@@ -262,46 +315,125 @@ def plot_programs_by_project(metrics="prover_time"):
         return
 
     # Graph settings
-    fig, ax = plt.subplots(figsize=(max(12, len(existing_projects) * 2), 8))
+    fig, ax = plt.subplots(figsize=(max(14, len(existing_projects) * 2), 10))
 
     # Set bar width and group spacing
     bar_width = 0.15
     group_spacing = 0.3
+    architecture_spacing = 0.8  # Additional space between architecture groups
+
+    # Group projects by architecture group
+    grouped_projects = {}
+    for group_name, group_info in ARCHITECTURE_GROUPS.items():
+        grouped_projects[group_name] = [p for p in existing_projects if p in group_info["projects"]]
 
     # Calculate x-axis positions
     x_positions = {}
-    for i, program in enumerate(programs):
-        x_positions[program] = [j * (len(programs) * bar_width + group_spacing) + i * bar_width for j in range(len(existing_projects))]
+    current_x = 0
+
+    for group_name, projects in grouped_projects.items():
+        if not projects:  # Skip if no projects in this group
+            continue
+
+        for i, program in enumerate(programs):
+            if group_name not in x_positions:
+                x_positions[group_name] = {}
+            x_positions[group_name][program] = []
+
+            for j, proj in enumerate(projects):
+                x_pos = current_x + j * (len(programs) * bar_width + group_spacing) + i * bar_width
+                x_positions[group_name][program].append(x_pos)
+
+        # Set start position for the next group
+        if projects:
+            current_x += len(projects) * (len(programs) * bar_width + group_spacing) + architecture_spacing
 
     # Plot bars
     bars = {}
-    for program in programs:
-        values = []
-        for proj in existing_projects:
-            # If a combination of program and proj exists, get the data for DEFAULT_N_VALUES[program]
-            if proj in all_data[program] and DEFAULT_N_VALUES[program] in all_data[program][proj]:
-                values.append(all_data[program][proj][DEFAULT_N_VALUES[program]])
-            else:
-                values.append(10000)  # Use 10000 if data is not available
+    x_tick_positions = []
+    x_tick_labels = []
 
-        # Plot all bars (using 10000 for missing values)
-        bars[program] = ax.bar(
-            x_positions[program],
-            values,
-            bar_width,
-            color=[PROJECT_COLORS.get(proj, "gray") for proj in existing_projects],
-            label=f"{program} (n={DEFAULT_N_VALUES[program]})"
+    # Draw background for each architecture group
+    for group_name, projects in grouped_projects.items():
+        if not projects:  # Skip if no projects in this group
+            continue
+
+        # Get the first and last position for the group
+        min_x = min([min(x_positions[group_name][program]) for program in programs])
+        max_program = programs[0]  # Use the first program arbitrarily
+        max_x = max([x_positions[group_name][max_program][-1] + bar_width for max_program in programs])
+
+        # Draw the background for the group
+        rect = plt.Rectangle(
+            (min_x - 0.3, 0),
+            max_x - min_x + 0.6,
+            1,  # Set height to 1 (reference value for logarithmic scale)
+            color=ARCHITECTURE_GROUPS[group_name]["color"],
+            alpha=0.3,
+            zorder=-1,
+            transform=ax.get_xaxis_transform()
+        )
+        ax.add_patch(rect)
+
+        # Add the group title
+        ax.text(
+            (min_x + max_x) / 2,
+            1.05,  # Adjust the y-axis position
+            group_name,
+            ha='center',
+            va='bottom',
+            fontsize=12,
+            fontweight='bold',
+            transform=ax.get_xaxis_transform()
         )
 
+    # Plot bar graphs for each program and project
+    for group_name, projects in grouped_projects.items():
+        if not projects:
+            continue
+
+        for program in programs:
+            values = []
+            project_positions = []
+            colors = []
+
+            for proj in projects:
+                # Get data for the combination of project and program
+                if proj in all_data[program] and DEFAULT_N_VALUES[program] in all_data[program][proj]:
+                    values.append(all_data[program][proj][DEFAULT_N_VALUES[program]])
+                else:
+                    values.append(10000)  # Use 10000 if data is not available
+
+                project_positions.append(x_positions[group_name][program][projects.index(proj)])
+                colors.append(PROJECT_COLORS.get(proj, "gray"))
+
+            if program not in bars:
+                bars[program] = {}
+
+            # Plot bars for this program in this architecture group
+            bars[program][group_name] = ax.bar(
+                project_positions,
+                values,
+                bar_width,
+                color=colors,
+                label=f"{program} (n={DEFAULT_N_VALUES[program]})" if group_name == list(grouped_projects.keys())[0] else ""
+            )
+
+            # Add x-axis label positions (only add labels on the last program)
+            if program == programs[-1]:
+                for j, proj in enumerate(projects):
+                    pos = project_positions[j]
+                    x_tick_positions.append(pos)
+                    x_tick_labels.append(f"{proj}\n({PROOF_SYSTEMS.get(proj, '')})")
+
     # Set the position and labels for the x-axis ticks
-    x_tick_positions = [j * (len(programs) * bar_width + group_spacing) + (len(programs) - 1) * bar_width / 2 for j in range(len(existing_projects))]
     ax.set_xticks(x_tick_positions)
-    ax.set_xticklabels(existing_projects, rotation=45, ha='right')
+    ax.set_xticklabels(x_tick_labels, rotation=45, ha='right')
 
     # Title and axis labels for the graph
-    ax.set_title(title)
-    ax.set_xlabel("Project")
-    ax.set_ylabel(y_label)
+    ax.set_title(title, fontsize=14)
+    ax.set_xlabel("Project (Proof System)", fontsize=12)
+    ax.set_ylabel(y_label, fontsize=12)
     ax.set_yscale("log")
     ax.grid(True, linestyle='--', alpha=0.6, axis='y')
 
@@ -309,28 +441,34 @@ def plot_programs_by_project(metrics="prover_time"):
     ax.legend()
 
     # Display values on each bar
-    for program in programs:
-        for bar_idx, bar in enumerate(bars[program]):
-            height = bar.get_height()
+    for group_name, projects in grouped_projects.items():
+        if not projects:
+            continue
 
-            # Special display for missing data (10000)
-            if height == 10000:
-                label_text = "N/A"
-                label_color = "red"
-            else:
-                label_text = f"{height:.2f}"
-                label_color = "black"
+        for program in programs:
+            if group_name in bars[program]:
+                for bar_idx, bar in enumerate(bars[program][group_name]):
+                    height = bar.get_height()
 
-            ax.text(
-                bar.get_x() + bar.get_width() / 2,
-                height,
-                label_text,
-                ha='center',
-                va='bottom',
-                fontsize=8,
-                rotation=90,
-                color=label_color
-            )
+                    # Special display for missing data (10000)
+                    if height == 10000:
+                        label_text = "N/A"
+                        label_color = "red"
+                    else:
+                        label_text = f"{height:.2f}"
+                        label_color = "black"
+
+                    ax.text(
+                        bar.get_x() + bar.get_width() / 2,
+                        height,
+                        label_text,
+                        ha='center',
+                        va='bottom',
+                        fontsize=8,
+                        rotation=90,
+                        color=label_color
+                    )
 
     plt.tight_layout()
+    plt.subplots_adjust(top=0.9)  # Make room for group titles
     plt.show()
