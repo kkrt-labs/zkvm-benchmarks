@@ -17,3 +17,4 @@ sp1-turbo/block_state_caches/*
 openssl-*/
 novanet/wats/*
 !novanet/wats/.gitkeep
+__pycache__/
