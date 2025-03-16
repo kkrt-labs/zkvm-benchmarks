@@ -4,11 +4,7 @@ use std::{
 };
 use utils::benchmark;
 
-use k256::{
-    ecdsa::Signature,
-    elliptic_curve::sec1::EncodedPoint,
-    Secp256k1,
-};
+use k256::{ecdsa::Signature, elliptic_curve::sec1::EncodedPoint, Secp256k1};
 
 use nexus_sdk::{
     compile::CompileOpts,
@@ -19,7 +15,7 @@ use nexus_sdk::{
 const FIB_PACKAGE: &str = "fibonacci-guest";
 const SHA2_PACKAGE: &str = "sha2-guest";
 const ECDSA_PACKAGE: &str = "ecdsa-guest";
-const TRANSFER_ETH_PACKAGE:  &str = "transfer-eth-guest";
+const TRANSFER_ETH_PACKAGE: &str = "transfer-eth-guest";
 
 const MESSAGE: &[u8] = include_bytes!("../../helper/ecdsa_signature/message.txt");
 const KEY: &[u8] = include_bytes!("../../helper/ecdsa_signature/verifying_key.txt");
@@ -30,36 +26,36 @@ fn main() {
     if args.iter().any(|arg| arg == "--once") {
         once_fib();
     } else {
-        // let ns = [10, 50, 90];
+        let ns = [10, 100, 1000, 10000];
+        benchmark(
+            benchmark_fib,
+            &ns,
+            "../benchmark_outputs/fib_nexus.csv",
+            "n",
+        );
+
+        // println!("==========Starting SHA2...");
+
+        // let lengths = [32, 256];
+        // benchmark(benchmark_sha2, &lengths, "../benchmark_outputs/sha2_nexus.csv", "n");
+
+        // println!("==========Starting ECDSA...");
+        // let lengths = [1];
         // benchmark(
-        //     benchmark_fib,
-        //     &ns,
-        //     "../benchmark_outputs/fib_nexus.csv",
+        //     benchmark_ecdsa_verify,
+        //     &lengths,
+        //     "../benchmark_outputs/ecdsa_nexus.csv",
         //     "n",
         // );
 
-        println!("==========Starting SHA2...");
-
-        let lengths = [32, 256];
-        benchmark(benchmark_sha2, &lengths, "../benchmark_outputs/sha2_nexus.csv", "n");
-
-        println!("==========Starting ECDSA...");
-        let lengths = [1];
-        benchmark(
-            benchmark_ecdsa_verify,
-            &lengths,
-            "../benchmark_outputs/ecdsa_nexus.csv",
-            "n",
-        );
-
-        println!("==========Starting ETHTransfer...");
-        let lengths = [1, 10];
-        benchmark(
-            benchmark_transfer_eth,
-            &lengths,
-            "../benchmark_outputs/ethtransfer_nexus.csv",
-            "n",
-        );
+        // println!("==========Starting ETHTransfer...");
+        // let lengths = [1, 10];
+        // benchmark(
+        //     benchmark_transfer_eth,
+        //     &lengths,
+        //     "../benchmark_outputs/ethtransfer_nexus.csv",
+        //     "n",
+        // );
     }
 }
 
@@ -157,7 +153,10 @@ fn benchmark_ecdsa_verify(_length: usize) -> (Duration, usize, usize) {
     println!("Proving execution of vm...");
     let start = Instant::now();
     let proof = prover
-        .prove_with_input::<(EncodedPoint<Secp256k1>, Vec<u8>, Signature)>(&pp, &(encoded_point, message, signature))
+        .prove_with_input::<(EncodedPoint<Secp256k1>, Vec<u8>, Signature)>(
+            &pp,
+            &(encoded_point, message, signature),
+        )
         .expect("failed to prove program");
     let end = Instant::now();
     println!(">>>>> Logging\n{}<<<<<", proof.logs().join(""));
@@ -169,7 +168,6 @@ fn benchmark_ecdsa_verify(_length: usize) -> (Duration, usize, usize) {
 
     (end.duration_since(start), 0x1000000, 0x1000000)
 }
-
 
 fn benchmark_transfer_eth(n: usize) -> (Duration, usize, usize) {
     println!("Setting up Nova public parameters...");

@@ -9,6 +9,20 @@ bench-all:
 	make bench-openvm
 	make bench-novanet
 
+bench-all-fibonacci:
+	cd jolt && \ RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci && \
+	cd ../sp1-turbo && RUSTFLAGS="-C target-cpu=native" cargo run --release -p fibonacci-script && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p fibonacci-script -- --input=10 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p fibonacci-script -- --input=100 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p fibonacci-script -- --input=1000 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p fibonacci-script -- --input=10000 && \
+	cd ../risczero && RUSTFLAGS="-C target-cpu=native" cargo run --release -- --out ../benchmark_outputs/fib_risczero.csv fibonacci && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -F cuda -- --out ../benchmark_outputs/fib_risczero-gpu.csv fibonacci && \
+	cd ../zkm && RUSTFLAGS="-C target-cpu=native" cargo run --bin fibo --release && \
+	cd ../openvm && RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci && \
+	cd ../novanet && RUSTFLAGS="-C target-cpu=native" RUST_LOG=debug cargo run --release -p runner --  --guest "fib" --benchmark-args 10 100 1000 10000 --wat fib/fib.wat && \
+	cd ../nexus && RUSTFLAGS="-C target-cpu=native" cargo run --release && \
+
 bench-jolt:
 	cd jolt && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci && \

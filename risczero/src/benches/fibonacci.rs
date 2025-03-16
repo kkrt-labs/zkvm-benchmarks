@@ -13,15 +13,13 @@
 // limitations under the License.
 
 use risc0_zkvm::serde::to_vec;
-use risc0_zkvm::{
-    get_prover_server, ExecutorEnv, ExecutorImpl, ProverOpts, VerifierContext,
-};
+use risc0_zkvm::{get_prover_server, ExecutorEnv, ExecutorImpl, ProverOpts, VerifierContext};
 
 use crate::Job;
 
 pub fn new_jobs() -> Vec<Job> {
     let mut jobs = Vec::new();
-    for iterations in [10u32, 50, 90] {
+    for iterations in [10u32, 100u32, 1000u32, 10000u32] {
         jobs.push(Job::new(
             format!("fibonacci-{iterations}"),
             risc0_benchmark_methods::FIBONACCI_ELF,
@@ -36,10 +34,7 @@ pub fn new_jobs() -> Vec<Job> {
 pub fn profile() {
     println!("Start profiling fibonacci(100)...");
     let n = vec![100u32];
-    let env = ExecutorEnv::builder()
-        .write_slice(&n)
-        .build()
-        .unwrap();
+    let env = ExecutorEnv::builder().write_slice(&n).build().unwrap();
     let mut exec = ExecutorImpl::from_elf(env, &risc0_benchmark_methods::FIBONACCI_ELF).unwrap();
     let session = exec.run().unwrap();
 

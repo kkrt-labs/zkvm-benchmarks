@@ -11,7 +11,7 @@ fn main() {
     // benchmark(benchmark_sha2, &lengths, "../benchmark_outputs/sha2_zkm.csv", "byte length");
     // benchmark(benchmark_sha3, &lengths, "../benchmark_outputs/sha3_zkm.csv", "byte length");
 
-    // let ns = [10, 50, 90];
+    // let ns = [10, 100, 1000, 10000];
     // benchmark(benchmark_fibonacci, &ns, "../benchmark_outputs/fiboancci_zkm.csv", "n");
 
     // let values = [5];
