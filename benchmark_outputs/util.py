@@ -4,6 +4,7 @@ import numpy as np
 import glob
 import os
 from matplotlib.patches import Patch
+import matplotlib.colors as mcolors
 
 # Group projects by architecture type
 ARCHITECTURE_GROUPS = {
@@ -38,7 +39,7 @@ for group_name, group_info in ARCHITECTURE_GROUPS.items():
 
 PROJECT_COLORS = {
     "jolt": "skyblue",
-    "jolt-gpu": "blue",
+    "jolt-gpu": "lightblue",
     "risczero": "lightgreen",
     "risczero-gpu": "green",
     "sp1turbo": "plum",
@@ -47,6 +48,14 @@ PROJECT_COLORS = {
     "openvm": "silver",
     "nexus": "orange",
     "novanet": "pink",
+}
+
+# Color intensity by program - define base colors and their intensity variations
+PROGRAM_COLOR_INTENSITY = {
+    "fib": 1.0,       # Full intensity
+    "sha2": 0.8,      # 80% intensity
+    "ecdsa": 0.6,     # 60% intensity
+    "ethtransfer": 0.4  # 40% intensity
 }
 
 # Marker style for each project
@@ -287,9 +296,31 @@ def plot_n_line_graph(program="ethtransfer", n_values=[1, 10, 100], metrics="pro
     plt.tight_layout()
     plt.show()
 
+def adjust_color_intensity(base_color, intensity):
+    """
+    Adjust the intensity of a color.
+
+    Parameters:
+        base_color (str): The base color (like 'skyblue' or '#RRGGBB')
+        intensity (float): Intensity factor between 0 and 1
+
+    Returns:
+        str: Adjusted color in hex format
+    """
+    # Convert named color to RGB
+    rgb = mcolors.to_rgb(base_color)
+
+    # Darken the color by adjusting towards black
+    # We preserve the hue but reduce brightness by mixing with black
+    darker_rgb = tuple(c * intensity for c in rgb)
+
+    # Convert back to hex
+    return mcolors.to_hex(darker_rgb)
+
 def plot_programs_by_project(metrics="prover_time"):
     """
     Display data for each program (fib, sha2, ecdsa, ethtransfer) by project using a bar graph.
+    Each program's bars have different color intensity.
 
     Parameters:
         metrics (str): One of "prover_time", "proof_size", or "peak_memory".
@@ -405,7 +436,12 @@ def plot_programs_by_project(metrics="prover_time"):
                     values.append(10000)  # Use 10000 if data is not available
 
                 project_positions.append(x_positions[group_name][program][projects.index(proj)])
-                colors.append(PROJECT_COLORS.get(proj, "gray"))
+
+                # Apply intensity to base color according to program
+                base_color = PROJECT_COLORS.get(proj, "gray")
+                intensity = PROGRAM_COLOR_INTENSITY.get(program, 1.0)
+                adjusted_color = adjust_color_intensity(base_color, intensity)
+                colors.append(adjusted_color)
 
             if program not in bars:
                 bars[program] = {}
@@ -437,8 +473,19 @@ def plot_programs_by_project(metrics="prover_time"):
     ax.set_yscale("log")
     ax.grid(True, linestyle='--', alpha=0.6, axis='y')
 
-    # Display legend
-    ax.legend()
+    # Create a custom legend for programs with different intensities
+    program_legend_elements = []
+    for program in programs:
+        intensity = PROGRAM_COLOR_INTENSITY.get(program, 1.0)
+        # Use a common color to show the intensity variations
+        legend_color = adjust_color_intensity("#3366CC", intensity)
+        program_legend_elements.append(
+            Patch(facecolor=legend_color,
+                  label=f"{program} (n={DEFAULT_N_VALUES[program]})")
+        )
+
+    # Add the main legend for programs
+    ax.legend(handles=program_legend_elements, loc='upper right')
 
     # Display values on each bar
     for group_name, projects in grouped_projects.items():
