@@ -519,3 +519,149 @@ def plot_programs_by_project(metrics="prover_time"):
     plt.tight_layout()
     plt.subplots_adjust(top=0.9)  # Make room for group titles
     plt.show()
+
+def plot_fib_memory_time_scatter():
+    """
+    Create a scatter plot with peak memory (GB) on x-axis and prover time (s) on y-axis
+    for the fib program at n=100000, using the collect_data function.
+    """
+    target_n = DEFAULT_N_VALUES["fib"]  # n=100000
+
+    # Collect data for both metrics
+    memory_data, memory_projects = collect_data("fib", [target_n], "peak_memory")
+    time_data, time_projects = collect_data("fib", [target_n], "prover_time")
+
+    # Combine data into a single structure for scatter plot
+    combined_data = {}
+    projects = set(memory_projects + time_projects)
+
+    for project in projects:
+        if (project in memory_data.get("fib", {}) and
+            project in time_data.get("fib", {}) and
+            target_n in memory_data["fib"].get(project, {}) and
+            target_n in time_data["fib"].get(project, {})):
+
+            combined_data[project] = {
+                'memory': memory_data["fib"][project][target_n],
+                'time': time_data["fib"][project][target_n]
+            }
+
+    if not combined_data:
+        print(f"No complete data found for fib program with n={target_n}.")
+        return
+
+    # Graph settings
+    fig, ax = plt.subplots(figsize=(12, 8))
+
+    # Store handles for the legend
+    handles_by_group = {}
+
+    # Group projects by architecture type for different markers/colors
+    for arch_group, group_info in ARCHITECTURE_GROUPS.items():
+        # Filter projects in this group that have data
+        group_projects = [p for p in group_info["projects"] if p in combined_data]
+
+        # Initialize handles for this group
+        handles_by_group[arch_group] = []
+
+        for project in group_projects:
+            # Get the color and marker for this project
+            color = PROJECT_COLORS.get(project, "gray")
+            marker = PROJECT_MARKERS.get(project, "o")
+
+            # Add data point
+            scatter = ax.scatter(
+                combined_data[project]['memory'],
+                combined_data[project]['time'],
+                color=color,
+                marker=marker,
+                s=150,  # Size of marker - larger for better visibility
+                label=f"{project} ({PROOF_SYSTEMS.get(project, '')})",
+                edgecolors='black',
+                linewidths=0.5,
+                alpha=0.8,
+                zorder=3  # Ensure points are on top of grid lines
+            )
+
+            # Add project name as annotation
+            ax.annotate(
+                project,
+                (combined_data[project]['memory'], combined_data[project]['time']),
+                xytext=(7, 7),
+                textcoords='offset points',
+                fontsize=9,
+                fontweight='bold',
+                bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.7)
+            )
+
+            # Store for legend
+            handles_by_group[arch_group].append(scatter)
+
+    # Visualize architecture group regions
+    for arch_group, group_info in ARCHITECTURE_GROUPS.items():
+        group_projects = [p for p in group_info["projects"] if p in combined_data]
+
+        if not group_projects:
+            continue
+
+        # Get the memory and time values for this group
+        memory_values = [combined_data[p]['memory'] for p in group_projects]
+        time_values = [combined_data[p]['time'] for p in group_projects]
+
+        # # Only add group label if there are enough projects in this group
+        # if len(group_projects) > 0:
+        #     # Calculate geometric mean center for the label
+        #     geo_mean_memory = np.exp(np.mean(np.log(memory_values)))
+        #     geo_mean_time = np.exp(np.mean(np.log(time_values)))
+
+        #     # Add group label
+        #     ax.text(
+        #         geo_mean_memory,
+        #         geo_mean_time * 1.5,  # Shift up to avoid overlap
+        #         arch_group,
+        #         ha='center',
+        #         va='center',
+        #         fontsize=11,
+        #         fontweight='bold',
+        #         bbox=dict(
+        #             boxstyle="round,pad=0.5",
+        #             fc=group_info["color"],
+        #             ec="gray",
+        #             alpha=0.3
+        #         ),
+        #         zorder=2
+        #     )
+
+    # Grid and labels
+    ax.grid(True, linestyle='--', alpha=0.6, zorder=1)
+    ax.set_title(f"Fibonacci (n={target_n}) Peak Memory vs Prover Time", fontsize=14)
+    ax.set_xlabel("Peak Memory (GB)", fontsize=12)
+    ax.set_ylabel("Prover Time (s)", fontsize=12)
+
+    # Set logarithmic scales for better visualization
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+
+    # Add legends grouped by architecture type
+    legend_elements = []
+
+    # Add group headers and project entries
+    for group_name, handles in handles_by_group.items():
+        if handles:  # Only add groups that have data
+            # Add the group header
+            legend_elements.append(Patch(facecolor='white', edgecolor='white', label=f"\n{group_name}"))
+            # Add all projects within the group
+            legend_elements.extend(handles)
+
+    # Create the legend
+    ax.legend(
+        handles=legend_elements,
+        loc='upper left',
+        bbox_to_anchor=(1.05, 1),
+        borderaxespad=0.,
+        frameon=True,
+        fontsize=10
+    )
+
+    plt.tight_layout()
+    plt.show()
