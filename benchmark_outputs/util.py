@@ -328,6 +328,9 @@ def plot_programs_by_project(metrics="prover_time"):
     if metrics not in METRICS_CONFIG:
         raise ValueError(f"metrics must be one of: {', '.join(METRICS_CONFIG.keys())}")
 
+    # Import path effects explicitly
+    import matplotlib.patheffects as path_effects
+
     metrics_config = METRICS_CONFIG[metrics]
     title = metrics_config["title"]
     y_label = metrics_config["y_label"]
@@ -345,8 +348,11 @@ def plot_programs_by_project(metrics="prover_time"):
         print(f"No data found for {metrics}.")
         return
 
-    # Graph settings
-    fig, ax = plt.subplots(figsize=(max(14, len(existing_projects) * 2), 10))
+    # Graph settings - increase figure size for better readability
+    fig, ax = plt.subplots(figsize=(max(16, len(existing_projects) * 2.5), 12))
+
+    # Increase font sizes globally
+    plt.rcParams.update({'font.size': 14})
 
     # Set bar width and group spacing
     bar_width = 0.15
@@ -383,6 +389,7 @@ def plot_programs_by_project(metrics="prover_time"):
     bars = {}
     x_tick_positions = []
     x_tick_labels = []
+    x_tick_colors = []  # Store colors for each tick label
 
     # Draw background for each architecture group
     for group_name, projects in grouped_projects.items():
@@ -406,14 +413,14 @@ def plot_programs_by_project(metrics="prover_time"):
         )
         ax.add_patch(rect)
 
-        # Add the group title
+        # Add the group title with larger text
         ax.text(
             (min_x + max_x) / 2,
             1.05,  # Adjust the y-axis position
             group_name,
             ha='center',
             va='bottom',
-            fontsize=12,
+            fontsize=20,  # Increased font size for architecture group
             fontweight='bold',
             transform=ax.get_xaxis_transform()
         )
@@ -461,17 +468,30 @@ def plot_programs_by_project(metrics="prover_time"):
                     pos = project_positions[j]
                     x_tick_positions.append(pos)
                     x_tick_labels.append(f"{proj}\n({PROOF_SYSTEMS.get(proj, '')})")
+                    # Store the base color for this project's label
+                    x_tick_colors.append(PROJECT_COLORS.get(proj, "black"))
 
-    # Set the position and labels for the x-axis ticks
+    # Set the position and labels for the x-axis ticks with increased font size
     ax.set_xticks(x_tick_positions)
-    ax.set_xticklabels(x_tick_labels, rotation=45, ha='right')
+    x_labels = ax.set_xticklabels(x_tick_labels, rotation=45, ha='right', fontsize=20)  # Increased font size for x-axis labels
 
-    # Title and axis labels for the graph
-    ax.set_title(title, fontsize=14)
-    ax.set_xlabel("Project (Proof System)", fontsize=12)
-    ax.set_ylabel(y_label, fontsize=12)
+    # Set the color of each x-axis label to match its corresponding project color
+    for i, label in enumerate(x_labels):
+        label.set_color(x_tick_colors[i])
+        # Add a subtle black outline instead of using path_effects
+        label.set_fontweight('bold')  # Make the text bold for better visibility
+
+    # Title and axis labels for the graph with increased font sizes
+    ax.set_title(title, fontsize=20)  # Increased font size for title
+    ax.set_xlabel("Project (Proof System)", fontsize=20)  # Increased font size for x-axis label
+    ax.set_ylabel(y_label, fontsize=20)  # Increased font size for y-axis label
     ax.set_yscale("log")
-    ax.grid(True, linestyle='--', alpha=0.6, axis='y')
+
+    # Make grid lines more prominent
+    ax.grid(True, linestyle='--', alpha=0.7, axis='y', linewidth=1.2)
+
+    # Increase y-axis tick font size
+    ax.tick_params(axis='y', labelsize=12)
 
     # Create a custom legend for programs with different intensities
     program_legend_elements = []
@@ -484,10 +504,11 @@ def plot_programs_by_project(metrics="prover_time"):
                   label=f"{program} (n={DEFAULT_N_VALUES[program]})")
         )
 
-    # Add the main legend for programs
-    ax.legend(handles=program_legend_elements, loc='upper right')
+    # Add the main legend for programs with increased font size
+    legend = ax.legend(handles=program_legend_elements, loc='upper right', fontsize=20)  # Increased font size
+    legend.get_frame().set_linewidth(1.5)  # Make legend border more visible
 
-    # Display values on each bar
+    # Display values on each bar - make them more visible
     for group_name, projects in grouped_projects.items():
         if not projects:
             continue
@@ -505,19 +526,28 @@ def plot_programs_by_project(metrics="prover_time"):
                         label_text = f"{height:.2f}"
                         label_color = "black"
 
+                    # Add background to text for better readability
                     ax.text(
                         bar.get_x() + bar.get_width() / 2,
                         height,
                         label_text,
                         ha='center',
                         va='bottom',
-                        fontsize=8,
+                        fontsize=20,  # Increased font size for bar values
+                        fontweight='bold',  # Make text bold
                         rotation=90,
-                        color=label_color
+                        color=label_color,
+                        bbox=dict(facecolor='white', alpha=0.7, pad=1, edgecolor='none')  # Add background to text
                     )
 
+    # Add more padding at the top for group titles
     plt.tight_layout()
-    plt.subplots_adjust(top=0.9)  # Make room for group titles
+    plt.subplots_adjust(top=0.88, bottom=0.15)  # More space for titles and x-axis labels
+
+    # Add a border around the plot
+    for spine in ax.spines.values():
+        spine.set_linewidth(1.5)
+
     plt.show()
 
 def plot_fib_memory_time_scatter():
