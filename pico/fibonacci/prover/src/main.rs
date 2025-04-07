@@ -1,46 +1,50 @@
-use fibonacci_lib::{fibonacci, load_elf, FibonacciData};
+use fibonacci_lib::{FibonacciData, fibonacci, load_elf};
 use pico_sdk::{client::DefaultProverClient, init_logger};
+use std::time::Duration;
+use utils::{benchmark, size};
 
 fn main() {
-    // Initialize logger
-    init_logger();
+    let args: Vec<String> = std::env::args().collect();
+    let is_once = true; //args.iter().any(|arg| arg == "--once");
 
-    // Load the ELF file
-    let elf = load_elf("../elf/riscv32im-pico-zkvm-elf");
+    if is_once {
+        println!("Profile mode activated: executing bench_fib(100) only...");
 
-    // Initialize the prover client
-    let client = DefaultProverClient::new(&elf);
-    let stdin_builder = client.get_stdin_builder();
+        // print current directory
+        let current_dir = std::env::current_dir().unwrap();
+        println!("Current directory: {:?}", current_dir);
 
-    // Set up input
-    let n = 128u32;
-    stdin_builder.borrow_mut().write(&n);
-
-    // Generate proof
-    let proof = client.prove_fast().expect("Failed to generate proof");
-
-    // Decodes public values from the proof's public value stream.
-    let public_buffer = proof.pv_stream.unwrap();
-
-    // Deserialize public_buffer into FibonacciData
-    let public_values: FibonacciData =
-        bincode::deserialize(&public_buffer).expect("Failed to deserialize");
-
-    // Verify the public values
-    verify_public_values(n, &public_values);
+        let result = bench_fib(100);
+        println!("Result: {:?}", result);
+    } else {
+        let lengths = [10, 50, 90];
+        benchmark(
+            bench_fib,
+            &lengths,
+            "../benchmark_outputs/fib_pico.csv",
+            "n",
+        );
+    }
 }
 
-/// Verifies that the computed Fibonacci values match the public values.
-fn verify_public_values(n: u32, public_values: &FibonacciData) {
-    println!(
-        "Public value n: {:?}, a: {:?}, b: {:?}",
-        public_values.n, public_values.a, public_values.b
-    );
+type BenchResult = (Duration, usize, usize);
+fn bench_fib(n: u32) -> BenchResult {
+    init_logger();
+    let elf = load_elf("../elf/riscv32im-pico-zkvm-elf");
+    let client = DefaultProverClient::new(&elf);
+    let stdin_builder = client.get_stdin_builder();
+    stdin_builder.borrow_mut().write(&n);
 
-    // Compute Fibonacci values locally
-    let (result_a, result_b) = fibonacci(n);
+    println!("n: {}", n);
 
-    // Assert that the computed values match the public values
-    assert_eq!(result_a, public_values.a, "Mismatch in value 'a'");
-    assert_eq!(result_b, public_values.b, "Mismatch in value 'b'");
+    let start = std::time::Instant::now();
+    let proof = client.prove_fast().expect("Failed to generate proof");
+    let end = std::time::Instant::now();
+    let duration = end.duration_since(start);
+
+    println!("Successfully generated proof!");
+
+    (
+        duration, 0, 0, // Placeholder for cycles
+    )
 }
