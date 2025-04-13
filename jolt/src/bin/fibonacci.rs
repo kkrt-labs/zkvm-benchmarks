@@ -5,7 +5,7 @@ use utils::benchmark;
 type BenchResult = (Duration, usize, usize);
 
 fn main() {
-    let ns = [10, 100, 1000, 10000];
+    let ns = [10, 100, 1000, 10000, 100000];
     let csv_file = format!(
         "../benchmark_outputs/fib_jolt{}{}.csv",
         if cfg!(feature = "icicle") { "-gpu" } else { "" },

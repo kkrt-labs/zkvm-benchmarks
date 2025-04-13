@@ -19,7 +19,7 @@ use crate::Job;
 
 pub fn new_jobs() -> Vec<Job> {
     let mut jobs = Vec::new();
-    for iterations in [10u32, 100u32, 1000u32, 10000u32] {
+    for iterations in [10u32, 100u32, 1000u32, 10000u32, 100000u32] {
         jobs.push(Job::new(
             format!("fibonacci-{iterations}"),
             risc0_benchmark_methods::FIBONACCI_ELF,

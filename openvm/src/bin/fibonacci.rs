@@ -21,7 +21,7 @@ type BenchResult = (Duration, usize, usize);
 
 #[allow(unused_variables, unused_doc_comments)]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let ns = [10, 100, 1000, 10000];
+    let ns = [10, 100, 1000, 10000, 100000];
     benchmark(
         benchmark_fib,
         &ns,

@@ -20,16 +20,23 @@ pub const EVM_ELF: &[u8] = include_elf!("transfer-eth-program");
 type BenchResult = (Duration, usize, usize);
 
 fn main() {
-    let num_transfers = [1, 10, 100];
-
+    let args: Vec<String> = std::env::args().collect();
     if std::env::var("SP1_PROVER").unwrap_or_default() == "cuda" {
+        let n: usize = args
+            .iter()
+            .skip_while(|arg| *arg != "--n")
+            .nth(1)
+            .expect("Please provide a value for --n")
+            .parse()
+            .expect("Value for --n should be a valid u32");
         benchmark(
             bench_evm,
-            &num_transfers,
-            "../benchmark_outputs/ethtransfer_sp1turbo-gpu.csv",
+            &[n],
+            format!("../benchmark_outputs/ethtransfer_sp1turbo-gpu-{}.csv", n).as_str(),
             "n",
         );
     } else {
+        let num_transfers = [1, 10, 100];
         benchmark(
             bench_evm,
             &num_transfers,

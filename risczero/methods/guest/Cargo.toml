@@ -16,11 +16,11 @@ k256 = { version = "=0.13.3", features = [
   "ecdsa",
 ], default-features = false }
 risc0-benchmark-lib = { path = "../../shared", default-features = false }
-risc0-zkvm = { version = "1.2.2", default-features = false, features = [
+risc0-zkvm = { version = "2.0.1", default-features = false, features = [
   "std",
   "unstable"
 ] }
-risc0-zkp = { version = "1.2.2", default-features = false }
+risc0-zkp = { version = "2.0.0", default-features = false }
 sha3 = { version = "0.10", default-features = false }
 starknet-crypto = "0.6"
 revm-utils = {git = "https://github.com/ClankPan/revm-utils"}

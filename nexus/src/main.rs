@@ -26,7 +26,7 @@ fn main() {
     if args.iter().any(|arg| arg == "--once") {
         once_fib();
     } else {
-        let ns = [10, 100, 1000, 10000];
+        let ns = [10, 100];
         benchmark(
             benchmark_fib,
             &ns,

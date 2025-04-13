@@ -1,5 +1,5 @@
-use ecdsa_lib::{EcdsaData, load_elf};
-use k256::{Secp256k1, ecdsa::Signature, elliptic_curve::sec1::EncodedPoint};
+use ecdsa_lib::{load_elf, EcdsaData};
+use k256::{ecdsa::Signature, elliptic_curve::sec1::EncodedPoint, Secp256k1};
 use pico_sdk::{client::DefaultProverClient, init_logger};
 use std::time::{Duration, Instant};
 use utils::benchmark;
@@ -11,7 +11,7 @@ const SIGNATURE_HEX: &[u8] = include_bytes!("../../../../helper/ecdsa_signature/
 fn main() {
     benchmark(
         bench_ecdsa,
-        &["fixed"],
+        &["1"],
         "../../../benchmark_outputs/ecdsa_pico.csv",
         "value",
     );

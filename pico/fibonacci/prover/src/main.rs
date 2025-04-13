@@ -17,7 +17,7 @@ fn main() {
         let result = bench_fib(100);
         println!("Result: {:?}", result);
     } else {
-        let lengths = [10, 50, 90];
+        let lengths = [10, 100, 1000, 10000, 100000];
         benchmark(
             bench_fib,
             &lengths,

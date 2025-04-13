@@ -7,7 +7,13 @@ bench-all:
 	make bench-risczero-gpu
 	make bench-zkm
 	make bench-openvm
-	make bench-novanet
+	make bench-pico
+
+bench-all2:
+	make bench-risczero
+	make bench-risczero-gpu
+	make bench-zkm
+	make bench-openvm
 	make bench-pico
 
 bench-all-fibonacci:
@@ -51,10 +57,20 @@ bench-sp1-turbo:
 
 bench-sp1-turbo-gpu:
 	cd sp1-turbo && \
-	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p fibonacci-script && \
-	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p sha2-script && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p fibonacci-script -- --n 10 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p fibonacci-script -- --n 100 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p fibonacci-script -- --n 1000 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p fibonacci-script -- --n 10000 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p fibonacci-script -- --n 100000 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p sha2-script -- --n 32 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p sha2-script -- --n 256 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p sha2-script -- --n 512 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p sha2-script -- --n 1024 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p sha2-script -- --n 2048 && \
 	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p ecdsa-script && \
-	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p transfer-eth-script
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p transfer-eth-script -- --n 1 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p transfer-eth-script -- --n 10 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p transfer-eth-script -- --n 100
 
 bench-zkm:
 	# rust toolchain path: ~/.zkm-toolchain/rust-toolchain-x86-64-unknown-linux-gnu-20241217/bin

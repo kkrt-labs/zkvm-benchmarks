@@ -18,6 +18,11 @@ pub mod benches;
 
 use std::{
     path::Path,
+    sync::{
+        atomic::{AtomicBool, AtomicUsize, Ordering},
+        Arc,
+    },
+    thread,
     time::{Duration, Instant},
 };
 
@@ -28,6 +33,44 @@ use risc0_zkvm::{
 use serde::Serialize;
 use serde_with::{serde_as, DurationNanoSeconds};
 use tabled::{settings::Style, Table, Tabled};
+
+fn get_current_memory_usage() -> Result<usize, std::io::Error> {
+    let content = std::fs::read_to_string("/proc/self/status")?;
+    for line in content.lines() {
+        if line.starts_with("VmRSS:") {
+            let parts: Vec<&str> = line.split_whitespace().collect();
+            if parts.len() >= 2 {
+                if let Ok(kb) = parts[1].parse::<usize>() {
+                    return Ok(kb * 1024); // KB to bytes
+                }
+            }
+        }
+    }
+    Ok(0)
+}
+
+fn measure_peak_memory<R, F: FnOnce() -> R>(func: F) -> (R, usize) {
+    let peak = Arc::new(AtomicUsize::new(0));
+    let stop = Arc::new(AtomicBool::new(false));
+
+    let peak_clone = Arc::clone(&peak);
+    let stop_clone = Arc::clone(&stop);
+    let monitor = thread::spawn(move || {
+        while !stop_clone.load(Ordering::Relaxed) {
+            if let Ok(mem) = get_current_memory_usage() {
+                peak_clone.fetch_max(mem, Ordering::Relaxed);
+            }
+            thread::sleep(Duration::from_millis(10));
+        }
+    });
+
+    let result = func();
+
+    stop.store(true, Ordering::Relaxed);
+    monitor.join().unwrap();
+
+    (result, peak.load(Ordering::Relaxed))
+}
 
 #[serde_as]
 #[derive(Serialize, Tabled)]
@@ -56,6 +99,8 @@ pub struct Metrics {
     pub output_bytes: usize,
     #[tabled(display_with = "display_bytes")]
     pub proof_bytes: usize,
+    #[tabled(display_with = "display_bytes")]
+    pub peak_memory: usize,
 }
 
 fn display_bytes(bytes: &usize) -> String {
@@ -88,6 +133,7 @@ impl Metrics {
             output_bytes: 0,
             proof_bytes: 0,
             speed: 0.0,
+            peak_memory: 0,
         }
     }
 }
@@ -126,24 +172,34 @@ impl Job {
     fn run(&self) -> Metrics {
         let mut metrics = Metrics::new(self.name.clone(), self.size);
 
-        let (session, duration) = self.exec_compute();
-
+        // Execute computation with memory measurement
+        let ((session, exec_duration), exec_peak_memory) =
+            measure_peak_memory(|| self.exec_compute());
+        metrics.exec_duration = exec_duration;
         metrics.total_cycles = session.total_cycles;
         metrics.user_cycles = session.user_cycles;
-        metrics.exec_duration = duration;
+        metrics.peak_memory = exec_peak_memory;
 
         let prover = get_prover_server(&ProverOpts::succinct()).unwrap();
         let ctx = VerifierContext::default();
 
-        let start = Instant::now();
-        let receipt = prover.prove_session(&ctx, &session).unwrap().receipt;
-        metrics.proof_duration = start.elapsed();
+        // Measure proving with memory tracking
+        let ((receipt, proof_duration), proof_peak_memory) = measure_peak_memory(|| {
+            let start = Instant::now();
+            let receipt = prover.prove_session(&ctx, &session).unwrap().receipt;
+            (receipt, start.elapsed())
+        });
+        metrics.proof_duration = proof_duration;
+
+        // Update peak memory if proving used more memory
+        metrics.peak_memory = metrics.peak_memory.max(proof_peak_memory);
 
         metrics.total_duration = metrics.exec_duration + metrics.proof_duration;
         metrics.speed = self.size as f32 / metrics.total_duration.as_secs_f32();
         metrics.output_bytes = receipt.journal.bytes.len();
         metrics.proof_bytes = receipt.inner.succinct().unwrap().seal_size();
 
+        // Measure verification (memory less critical here)
         let start = Instant::now();
         receipt.verify(self.image_id).unwrap();
         metrics.verify_duration = start.elapsed();
@@ -169,6 +225,7 @@ pub fn run_jobs(out_path: &Path, jobs: Vec<Job>) -> Vec<Metrics> {
 
         let metrics = job.run();
         println!(" + {}", display_speed(&metrics.speed));
+        println!(" + Peak Memory: {}", display_bytes(&metrics.peak_memory));
         out.serialize(&metrics).expect("Could not serialize");
         out.flush().expect("Could not flush");
 
