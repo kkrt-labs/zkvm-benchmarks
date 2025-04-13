@@ -44,10 +44,6 @@ bench-jolt-gpu:
 	ICICLE_BACKEND_INSTALL_DIR=$$(pwd)/target/release/deps/icicle/lib/backend RUSTFLAGS="-C target-cpu=native" cargo run --release --bin ecdsa -F icicle && \
 	ICICLE_BACKEND_INSTALL_DIR=$$(pwd)/target/release/deps/icicle/lib/backend RUSTFLAGS="-C target-cpu=native" cargo run --release --bin transfer-eth -F icicle
 
-bench-sp1:
-	make build-sp1
-	cd sp1 && RUSTFLAGS="-C target-cpu=native" cargo run --release
-
 bench-sp1-turbo:
 	cd sp1-turbo && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release -p sha2-script && \
@@ -86,14 +82,6 @@ bench-zkm2:
 	cd zkm2 && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --bin fibonacci --release && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --bin sha2 --release
-
-build-sp1:
-	cd sp1/fibonacci && cargo prove build
-	cd sp1/sha2-chain && cargo prove build
-	cd sp1/sha3-chain && cargo prove build
-	cd sp1/sha2 && cargo prove build
-	cd sp1/sha3 && cargo prove build
-	cd sp1/bigmem && cargo prove build
 
 bench-risczero:
 	cd risczero && \
