@@ -5,9 +5,9 @@ edition = "2021"
 
 [dependencies]
 
-# revm
-revm = {git = "https://github.com/bluealloy/revm", default-features = false, features = ["serde"]}
-revm-database = {git = "https://github.com/bluealloy/revm", default-features = false, features = ["serde"]}
+# revm アップデートが早く壊れやすいので、バージョンを固定
+revm = {version="=22.0.0", default-features = false, features = ["serde"]}
+revm-database = {version="=3.0.0", default-features = false, features = ["serde"]}
 alloy-eip2930 = { version = "0.1.0", features = ["serde"] } ## revmが依存しているAccessListのSerdeを有効にする
 
 # serialize

@@ -24,7 +24,7 @@ pub fn transfer_eth_n_times(n: usize) -> bool {
     /* Transfer */
     let mut is_all_success = true;
     for i in 0..n {
-        let to = Address::from(U160::from(100_000_000_000_000 + i));
+        let to = Address::from(U160::from(100_000_000_000_000_000u64 + i as u64));
 
         let mut tx = TxEnv::default();
         tx.caller = base_account;
