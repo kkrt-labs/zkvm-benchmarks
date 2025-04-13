@@ -5,4 +5,4 @@ edition = "2024"
 
 [dependencies]
 pico-sdk = { workspace = true }
-fibonacci-lib ={ path = "../lib"}
+sha256-lib = { path = "../lib" }

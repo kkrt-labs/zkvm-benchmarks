@@ -1,5 +1,5 @@
-use fibonacci_lib::load_elf;
 use pico_sdk::{client::DefaultProverClient, init_logger};
+use sha256_lib::load_elf;
 use std::time::{Duration, Instant};
 use utils::benchmark;
 
@@ -8,34 +8,35 @@ fn main() {
     let is_once = args.iter().any(|arg| arg == "--once");
 
     if is_once {
-        println!("Profile mode activated: executing bench_fib(100) only...");
+        println!("Profile mode activated: executing bench_hash(32) only...");
 
         // print current directory
         let current_dir = std::env::current_dir().unwrap();
         println!("Current directory: {:?}", current_dir);
 
-        let result = bench_fib(100);
-        println!("Result: {:?}", result);
+        bench_hash(32);
+
+        println!("Execution completed for bench_hash(32).");
     } else {
-        let lengths = [10, 50, 90];
+        let lengths = [32, 256, 512, 1024, 2048];
         benchmark(
-            bench_fib,
+            bench_hash,
             &lengths,
-            "../../../benchmark_outputs/fib_pico.csv",
+            "../../../benchmark_outputs/sha2-256_pico.csv",
             "n",
         );
     }
 }
 
 type BenchResult = (Duration, usize, usize);
-fn bench_fib(n: u32) -> BenchResult {
+fn bench_hash(num_bytes: usize) -> BenchResult {
     init_logger();
     let elf = load_elf("../app/elf/riscv32im-pico-zkvm-elf");
     let client = DefaultProverClient::new(&elf);
     let stdin_builder = client.get_stdin_builder();
-    stdin_builder.borrow_mut().write(&n);
 
-    println!("n: {}", n);
+    let input = vec![5u8; num_bytes];
+    stdin_builder.borrow_mut().write(&input);
 
     let now = Instant::now();
     client.prove_fast().expect("Failed to generate proof");

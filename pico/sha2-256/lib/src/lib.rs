@@ -1,23 +1,20 @@
 use serde::{Deserialize, Serialize};
+use sha2::{Digest, Sha256};
 use std::fs;
 
 #[derive(Serialize, Deserialize)]
-pub struct FibonacciData {
-    pub a: u32,
-    pub b: u32,
-    pub n: u32,
+pub struct Sha256Data {
+    pub input: Vec<u8>,
+    pub result: [u8; 32],
 }
 
-/// copied from sp1-turobo/fibonacci/lib/src/lib.rs
-pub fn fibonacci(n: u32) -> (u32, u32) {
-    let mut a = 0u32;
-    let mut b = 1u32;
-    for _ in 0..n {
-        let c = a.wrapping_add(b);
-        a = b;
-        b = c;
-    }
-    (a, b)
+/// copied from sp1-turobo/sha256/lib/src/lib.rs
+pub fn hash_sha256(input: Vec<u8>) -> [u8; 32] {
+    let mut hasher = Sha256::new();
+    hasher.update(input);
+    let result = hasher.finalize();
+
+    result.into()
 }
 
 /// Loads an ELF file from the specified path.
