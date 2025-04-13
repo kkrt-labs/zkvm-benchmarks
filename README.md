@@ -132,6 +132,13 @@ sudo apt install wabt
 #### Others
 Please build `wabt` from [here](https://github.com/WebAssembly/wabt) on your own.
 
+### Install Pico
+```bash
+rustup install nightly-2024-11-27
+rustup component add rust-src --toolchain nightly-2024-11-27 
+cargo +nightly-2024-11-27 install --git https://github.com/brevis-network/pico pico-cli
+```
+
 ## Running
 
 To run all benchmarks run:

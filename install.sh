@@ -83,6 +83,10 @@ sudo apt-get install gcc-12 g++-12
 sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 100
 sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 100
 
+# 6. Install Pico
+rustup install nightly-2024-11-27
+rustup component add rust-src --toolchain nightly-2024-11-27 
+cargo +nightly-2024-11-27 install --git https://github.com/brevis-network/pico pico-cli
 
 source ~/.bashrc
 

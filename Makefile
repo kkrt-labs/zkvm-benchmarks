@@ -8,6 +8,7 @@ bench-all:
 	make bench-zkm
 	make bench-openvm
 	make bench-novanet
+	make bench-pico
 
 bench-all-fibonacci:
 	cd jolt && \ RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci && \
@@ -110,6 +111,28 @@ bench-novanet:
 	RUSTFLAGS="-C target-cpu=native" RUST_LOG=debug cargo run --release -p runner --  --guest "fib" --benchmark-args 10 50 90 --wat fib/fib.wat && \
 	RUSTFLAGS="-C target-cpu=native" RUST_LOG=debug cargo run --release -p runner --  --guest "fib" --benchmark-args 10 50 90 --compress --wat fib/fib.wat
 	RUSTFLAGS="-C target-cpu=native" RUST_LOG=debug cargo run --release -p runner --  --guest "ethblock" --benchmark-args 1 10 100  && \
+
+bench-pico:
+	cd pico/fibonacci/app && \
+	cargo pico build && \
+	cd ../prover && \
+	cargo run --release
+
+	cd pico/sha2-256/app && \
+	cargo pico build && \
+	cd ../prover && \
+	cargo run --release
+
+	cd pico/ecdsa/app && \
+	cargo pico build && \
+	cd ../prover && \
+	cargo run --release
+
+	cd pico/ethblock/app && \
+	cargo pico build && \
+	cd ../prover && \
+	cargo run --release && \
+	cd ../../../..
 
 perf-all:
 	make perf-sp1turbo
