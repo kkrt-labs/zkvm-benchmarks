@@ -7,16 +7,10 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Debug executable 'prover'",
-      "cargo": {
-        "args": ["build", "--bin=prover", "--package=prover"],
-        "filter": {
-          "name": "prover",
-          "kind": "bin"
-        }
-      },
-      "args": ["run", "--", "--once"],
-      "cwd": "${workspaceFolder}/prover"
+      "name": "Debug",
+      "program": "${workspaceFolder}/<executable file>",
+      "args": [],
+      "cwd": "${workspaceFolder}"
     }
   ]
 }

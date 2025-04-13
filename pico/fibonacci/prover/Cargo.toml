@@ -6,6 +6,6 @@ edition = "2024"
 [dependencies]
 pico-sdk = { workspace = true }
 bincode = "1.3.3"
-fibonacci-lib ={ path = "../lib"}
+fibonacci-lib = { path = "../lib" }
 serde = { workspace = true }
 utils = { path = "../../../utils" }

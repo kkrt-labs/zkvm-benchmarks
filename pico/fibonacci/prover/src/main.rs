@@ -1,11 +1,11 @@
-use fibonacci_lib::{FibonacciData, fibonacci, load_elf};
+use fibonacci_lib::load_elf;
 use pico_sdk::{client::DefaultProverClient, init_logger};
-use std::time::Duration;
-use utils::{benchmark, size};
+use std::time::{Duration, Instant};
+use utils::benchmark;
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
-    let is_once = true; //args.iter().any(|arg| arg == "--once");
+    let is_once = args.iter().any(|arg| arg == "--once");
 
     if is_once {
         println!("Profile mode activated: executing bench_fib(100) only...");
@@ -21,7 +21,7 @@ fn main() {
         benchmark(
             bench_fib,
             &lengths,
-            "../benchmark_outputs/fib_pico.csv",
+            "../../../benchmark_outputs/fib_pico.csv",
             "n",
         );
     }
@@ -30,21 +30,21 @@ fn main() {
 type BenchResult = (Duration, usize, usize);
 fn bench_fib(n: u32) -> BenchResult {
     init_logger();
-    let elf = load_elf("../elf/riscv32im-pico-zkvm-elf");
+    let elf = load_elf("../app/elf/riscv32im-pico-zkvm-elf");
     let client = DefaultProverClient::new(&elf);
     let stdin_builder = client.get_stdin_builder();
     stdin_builder.borrow_mut().write(&n);
 
     println!("n: {}", n);
 
-    let start = std::time::Instant::now();
-    let proof = client.prove_fast().expect("Failed to generate proof");
-    let end = std::time::Instant::now();
-    let duration = end.duration_since(start);
+    let now = Instant::now();
+    client.prove_fast().expect("Failed to generate proof");
+    let duration = now.elapsed();
 
-    println!("Successfully generated proof!");
+    println!("Successfully generated proof! Duration: {:?}", duration);
 
     (
-        duration, 0, 0, // Placeholder for cycles
+        duration, 0x1000000,
+        0x1000000, // placeholder values for proof size and instruction cycles
     )
 }
