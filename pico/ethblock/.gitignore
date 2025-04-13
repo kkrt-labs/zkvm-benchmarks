@@ -1,0 +1,4 @@
+/target
+
+# Guest ELF files, please build it yourself
+/app/elf
