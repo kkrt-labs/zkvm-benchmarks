@@ -15,12 +15,13 @@ We are so welcome to your contribution!
 |[Nexus](./nexus/)|✅|✅|✅|❌||
 |[Novanet](./novanet/)|✅|❌|❌|❌||
 |[OpenVM](./openvm/)|✅|✅|✅|✅||
+|[Pico](./pico/)|✅|✅|✅|✅||
 |[Powdr](./powdr/)|❌|❌|❌|❌||
 |[RISC Zero](./risczero)|✅|✅|✅|✅||
 |[RISC Zero (GPU)](./risczero)|✅|✅|✅|✅||
 |[SP1](./sp1-turbo)|✅|✅|✅|✅||
 |[SP1 (GPU)](./sp1-turbo)|✅|✅|✅|✅||
-|[ZKM](./zkm)|✅|✅|✅|❌|Curious compile error|
+|[ZKM](./zkm)|✅|✅|✅|✅||
 |Ceno|||||[No SDK yet](https://github.com/orgs/scroll-tech/projects/20)|
 |zkWASM||||||
 |Valida|||||[The repo is currently private, and the latest docker image is not available.](https://github.com/lita-xyz/valida-releases)|
@@ -37,6 +38,7 @@ Architecture: Linux x86_64
 |Nexus|8|32GB|-|
 |Novanet|8|32GB|-|
 |OpenVM|8|32GB|-|
+|Pico|8|32GB|-|
 |RISC Zero|8|32GB|8GB|
 |SP1|8|64GB|24GB|
 |ZKM|8|80GB|-|

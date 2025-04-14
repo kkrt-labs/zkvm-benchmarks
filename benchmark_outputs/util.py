@@ -83,14 +83,14 @@ METRICS_CONFIG = {
     },
     "proof_size": {
         "title": "Proof Size",
-        "y_label": "Proof Size (MB)",
+        "y_label": "Proof Size (KB)",
         "column_names": {
             'n': 'proof size (bytes)',
             'size': 'proof_bytes'
         },
         "conversion_factors": {
-            'n': 1000 * 1000,  # from bytes to MB
-            'size': 1000 * 1000  # from bytes to MB
+            'n': 1000,  # from bytes to MB
+            'size': 1000  # from bytes to MB
         }
     },
     "peak_memory": {
