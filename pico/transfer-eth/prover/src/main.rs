@@ -1,41 +1,47 @@
-use fibonacci_lib::load_elf;
 use pico_sdk::{client::DefaultProverClient, init_logger};
-use std::time::{Duration, Instant};
+use std::{
+    fs,
+    time::{Duration, Instant},
+};
 use utils::benchmark;
+
+pub fn load_elf(path: &str) -> Vec<u8> {
+    fs::read(path).unwrap_or_else(|err| {
+        panic!("Failed to load ELF file from {}: {}", path, err);
+    })
+}
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     let is_once = args.iter().any(|arg| arg == "--once");
 
     if is_once {
-        println!("Profile mode activated: executing bench_fib(100) only...");
+        println!("Profile mode activated: executing bench_transfer_eth(10) only...");
 
         // print current directory
         let current_dir = std::env::current_dir().unwrap();
         println!("Current directory: {:?}", current_dir);
 
-        let result = bench_fib(100);
+        let result = bench_transfer_eth(10);
         println!("Result: {:?}", result);
     } else {
-        let lengths = [10, 100, 1000, 10000, 100000];
+        let num_transfers = [1, 10, 100];
         benchmark(
-            bench_fib,
-            &lengths,
-            "../../../benchmark_outputs/fib_pico.csv",
+            bench_transfer_eth,
+            &num_transfers,
+            "../../../benchmark_outputs/ethtransfer_pico.csv",
             "n",
         );
     }
 }
 
 type BenchResult = (Duration, usize, usize);
-fn bench_fib(n: u32) -> BenchResult {
+fn bench_transfer_eth(n: usize) -> BenchResult {
     init_logger();
     let elf = load_elf("../app/elf/riscv32im-pico-zkvm-elf");
     let client = DefaultProverClient::new(&elf);
     let stdin_builder = client.get_stdin_builder();
     stdin_builder.borrow_mut().write(&n);
-
-    println!("n: {}", n);
 
     let now = Instant::now();
     client.prove_fast().expect("Failed to generate proof");

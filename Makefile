@@ -9,10 +9,6 @@ bench-all:
 	make bench-openvm
 	make bench-pico
 
-bench-all2:
-	make bench-openvm
-	make bench-pico
-
 bench-all-fibonacci:
 	cd jolt && \ RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci && \
 	cd ../sp1-turbo && RUSTFLAGS="-C target-cpu=native" cargo run --release -p fibonacci-script && \
@@ -25,7 +21,7 @@ bench-all-fibonacci:
 	cd ../zkm && RUSTFLAGS="-C target-cpu=native" cargo run --bin fibo --release && \
 	cd ../openvm && RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci && \
 	cd ../novanet && RUSTFLAGS="-C target-cpu=native" RUST_LOG=debug cargo run --release -p runner --  --guest "fib" --benchmark-args 10 100 1000 10000 --wat fib/fib.wat && \
-	cd ../nexus && RUSTFLAGS="-C target-cpu=native" cargo run --release && \
+	cd ../nexus && RUSTFLAGS="-C target-cpu=native" cargo run --release
 
 bench-jolt:
 	cd jolt && \
@@ -40,12 +36,6 @@ bench-jolt-gpu:
 	ICICLE_BACKEND_INSTALL_DIR=$$(pwd)/target/release/deps/icicle/lib/backend RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2 -F icicle && \
 	ICICLE_BACKEND_INSTALL_DIR=$$(pwd)/target/release/deps/icicle/lib/backend RUSTFLAGS="-C target-cpu=native" cargo run --release --bin ecdsa -F icicle && \
 	ICICLE_BACKEND_INSTALL_DIR=$$(pwd)/target/release/deps/icicle/lib/backend RUSTFLAGS="-C target-cpu=native" cargo run --release --bin transfer-eth -F icicle
-
-bench-jolt-gpu2:
-	cd jolt && \
-	ICICLE_BACKEND_INSTALL_DIR=$$(pwd)/target/release/deps/icicle/lib/backend RUSTFLAGS="-C target-cpu=native" cargo run --release --bin ecdsa -F icicle && \
-	ICICLE_BACKEND_INSTALL_DIR=$$(pwd)/target/release/deps/icicle/lib/backend RUSTFLAGS="-C target-cpu=native" cargo run --release --bin transfer-eth -F icicle
-
 
 bench-sp1-turbo:
 	cd sp1-turbo && \
@@ -121,22 +111,22 @@ bench-pico:
 	cd pico/fibonacci/app && \
 	cargo pico build && \
 	cd ../prover && \
-	cargo run --release
+	RUSTFLAGS="-C target-cpu=native" cargo run --release
 
 	cd pico/sha2-256/app && \
 	cargo pico build && \
 	cd ../prover && \
-	cargo run --release
+	RUSTFLAGS="-C target-cpu=native" cargo run --release
 
 	cd pico/ecdsa/app && \
 	cargo pico build && \
 	cd ../prover && \
-	cargo run --release
+	RUSTFLAGS="-C target-cpu=native" cargo run --release
 
-	cd pico/ethblock/app && \
+	cd pico/transfer-eth/app && \
 	cargo pico build && \
 	cd ../prover && \
-	cargo run --release && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release && \
 	cd ../../../..
 
 perf-all:

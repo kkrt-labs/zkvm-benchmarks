@@ -28,7 +28,6 @@ fn bench_ethblock(num_txs: usize) -> BenchResult {
     println!("Successfully generated proof! Duration: {:?}", duration);
 
     (
-        duration, 0x1000000,
-        0x1000000, // placeholder values for proof size and instruction cycles
+        duration, 0x0, 0x0, // placeholder values for proof size and instruction cycles
     )
 }
