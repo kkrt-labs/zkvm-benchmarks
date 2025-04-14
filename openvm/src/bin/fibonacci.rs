@@ -1,9 +1,8 @@
 // ANCHOR: dependencies
+use std::sync::Arc;
 use std::time::{Duration, Instant};
-use std::{fs, sync::Arc};
 
 use eyre::Result;
-use openvm::platform::memory::MEM_SIZE;
 use openvm_build::GuestOptions;
 use openvm_sdk::{
     config::{AppConfig, SdkVmConfig},
@@ -11,8 +10,6 @@ use openvm_sdk::{
     Sdk, StdIn,
 };
 use openvm_stark_sdk::config::FriParameters;
-use openvm_transpiler::elf::Elf;
-use serde::{Deserialize, Serialize};
 use utils::{benchmark, size};
 
 // ANCHOR_END: dependencies
@@ -21,7 +18,7 @@ type BenchResult = (Duration, usize, usize);
 
 #[allow(unused_variables, unused_doc_comments)]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let ns = [10, 100, 1000, 10000];
+    let ns = [10, 100, 1000, 10000, 100000];
     benchmark(
         benchmark_fib,
         &ns,
@@ -42,14 +39,6 @@ fn benchmark_fib(n: u32) -> BenchResult {
         .build();
     // ANCHOR_END: vm_config
 
-    /// to import example guest code in crate replace `target_path` for:
-    /// ```
-    /// use std::path::PathBuf;
-    ///
-    /// let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).to_path_buf();
-    /// path.push("guest");
-    /// let target_path = path.to_str().unwrap();
-    /// ```
     // ANCHOR: build
     // 1. Build the VmConfig with the extensions needed.
     let sdk = Sdk;

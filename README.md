@@ -132,6 +132,13 @@ sudo apt install wabt
 #### Others
 Please build `wabt` from [here](https://github.com/WebAssembly/wabt) on your own.
 
+### Install Pico
+```bash
+rustup install nightly-2024-11-27
+rustup component add rust-src --toolchain nightly-2024-11-27
+cargo +nightly-2024-11-27 install --git https://github.com/brevis-network/pico pico-cli
+```
+
 ## Running
 
 To run all benchmarks run:
@@ -142,7 +149,7 @@ make bench-all
 
 The benchmark results should be outputted in CSV form in `benchmark_outputs`.
 
-To run an individual benchmark run `make bench-zkm`, `make bench-jolt`, `make bench-risczero` or `make bench-sp1`.
+To run an individual benchmark run `make bench-zkm`, `make bench-jolt`, `make bench-risczero` or ... .
 
 ## Profiling
 

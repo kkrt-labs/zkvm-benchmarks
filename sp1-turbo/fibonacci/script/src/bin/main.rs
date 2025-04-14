@@ -42,15 +42,23 @@ fn main() {
             .run()
             .expect("failed to generate proof");
     } else {
-        let lengths = [10, 50, 90];
         if std::env::var("SP1_PROVER").unwrap_or_default() == "cuda" {
+            let n: u32 = args
+                .iter()
+                .skip_while(|arg| *arg != "--n")
+                .nth(1)
+                .expect("Please provide a value for --n")
+                .parse()
+                .expect("Value for --n should be a valid u32");
+
             benchmark(
                 bench_fib,
-                &lengths,
-                "../benchmark_outputs/fib_sp1turbo-gpu.csv",
+                &[n],
+                format!("../benchmark_outputs/fib_sp1turbo-gpu-{}.csv", n).as_str(),
                 "n",
             );
         } else {
+            let lengths = [10, 100, 1000, 10000, 100000];
             benchmark(
                 bench_fib,
                 &lengths,

@@ -1,10 +1,12 @@
-use revm::{primitives::TxKind, Context, ExecuteCommitEvm, MainBuilder, MainContext};
+use revm::{
+    context::transaction::AccessList, primitives::TxKind, Context, ExecuteCommitEvm, MainBuilder,
+    MainContext,
+};
 use revm_database::{CacheDB, StateBuilder};
 use serde::{Deserialize, Serialize};
 use std::convert::Infallible;
 
 use revm::{
-    context::AccessList,
     primitives::{Address, Bytes, B256, U256},
     state::{AccountInfo, Bytecode},
     Database, DatabaseRef,
@@ -147,7 +149,7 @@ pub fn trace_ethblock(num_txs: usize) -> bool {
             };
         });
 
-        let res = evm.transact_commit_previous();
+        let res = evm.replay_commit();
 
         if let Err(error) = res {
             println!("Got error: {:?}", error);

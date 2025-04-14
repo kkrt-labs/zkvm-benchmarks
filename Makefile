@@ -7,7 +7,7 @@ bench-all:
 	make bench-risczero-gpu
 	make bench-zkm
 	make bench-openvm
-	make bench-novanet
+	make bench-pico
 
 bench-all-fibonacci:
 	cd jolt && \ RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci && \
@@ -21,7 +21,7 @@ bench-all-fibonacci:
 	cd ../zkm && RUSTFLAGS="-C target-cpu=native" cargo run --bin fibo --release && \
 	cd ../openvm && RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci && \
 	cd ../novanet && RUSTFLAGS="-C target-cpu=native" RUST_LOG=debug cargo run --release -p runner --  --guest "fib" --benchmark-args 10 100 1000 10000 --wat fib/fib.wat && \
-	cd ../nexus && RUSTFLAGS="-C target-cpu=native" cargo run --release && \
+	cd ../nexus && RUSTFLAGS="-C target-cpu=native" cargo run --release
 
 bench-jolt:
 	cd jolt && \
@@ -37,10 +37,6 @@ bench-jolt-gpu:
 	ICICLE_BACKEND_INSTALL_DIR=$$(pwd)/target/release/deps/icicle/lib/backend RUSTFLAGS="-C target-cpu=native" cargo run --release --bin ecdsa -F icicle && \
 	ICICLE_BACKEND_INSTALL_DIR=$$(pwd)/target/release/deps/icicle/lib/backend RUSTFLAGS="-C target-cpu=native" cargo run --release --bin transfer-eth -F icicle
 
-bench-sp1:
-	make build-sp1
-	cd sp1 && RUSTFLAGS="-C target-cpu=native" cargo run --release
-
 bench-sp1-turbo:
 	cd sp1-turbo && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release -p sha2-script && \
@@ -50,10 +46,20 @@ bench-sp1-turbo:
 
 bench-sp1-turbo-gpu:
 	cd sp1-turbo && \
-	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p fibonacci-script && \
-	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p sha2-script && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p fibonacci-script -- --n 10 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p fibonacci-script -- --n 100 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p fibonacci-script -- --n 1000 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p fibonacci-script -- --n 10000 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p fibonacci-script -- --n 100000 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p sha2-script -- --n 32 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p sha2-script -- --n 256 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p sha2-script -- --n 512 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p sha2-script -- --n 1024 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p sha2-script -- --n 2048 && \
 	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p ecdsa-script && \
-	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p transfer-eth-script
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p transfer-eth-script -- --n 1 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p transfer-eth-script -- --n 10 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p transfer-eth-script -- --n 100
 
 bench-zkm:
 	# rust toolchain path: ~/.zkm-toolchain/rust-toolchain-x86-64-unknown-linux-gnu-20241217/bin
@@ -69,14 +75,6 @@ bench-zkm2:
 	cd zkm2 && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --bin fibonacci --release && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --bin sha2 --release
-
-build-sp1:
-	cd sp1/fibonacci && cargo prove build
-	cd sp1/sha2-chain && cargo prove build
-	cd sp1/sha3-chain && cargo prove build
-	cd sp1/sha2 && cargo prove build
-	cd sp1/sha3 && cargo prove build
-	cd sp1/bigmem && cargo prove build
 
 bench-risczero:
 	cd risczero && \
@@ -107,9 +105,29 @@ bench-nexus:
 
 bench-novanet:
 	cd novanet && \
-	RUSTFLAGS="-C target-cpu=native" RUST_LOG=debug cargo run --release -p runner --  --guest "fib" --benchmark-args 10 50 90 --wat fib/fib.wat && \
-	RUSTFLAGS="-C target-cpu=native" RUST_LOG=debug cargo run --release -p runner --  --guest "fib" --benchmark-args 10 50 90 --compress --wat fib/fib.wat
-	RUSTFLAGS="-C target-cpu=native" RUST_LOG=debug cargo run --release -p runner --  --guest "ethblock" --benchmark-args 1 10 100  && \
+	RUSTFLAGS="-C target-cpu=native" RUST_LOG=debug cargo run --release -p runner --  --guest "fib" --benchmark-args 10 100 --compress --wat fib/fib.wat
+
+bench-pico:
+	cd pico/fibonacci/app && \
+	cargo pico build && \
+	cd ../prover && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release
+
+	cd pico/sha2-256/app && \
+	cargo pico build && \
+	cd ../prover && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release
+
+	cd pico/ecdsa/app && \
+	cargo pico build && \
+	cd ../prover && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release
+
+	cd pico/transfer-eth/app && \
+	cargo pico build && \
+	cd ../prover && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release && \
+	cd ../../../..
 
 perf-all:
 	make perf-sp1turbo
