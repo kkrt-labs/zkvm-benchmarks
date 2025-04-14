@@ -44,7 +44,6 @@ fn bench_fib(n: u32) -> BenchResult {
     println!("Successfully generated proof! Duration: {:?}", duration);
 
     (
-        duration, 0x1000000,
-        0x1000000, // placeholder values for proof size and instruction cycles
+        duration, 0x0, 0x0, // placeholder values for proof size and instruction cycles
     )
 }

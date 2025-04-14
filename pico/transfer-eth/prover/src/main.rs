@@ -29,7 +29,7 @@ fn main() {
         benchmark(
             bench_transfer_eth,
             &num_transfers,
-            "../../../benchmark_outputs/transfer_eth_pico.csv",
+            "../../../benchmark_outputs/ethtransfer_pico.csv",
             "n",
         );
     }
@@ -50,7 +50,6 @@ fn bench_transfer_eth(n: usize) -> BenchResult {
     println!("Successfully generated proof! Duration: {:?}", duration);
 
     (
-        duration, 0x1000000,
-        0x1000000, // placeholder values for proof size and instruction cycles
+        duration, 0x0, 0x0, // placeholder values for proof size and instruction cycles
     )
 }

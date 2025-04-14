@@ -115,22 +115,22 @@ bench-pico:
 	cd pico/fibonacci/app && \
 	cargo pico build && \
 	cd ../prover && \
-	cargo run --release
+	RUSTFLAGS="-C target-cpu=native" cargo run --release
 
 	cd pico/sha2-256/app && \
 	cargo pico build && \
 	cd ../prover && \
-	cargo run --release
+	RUSTFLAGS="-C target-cpu=native" cargo run --release
 
 	cd pico/ecdsa/app && \
 	cargo pico build && \
 	cd ../prover && \
-	cargo run --release
+	RUSTFLAGS="-C target-cpu=native" cargo run --release
 
-	cd pico/ethblock/app && \
+	cd pico/transfer-eth/app && \
 	cargo pico build && \
 	cd ../prover && \
-	cargo run --release && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release && \
 	cd ../../../..
 
 perf-all:
