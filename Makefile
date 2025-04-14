@@ -10,9 +10,6 @@ bench-all:
 	make bench-pico
 
 bench-all2:
-	make bench-risczero
-	make bench-risczero-gpu
-	make bench-zkm
 	make bench-openvm
 	make bench-pico
 
@@ -112,9 +109,7 @@ bench-nexus:
 
 bench-novanet:
 	cd novanet && \
-	RUSTFLAGS="-C target-cpu=native" RUST_LOG=debug cargo run --release -p runner --  --guest "fib" --benchmark-args 10 50 90 --wat fib/fib.wat && \
-	RUSTFLAGS="-C target-cpu=native" RUST_LOG=debug cargo run --release -p runner --  --guest "fib" --benchmark-args 10 50 90 --compress --wat fib/fib.wat
-	RUSTFLAGS="-C target-cpu=native" RUST_LOG=debug cargo run --release -p runner --  --guest "ethblock" --benchmark-args 1 10 100  && \
+	RUSTFLAGS="-C target-cpu=native" RUST_LOG=debug cargo run --release -p runner --  --guest "fib" --benchmark-args 10 100 --compress --wat fib/fib.wat
 
 bench-pico:
 	cd pico/fibonacci/app && \

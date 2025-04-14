@@ -4,7 +4,10 @@ use zk_engine::{
         provider::{ipa_pc, Bn256EngineIPA},
         spartan,
         traits::Dual,
-    }, utils::logging::init_logger, wasm_ctx::{WASMArgsBuilder, WASMCtx, ZKWASMCtx}, wasm_snark::{StepSize, WasmSNARK}
+    },
+    utils::logging::init_logger,
+    wasm_ctx::{WASMArgsBuilder, WASMCtx, ZKWASMCtx},
+    wasm_snark::{StepSize, WasmSNARK},
 };
 
 use utils::{benchmark, size};
@@ -18,7 +21,6 @@ pub type S1 = spartan::batched::BatchedRelaxedR1CSSNARK<E, EE1>;
 pub type S2 = spartan::batched::BatchedRelaxedR1CSSNARK<Dual<E>, EE2>;
 
 use clap::Parser;
-
 
 #[derive(Parser, Debug, Clone)]
 #[command(name = "zkwasm-cli")]
@@ -72,7 +74,10 @@ fn build_guest(package_name: &str) {
         File::create(format!("wats/{}.wat", package_name)).expect("Failed to create output file");
 
     let output = Command::new("wasm2wat")
-        .arg(format!("target/wasm32-unknown-unknown/release/{}.wasm", package_name))
+        .arg(format!(
+            "target/wasm32-unknown-unknown/release/{}.wasm",
+            package_name
+        ))
         .stdout(output_file.try_clone().unwrap()) // Redirect standard output to the file
         .output() // Captures both stdout and stderr
         .expect("Failed to run wasm2wat");
@@ -99,15 +104,13 @@ fn main() {
     benchmark(
         generate(cli.clone()),
         &cli.benchmark_args,
-        &format!("../benchmark_outputs/{}_novanet-{}-compressing.csv", cli.guest, if cli.compress {"with"} else {"without"}),
+        &format!("../benchmark_outputs/{}_novanet.csv", cli.guest),
         "n",
     );
 }
 
 fn generate(cli: Cli) -> impl Fn(String) -> BenchResult {
-
     move |n: String| {
-
         let func_args = vec![n];
 
         let mut step_size = StepSize::new(cli.execution_step_size);
@@ -119,13 +122,10 @@ fn generate(cli: Cli) -> impl Fn(String) -> BenchResult {
         // Produce setup material
         let pp = WasmSNARK::<E, S1, S2>::setup(step_size);
 
-        let wat_path  = if let Some(wat_path) = cli.wat.clone() {
+        let wat_path = if let Some(wat_path) = cli.wat.clone() {
             wat_path
         } else {
-            format!(
-                "wats/{}.wat",
-                cli.guest
-            )
+            format!("wats/{}.wat", cli.guest)
         };
 
         println!("wat_path: {wat_path}");
@@ -141,7 +141,8 @@ fn generate(cli: Cli) -> impl Fn(String) -> BenchResult {
 
         // Prove wasm execution
         let start = std::time::Instant::now();
-        let (mut snark, instance) = WasmSNARK::<E, S1, S2>::prove(&pp, &wasm_ctx, step_size).expect("Failed in prove");
+        let (mut snark, instance) =
+            WasmSNARK::<E, S1, S2>::prove(&pp, &wasm_ctx, step_size).expect("Failed in prove");
 
         // Compress the proof
         if cli.compress {
@@ -155,16 +156,13 @@ fn generate(cli: Cli) -> impl Fn(String) -> BenchResult {
         let duration = end.duration_since(start);
 
         // Get execution trace length
-        let (execution_trace,_, _) = wasm_ctx.execution_trace().expect("Failed in execution_trace");
-
+        let (execution_trace, _, _) = wasm_ctx
+            .execution_trace()
+            .expect("Failed in execution_trace");
 
         println!("Success!");
 
-        (
-            duration,
-            size(&snark),
-            execution_trace.len(),
-        )
+        (duration, size(&snark), execution_trace.len())
     }
 }
 
