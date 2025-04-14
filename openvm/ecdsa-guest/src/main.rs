@@ -5,18 +5,14 @@ extern crate alloc;
 
 // ANCHOR: imports
 use alloc::vec::Vec;
-use core::hint::black_box;
-
-use serde::{Deserialize, Serialize};
-use hex::FromHex;
 use k256::{
     ecdsa::{signature::Verifier, Signature, VerifyingKey},
     EncodedPoint,
-    Secp256k1,
 };
+use serde::{Deserialize, Serialize};
 // ANCHOR_END: imports
 
-use openvm::io::{read, reveal};
+use openvm::io::read;
 
 // ANCHOR: main
 openvm::entry!(main);
@@ -30,8 +26,11 @@ pub struct SomeStruct {
 
 pub fn main() {
     let input: SomeStruct = read();
-    let verifying_key: VerifyingKey = VerifyingKey::from_encoded_point(&input.encoded_verifying_key).unwrap();
-    let is_ok = verifying_key.verify(&input.message, &input.signature).is_ok();
+    let verifying_key: VerifyingKey =
+        VerifyingKey::from_encoded_point(&input.encoded_verifying_key).unwrap();
+    let is_ok = verifying_key
+        .verify(&input.message, &input.signature)
+        .is_ok();
     if is_ok != true {
         panic!();
     }
