@@ -1,0 +1,17 @@
+[workspace]
+members = [
+  "fibonacci-guest",
+  "sha2-guest",
+  "ecdsa-guest",
+  "transfer-eth-guest",
+  "host",
+]
+resolver = "2"
+
+[workspace.dependencies]
+sp1-sdk = "4.2.0"
+sp1-zkvm = "4.2.0"
+sp1-build = "4.2.0"
+utils = { path = "../utils" }
+guests = { path = "../guests" }
+dotenv = "0.15.0"

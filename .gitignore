@@ -10,10 +10,10 @@ mips-linux-muslsf-cross/
 **/perf.data
 **/perf.data.old
 **/flamegraph.svg
-sp1-turbo/traces/*
-!sp1-turbo/traces/.gitkeep
-sp1-turbo/block_state_caches/*
-!sp1-turbo/block_state_caches/.gitkeep
+sp1/traces/*
+!sp1/traces/.gitkeep
+sp1/block_state_caches/*
+!sp1/block_state_caches/.gitkeep
 openssl-*/
 novanet/wats/*
 !novanet/wats/.gitkeep

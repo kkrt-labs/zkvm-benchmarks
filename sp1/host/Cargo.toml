@@ -1,0 +1,12 @@
+[package]
+version = "0.1.0"
+name = "host"
+edition = "2021"
+
+[dependencies]
+sp1-sdk = { workspace = true }
+dotenv = { workspace = true }
+utils = { workspace = true }
+
+[build-dependencies]
+sp1-build = { workspace = true }

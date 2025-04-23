@@ -1,27 +1,13 @@
 bench-all:
 	make bench-jolt
 	make bench-jolt-gpu
-	make bench-sp1-turbo
-	make bench-sp1-turbo-gpu
+	make bench-sp1
+	make bench-sp1-gpu
 	make bench-risczero
 	make bench-risczero-gpu
 	make bench-zkm
 	make bench-openvm
 	make bench-pico
-
-bench-all-fibonacci:
-	cd jolt && \ RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci && \
-	cd ../sp1-turbo && RUSTFLAGS="-C target-cpu=native" cargo run --release -p fibonacci-script && \
-	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p fibonacci-script -- --input=10 && \
-	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p fibonacci-script -- --input=100 && \
-	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p fibonacci-script -- --input=1000 && \
-	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p fibonacci-script -- --input=10000 && \
-	cd ../risczero && RUSTFLAGS="-C target-cpu=native" cargo run --release -- --out ../benchmark_outputs/fib_risczero.csv fibonacci && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release -F cuda -- --out ../benchmark_outputs/fib_risczero-gpu.csv fibonacci && \
-	cd ../zkm && RUSTFLAGS="-C target-cpu=native" cargo run --bin fibo --release && \
-	cd ../openvm && RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci && \
-	cd ../novanet && RUSTFLAGS="-C target-cpu=native" RUST_LOG=debug cargo run --release -p runner --  --guest "fib" --benchmark-args 10 100 1000 10000 --wat fib/fib.wat && \
-	cd ../nexus && RUSTFLAGS="-C target-cpu=native" cargo run --release
 
 bench-jolt:
 	cd jolt && \
@@ -37,29 +23,29 @@ bench-jolt-gpu:
 	ICICLE_BACKEND_INSTALL_DIR=$$(pwd)/target/release/deps/icicle/lib/backend RUSTFLAGS="-C target-cpu=native" cargo run --release --bin ecdsa -F icicle && \
 	ICICLE_BACKEND_INSTALL_DIR=$$(pwd)/target/release/deps/icicle/lib/backend RUSTFLAGS="-C target-cpu=native" cargo run --release --bin transfer-eth -F icicle
 
-bench-sp1-turbo:
-	cd sp1-turbo && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release -p sha2-script && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release -p fibonacci-script && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release -p ecdsa-script && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release -p transfer-eth-script
+bench-sp1:
+	cd sp1 && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin fib && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin sha2 && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin ecdsa && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin transfer-eth
 
-bench-sp1-turbo-gpu:
-	cd sp1-turbo && \
-	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p fibonacci-script -- --n 10 && \
-	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p fibonacci-script -- --n 100 && \
-	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p fibonacci-script -- --n 1000 && \
-	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p fibonacci-script -- --n 10000 && \
-	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p fibonacci-script -- --n 100000 && \
-	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p sha2-script -- --n 32 && \
-	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p sha2-script -- --n 256 && \
-	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p sha2-script -- --n 512 && \
-	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p sha2-script -- --n 1024 && \
-	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p sha2-script -- --n 2048 && \
-	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p ecdsa-script && \
-	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p transfer-eth-script -- --n 1 && \
-	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p transfer-eth-script -- --n 10 && \
-	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p transfer-eth-script -- --n 100
+bench-sp1-gpu:
+	cd sp1 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin fib -- --n 10 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin fib -- --n 100 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin fib -- --n 1000 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin fib -- --n 10000 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin fib -- --n 100000 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin sha2 -- --n 32 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin sha2 -- --n 256 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin sha2 -- --n 512 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin sha2 -- --n 1024 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin sha2 -- --n 2048 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin ecdsa && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin transfer-eth -- --n 1 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin transfer-eth -- --n 10 && \
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin transfer-eth -- --n 100
 
 bench-zkm:
 	# rust toolchain path: ~/.zkm-toolchain/rust-toolchain-x86-64-unknown-linux-gnu-20241217/bin
@@ -127,31 +113,3 @@ build-pico:
 
 	cd pico/transfer-eth-guest && \
 	cargo pico build
-
-perf-all:
-	make perf-sp1turbo
-
-perf-sp1turbo:
-	cd sp1-turbo && \
-	CARGO_PROFILE_RELEASE_DEBUG=true RUSTFLAGS="-C target-cpu=native" \
-	cargo flamegraph --release -p fibonacci-script -F 100 -o ../benchmark_outputs/flamegraph_sp1turbo.svg --no-inline -- --once
-
-perf-risczero:
-	cd risczero && \
-	CARGO_PROFILE_RELEASE_DEBUG=true RUSTFLAGS="-C target-cpu=native" \
-	cargo flamegraph --release -F 100 -o ../benchmark_outputs/flamegraph_risczero.svg --no-inline -- profiling
-
-perf-jolt:
-	cd jolt && \
-	CARGO_PROFILE_RELEASE_DEBUG=true RUSTFLAGS="-C target-cpu=native" \
-	cargo flamegraph --release -p jolt-benchmarks -F 100 -o ../benchmark_outputs/flamegraph_jolt.svg --no-inline --bin profiling
-
-perf-nexus:
-	cd nexus && \
-	CARGO_PROFILE_RELEASE_DEBUG=true RUSTFLAGS="-C target-cpu=native" \
-	RUSTFLAGS="-C target-cpu=native" cargo flamegraph --release -p nexus -F 100 -o ../benchmark_outputs/flamegraph_nexus.svg --no-inline -- --once
-
-perf-zkm:
-	cd zkm && \
-	CARGO_PROFILE_RELEASE_DEBUG=true RUSTFLAGS="-C target-cpu=native" \
-	RUSTFLAGS="-C target-cpu=native" cargo flamegraph --release -p zkm-script -F 100 -o ../benchmark_outputs/flamegraph_zkm.svg --no-inline -- --once
