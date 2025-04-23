@@ -37,7 +37,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         benchmark_ecdsa,
         &ns,
         "../benchmark_outputs/ecdsa_openvm.csv",
-        "n",
     );
 
     Ok(())

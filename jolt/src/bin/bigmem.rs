@@ -1,8 +1,6 @@
-use std::time::{Duration, Instant};
 use jolt::Serializable;
-use utils::benchmark;
-
-type BenchResult = (Duration, usize, usize);
+use std::time::Instant;
+use utils::{benchmark, BenchResult};
 
 fn main() {
     let csv_file = format!(
@@ -12,11 +10,11 @@ fn main() {
     );
 
     let values = [5];
-    benchmark(benchmark_bigmem, &values, &csv_file, "value");
+    benchmark(benchmark_bigmem, &values, &csv_file);
 }
 
 fn benchmark_bigmem(value: u32) -> BenchResult {
-    let (prove_bigmem, verify_bigmem) = bigmem_guest::build_waste_memory();
+    let (prove_bigmem, _verify_bigmem) = bigmem_guest::build_waste_memory();
     let program_summary = bigmem_guest::analyze_waste_memory(value);
 
     let start = Instant::now();

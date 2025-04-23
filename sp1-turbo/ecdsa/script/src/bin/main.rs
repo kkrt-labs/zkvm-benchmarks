@@ -26,14 +26,12 @@ fn main() {
             bench_ecdsa,
             &lengths,
             "../benchmark_outputs/ecdsa_sp1turbo-gpu.csv",
-            "n",
         );
     } else {
         benchmark(
             bench_ecdsa,
             &lengths,
             "../benchmark_outputs/ecdsa_sp1turbo.csv",
-            "n",
         );
     }
 }

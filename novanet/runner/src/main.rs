@@ -105,7 +105,6 @@ fn main() {
         generate(cli.clone()),
         &cli.benchmark_args,
         &format!("../benchmark_outputs/{}_novanet.csv", cli.guest),
-        "n",
     );
 }
 

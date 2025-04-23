@@ -23,7 +23,6 @@ fn main() {
             bench_hash,
             &lengths,
             "../../../benchmark_outputs/sha2_pico.csv",
-            "num_bytes",
         );
     }
 }

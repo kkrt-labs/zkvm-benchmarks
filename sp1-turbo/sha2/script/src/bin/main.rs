@@ -33,7 +33,6 @@ fn main() {
             bench_sha2,
             &[n],
             format!("../benchmark_outputs/sha2_sp1turbo-gpu-{}.csv", n).as_str(),
-            "n",
         );
     } else {
         let lengths = [32, 256, 512, 1024, 2048];
@@ -41,7 +40,6 @@ fn main() {
             bench_sha2,
             &lengths,
             "../benchmark_outputs/sha2_sp1turbo.csv",
-            "n",
         );
     }
 }

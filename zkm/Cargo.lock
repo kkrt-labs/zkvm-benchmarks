@@ -525,6 +525,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "guests"
+version = "0.1.0"
+dependencies = [
+ "getrandom",
+ "k256",
+ "serde",
+ "sha2",
+]
+
+[[package]]
 name = "hashbrown"
 version = "0.14.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1250,6 +1260,11 @@ name = "utils"
 version = "0.1.0"
 dependencies = [
  "bincode",
+ "getrandom",
+ "guests",
+ "hex",
+ "k256",
+ "once_cell",
  "serde",
 ]
 

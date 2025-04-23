@@ -1,10 +1,10 @@
 use nexus_sdk::{
-    compile::{cargo::CargoPackager, Compile, Compiler},
-    stwo::seq::Stwo,
     ByGuestCompilation, Local, Prover, Verifiable, Viewable,
+    compile::{Compile, Compiler, cargo::CargoPackager},
+    stwo::seq::Stwo,
 };
 use std::time::Instant;
-use utils::{benchmark, size, BenchResult, FIBONACI_INPUTS};
+use utils::{BenchResult, FIBONACI_INPUTS, benchmark, size};
 
 const PACKAGE: &str = "fibonacci-guest";
 
@@ -13,7 +13,6 @@ fn main() {
         benchmark_fib,
         &FIBONACI_INPUTS,
         "../benchmark_outputs/fib_nexus.csv",
-        "n",
     );
 }
 
