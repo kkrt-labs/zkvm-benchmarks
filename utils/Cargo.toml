@@ -16,6 +16,4 @@ k256 = { version = "=0.13.3", features = [
   "std",
   "ecdsa",
 ], default-features = false }
-guests = { path = "../guests", features = ["std"] }
-once_cell = "1.19.0"
-base64 = "0.22.1"
+guests = { path = "../guests", features = ["with-ecdsa"] }

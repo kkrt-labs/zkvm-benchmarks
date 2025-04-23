@@ -16,6 +16,8 @@ serde = { version = "1.0", features = ["derive"], optional = true }
 revm-utils = {git = "https://github.com/ClankPan/revm-utils", optional = true }
 
 [features]
-default = ["no_std"]
-std = ["k256", "getrandom", "serde", "revm-utils"]
-no_std = ["sha2"]
+default = ["fibonacci"]
+fibonacci = []
+with-sha2 = ["sha2"]
+with-ecdsa = ["k256", "getrandom", "serde"]
+ethtransfer = ["revm-utils"]

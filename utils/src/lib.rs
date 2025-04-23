@@ -2,6 +2,7 @@ use guests::ecdsa::EcdsaVerifyInput;
 use k256::{ecdsa::Signature, elliptic_curve::sec1::EncodedPoint, Secp256k1};
 use std::{
     fmt::Display,
+    fs,
     fs::File,
     io::Write,
     sync::{
@@ -37,15 +38,13 @@ fn get_current_memory_usage() -> Result<usize, std::io::Error> {
     Ok(0)
 }
 
-pub fn ecdsa_input() -> EcdsaVerifyInput<'static> {
+pub fn ecdsa_input() -> EcdsaVerifyInput {
     const MESSAGE: &[u8] = include_bytes!("../../utils/ecdsa_signature/message.txt");
     const KEY: &[u8] = include_bytes!("../../utils/ecdsa_signature/verifying_key.txt");
     const SIGNATURE: &[u8] = include_bytes!("../../utils/ecdsa_signature/signature.txt");
 
     // Use a static variable to store the decoded message so it has a 'static lifetime
-    static MESSAGE_DECODED: once_cell::sync::Lazy<Vec<u8>> = once_cell::sync::Lazy::new(|| {
-        hex::decode(MESSAGE).expect("Failed to decode hex of 'message'")
-    });
+    let message = hex::decode(MESSAGE).expect("Failed to decode hex of 'message'");
 
     let encoded_point = EncodedPoint::<Secp256k1>::from_bytes(
         &hex::decode(KEY).expect("Failed to decode hex of 'verifying_key'"),
@@ -57,9 +56,15 @@ pub fn ecdsa_input() -> EcdsaVerifyInput<'static> {
 
     EcdsaVerifyInput {
         encoded_point,
-        message: &*MESSAGE_DECODED,
+        message: message.clone(),
         signature,
     }
+}
+
+pub fn load_elf(path: &str) -> Vec<u8> {
+    fs::read(path).unwrap_or_else(|err| {
+        panic!("Failed to load ELF file from {}: {}", path, err);
+    })
 }
 
 fn measure_peak_memory<R, F: FnOnce() -> R>(func: F) -> (R, usize) {

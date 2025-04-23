@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 openvm = { git = "https://github.com/openvm-org/openvm.git", rev = "333b367f3ba64da40191726b76ba24af24a97888" }
-guests = { path = "../../guests", features = ["no_std"] }
+guests = { path = "../../guests", features = ["fibonacci"] }
 
 [features]
 default = []
