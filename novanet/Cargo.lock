@@ -1379,6 +1379,7 @@ dependencies = [
 name = "fib"
 version = "0.1.0"
 dependencies = [
+ "guests",
  "zk-engine",
 ]
 
