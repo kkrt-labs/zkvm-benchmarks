@@ -1,6 +1,6 @@
 // ANCHOR: dependencies
 use std::sync::Arc;
-use std::time::{Duration, Instant};
+use std::time::Instant;
 
 use eyre::Result;
 use openvm_build::GuestOptions;
@@ -10,18 +10,15 @@ use openvm_sdk::{
     Sdk, StdIn,
 };
 use openvm_stark_sdk::config::FriParameters;
-use utils::{benchmark, size};
+use utils::{benchmark, size, BenchResult, SHA2_INPUTS};
 
 // ANCHOR_END: dependencies
 
-type BenchResult = (Duration, usize, usize);
-
 #[allow(unused_variables, unused_doc_comments)]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let lengths = [32, 256, 512, 1024, 2048];
     benchmark(
         benchmark_sha2,
-        &lengths,
+        &SHA2_INPUTS,
         "../benchmark_outputs/sha2_openvm.csv",
     );
 

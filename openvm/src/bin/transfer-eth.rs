@@ -1,6 +1,6 @@
 // ANCHOR: dependencies
 use std::sync::Arc;
-use std::time::{Duration, Instant};
+use std::time::Instant;
 
 use eyre::Result;
 use openvm_build::GuestOptions;
@@ -10,18 +10,15 @@ use openvm_sdk::{
     Sdk, StdIn,
 };
 use openvm_stark_sdk::config::FriParameters;
-use utils::{benchmark, size};
+use utils::{benchmark, size, BenchResult, ETHTRANSFER_INPUTS};
 
 // ANCHOR_END: dependencies
 
-type BenchResult = (Duration, usize, usize);
-
 #[allow(unused_variables, unused_doc_comments)]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let ns = [1, 10, 100];
     benchmark(
         benchmark_transfer_eth,
-        &ns,
+        &ETHTRANSFER_INPUTS,
         "../benchmark_outputs/ethtransfer_openvm.csv",
     );
 

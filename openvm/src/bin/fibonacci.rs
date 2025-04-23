@@ -1,6 +1,6 @@
 // ANCHOR: dependencies
 use std::sync::Arc;
-use std::time::{Duration, Instant};
+use std::time::Instant;
 
 use eyre::Result;
 use openvm_build::GuestOptions;
@@ -10,16 +10,17 @@ use openvm_sdk::{
     Sdk, StdIn,
 };
 use openvm_stark_sdk::config::FriParameters;
-use utils::{benchmark, size};
+use utils::{benchmark, size, BenchResult, FIBONACCI_INPUTS};
 
 // ANCHOR_END: dependencies
 
-type BenchResult = (Duration, usize, usize);
-
 #[allow(unused_variables, unused_doc_comments)]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let ns = [10, 100, 1000, 10000, 100000];
-    benchmark(benchmark_fib, &ns, "../benchmark_outputs/fib_openvm.csv");
+    benchmark(
+        benchmark_fib,
+        &FIBONACCI_INPUTS,
+        "../benchmark_outputs/fib_openvm.csv",
+    );
 
     Ok(())
 }
