@@ -10,17 +10,14 @@ We are so welcome to your contribution!
 
 ||Fibonacci|SHA2|ECDSA|ETHTransfer|Notes|
 |-|-|-|-|-|-|
-|[Jolt](./jolt/)|✅|✅|✅|✅||
-|[Jolt (GPU)](./jolt/)|✅|✅|✅|✅|Optimization by GPU is still only partially implemented|
+|[Jolt (CPU/GPU)](./jolt/)|✅|✅|✅|✅|Optimization by GPU is still only partially implemented|
 |[Nexus](./nexus/)|✅|✅|✅|❌||
 |[Novanet](./novanet/)|✅|❌|❌|❌||
 |[OpenVM](./openvm/)|✅|✅|✅|✅||
 |[Pico](./pico/)|✅|✅|✅|✅||
 |[Powdr](./powdr/)|❌|❌|❌|❌||
-|[RISC Zero](./risczero)|✅|✅|✅|✅||
-|[RISC Zero (GPU)](./risczero)|✅|✅|✅|✅||
-|[SP1](./sp1-turbo)|✅|✅|✅|✅||
-|[SP1 (GPU)](./sp1-turbo)|✅|✅|✅|✅||
+|[RISC Zero (CPU/GPU)](./risczero)|✅|✅|✅|✅||
+|[SP1 (CPU/GPU)](./sp1)|✅|✅|✅|✅||
 |[ZKM](./zkm)|✅|✅|✅|✅||
 |Ceno|||||[No SDK yet](https://github.com/orgs/scroll-tech/projects/20)|
 |zkWASM||||||
