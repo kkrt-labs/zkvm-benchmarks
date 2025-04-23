@@ -1,23 +1,15 @@
-use std::time::{Duration, Instant};
 use jolt::Serializable;
-use utils::benchmark;
-
-type BenchResult = (Duration, usize, usize);
+use std::time::Instant;
+use utils::{benchmark, BenchResult, ETHTRANSFER_INPUTS};
 
 fn main() {
-    let num_transfers = [1, 10, 100];
     let csv_file = format!(
         "../benchmark_outputs/ethtransfer_jolt{}{}.csv",
         if cfg!(feature = "icicle") { "-gpu" } else { "" },
         ""
     );
 
-    benchmark(
-        benchmark_transfer_eth,
-        &num_transfers,
-        &csv_file,
-        "n",
-    );
+    benchmark(benchmark_transfer_eth, &ETHTRANSFER_INPUTS, &csv_file);
 }
 
 fn benchmark_transfer_eth(n: usize) -> BenchResult {

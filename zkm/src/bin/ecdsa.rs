@@ -5,5 +5,9 @@ fn main() {
     init_logger();
 
     let lengths = [1];
-    benchmark(benchmark_ecdsa, &lengths, "../benchmark_outputs/ecdsa_zkm.csv", "n");
+    benchmark(
+        benchmark_ecdsa,
+        &lengths,
+        "../benchmark_outputs/ecdsa_zkm.csv",
+    );
 }

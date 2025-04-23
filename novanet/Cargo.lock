@@ -1167,6 +1167,7 @@ dependencies = [
  "digest 0.10.7",
  "elliptic-curve",
  "rfc6979",
+ "serdect",
  "signature",
  "spki",
 ]
@@ -1207,6 +1208,7 @@ dependencies = [
  "pkcs8",
  "rand_core 0.6.4",
  "sec1",
+ "serdect",
  "subtle",
  "zeroize",
 ]
@@ -1371,6 +1373,7 @@ dependencies = [
 name = "fib"
 version = "0.1.0"
 dependencies = [
+ "guests",
  "zk-engine",
 ]
 
@@ -1487,12 +1490,21 @@ dependencies = [
  "getrandom 0.2.12",
  "halo2curves",
  "pasta_curves",
- "rand 0.8.5",
- "rand_chacha 0.3.1",
+ "rand 0.9.0",
+ "rand_chacha 0.9.0",
  "rayon",
  "semolina",
  "sppark",
  "which",
+]
+
+[[package]]
+name = "guests"
+version = "0.1.0"
+dependencies = [
+ "getrandom 0.2.12",
+ "k256",
+ "serde",
 ]
 
 [[package]]
@@ -1719,14 +1731,15 @@ dependencies = [
 
 [[package]]
 name = "k256"
-version = "0.13.4"
+version = "0.13.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f6e3919bbaa2945715f0bb6d3934a173d1e9a59ac23767fbaaef277265a7411b"
+checksum = "956ff9b67e26e1a6a866cb758f12c6f8746208489e3e4a4b5580802f2f0a587b"
 dependencies = [
  "cfg-if",
  "ecdsa",
  "elliptic-curve",
  "once_cell",
+ "serdect",
  "sha2",
 ]
 
@@ -2945,6 +2958,7 @@ dependencies = [
  "der",
  "generic-array 0.14.7",
  "pkcs8",
+ "serdect",
  "subtle",
  "zeroize",
 ]
@@ -3021,6 +3035,16 @@ dependencies = [
  "itoa",
  "memchr",
  "ryu",
+ "serde",
+]
+
+[[package]]
+name = "serdect"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a84f14a19e9a014bb9f4512488d9829a68e04ecabffb0f9904cd1ace94598177"
+dependencies = [
+ "base16ct",
  "serde",
 ]
 
@@ -3449,6 +3473,9 @@ name = "utils"
 version = "0.1.0"
 dependencies = [
  "bincode",
+ "guests",
+ "hex",
+ "k256",
  "serde",
 ]
 

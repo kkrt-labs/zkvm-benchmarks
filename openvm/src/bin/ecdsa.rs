@@ -1,6 +1,6 @@
 // ANCHOR: dependencies
 use std::sync::Arc;
-use std::time::{Duration, Instant};
+use std::time::Instant;
 
 use eyre::Result;
 use openvm_build::GuestOptions;
@@ -10,40 +10,20 @@ use openvm_sdk::{
     Sdk, StdIn,
 };
 use openvm_stark_sdk::config::FriParameters;
-use serde::{Deserialize, Serialize};
-use utils::{benchmark, size};
-
-use k256::{ecdsa::Signature, elliptic_curve::sec1::EncodedPoint, Secp256k1};
-
-// ANCHOR_END: dependencies
-
-type BenchResult = (Duration, usize, usize);
-
-const MESSAGE: &[u8] = include_bytes!("../../../helper/ecdsa_signature/message.txt");
-const KEY: &[u8] = include_bytes!("../../../helper/ecdsa_signature/verifying_key.txt");
-const SIGNATURE: &[u8] = include_bytes!("../../../helper/ecdsa_signature/signature.txt");
-
-#[derive(Serialize, Deserialize)]
-pub struct SomeStruct {
-    pub encoded_verifying_key: EncodedPoint<Secp256k1>,
-    pub message: Vec<u8>,
-    pub signature: Signature,
-}
+use utils::{benchmark, ecdsa_input, size, BenchResult, ECDSA_INPUTS};
 
 #[allow(unused_variables, unused_doc_comments)]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let ns = [1];
     benchmark(
         benchmark_ecdsa,
-        &ns,
+        &ECDSA_INPUTS,
         "../benchmark_outputs/ecdsa_openvm.csv",
-        "n",
     );
 
     Ok(())
 }
 
-fn benchmark_ecdsa(_n: u32) -> BenchResult {
+fn benchmark_ecdsa(_n: usize) -> BenchResult {
     // ANCHOR: vm_config
     let vm_config = SdkVmConfig::builder()
         .system(Default::default())
@@ -70,21 +50,7 @@ fn benchmark_ecdsa(_n: u32) -> BenchResult {
     let exe = sdk.transpile(elf, vm_config.transpiler()).unwrap();
     // ANCHOR_END: transpilation
 
-    let message = hex::decode(MESSAGE).expect("Failed to decode hex of 'message'");
-
-    let encoded_point = EncodedPoint::<Secp256k1>::from_bytes(
-        &hex::decode(KEY).expect("Failed to decode hex of 'verifying_key'"),
-    )
-    .expect("Invalid encoded verifying_key bytes");
-
-    let bytes = hex::decode(SIGNATURE).expect("Failed to decode hex of 'signature'");
-    let signature = Signature::from_slice(&bytes).expect("Invalid signature bytes");
-
-    let input = SomeStruct {
-        encoded_verifying_key: encoded_point,
-        message: message,
-        signature: signature,
-    };
+    let input = ecdsa_input();
 
     // ANCHOR: execution
     // 4. Format your input into StdIn

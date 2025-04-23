@@ -55,16 +55,10 @@ fn main() {
                 bench_fib,
                 &[n],
                 format!("../benchmark_outputs/fib_sp1turbo-gpu-{}.csv", n).as_str(),
-                "n",
             );
         } else {
             let lengths = [10, 100, 1000, 10000, 100000];
-            benchmark(
-                bench_fib,
-                &lengths,
-                "../benchmark_outputs/fib_sp1turbo.csv",
-                "n",
-            );
+            benchmark(bench_fib, &lengths, "../benchmark_outputs/fib_sp1turbo.csv");
         }
     }
 }

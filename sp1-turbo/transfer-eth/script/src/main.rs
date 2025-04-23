@@ -33,7 +33,6 @@ fn main() {
             bench_evm,
             &[n],
             format!("../benchmark_outputs/ethtransfer_sp1turbo-gpu-{}.csv", n).as_str(),
-            "n",
         );
     } else {
         let num_transfers = [1, 10, 100];
@@ -41,7 +40,6 @@ fn main() {
             bench_evm,
             &num_transfers,
             "../benchmark_outputs/ethtransfer_sp1turbo.csv",
-            "n",
         );
     }
 }

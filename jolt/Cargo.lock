@@ -1290,10 +1290,8 @@ dependencies = [
 name = "ecdsa-guest"
 version = "0.1.0"
 dependencies = [
- "getrandom 0.2.15",
- "hex",
+ "guests",
  "jolt-sdk",
- "k256",
 ]
 
 [[package]]
@@ -1475,6 +1473,7 @@ dependencies = [
 name = "fibonacci-guest"
 version = "0.1.0"
 dependencies = [
+ "guests",
  "jolt-sdk",
 ]
 
@@ -1666,6 +1665,17 @@ dependencies = [
  "ff",
  "rand_core 0.6.4",
  "subtle",
+]
+
+[[package]]
+name = "guests"
+version = "0.1.0"
+dependencies = [
+ "getrandom 0.2.15",
+ "k256",
+ "revm-utils",
+ "serde",
+ "sha2",
 ]
 
 [[package]]
@@ -2131,10 +2141,8 @@ dependencies = [
  "bigmem-guest",
  "ecdsa-guest",
  "fibonacci-guest",
- "getrandom 0.2.15",
  "hex",
  "jolt-sdk",
- "k256",
  "sha2-chain-guest",
  "sha2-guest",
  "sha3-chain-guest",
@@ -3583,8 +3591,8 @@ dependencies = [
 name = "sha2-guest"
 version = "0.1.0"
 dependencies = [
+ "guests",
  "jolt-sdk",
- "sha2",
 ]
 
 [[package]]
@@ -4135,9 +4143,8 @@ dependencies = [
 name = "transfer-eth-guest"
 version = "0.1.0"
 dependencies = [
- "getrandom 0.2.15",
+ "guests",
  "jolt-sdk",
- "revm-utils",
 ]
 
 [[package]]
@@ -4254,6 +4261,9 @@ name = "utils"
 version = "0.1.0"
 dependencies = [
  "bincode",
+ "guests",
+ "hex",
+ "k256",
  "serde",
 ]
 

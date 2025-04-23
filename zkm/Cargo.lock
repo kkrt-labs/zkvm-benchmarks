@@ -408,9 +408,9 @@ dependencies = [
 
 [[package]]
 name = "either"
-version = "1.13.0"
+version = "1.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "60b1af1c220855b6ceac025d3f6ecdd2b7c4894bfe9cd9bda4fbb4bc7c0d4cf0"
+checksum = "48c757948c5ede0e46177b7add2e67155f70e33c07fea8284df6576da70b3719"
 
 [[package]]
 name = "elf"
@@ -522,6 +522,15 @@ dependencies = [
  "ff",
  "rand_core",
  "subtle",
+]
+
+[[package]]
+name = "guests"
+version = "0.1.0"
+dependencies = [
+ "getrandom",
+ "k256",
+ "serde",
 ]
 
 [[package]]
@@ -780,9 +789,9 @@ dependencies = [
 
 [[package]]
 name = "once_cell"
-version = "1.20.3"
+version = "1.21.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "945462a4b81e43c4e3ba96bd7b49d834c6f61198356aa858733bc4acf3cbe62e"
+checksum = "42f5e15c9953c5e4ccceeb2e7382a716482c34515315f7b03532b8b4e8393d2d"
 
 [[package]]
 name = "option-ext"
@@ -1250,6 +1259,9 @@ name = "utils"
 version = "0.1.0"
 dependencies = [
  "bincode",
+ "guests",
+ "hex",
+ "k256",
  "serde",
 ]
 

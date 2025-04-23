@@ -101,33 +101,32 @@ bench-openvm:
 	RUST_BACKTRACE=1 RUSTFLAGS="-C target-cpu=native" cargo run --release --bin transfer-eth -F std
 
 bench-nexus:
-	cd nexus && RUSTFLAGS="-C target-cpu=native" cargo run --release
+	cd nexus && RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fib && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2
 
 bench-novanet:
 	cd novanet && \
 	RUSTFLAGS="-C target-cpu=native" RUST_LOG=debug cargo run --release -p runner --  --guest "fib" --benchmark-args 10 100 --compress --wat fib/fib.wat
 
 bench-pico:
-	cd pico/fibonacci/app && \
-	cargo pico build && \
-	cd ../prover && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release
+	cd pico/host && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fib && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2 && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin ecdsa && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin transfer-eth
 
-	cd pico/sha2-256/app && \
-	cargo pico build && \
-	cd ../prover && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release
+build-pico:
+	cd pico/fibonacci-guest && \
+	cargo pico build
 
-	cd pico/ecdsa/app && \
-	cargo pico build && \
-	cd ../prover && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release
+	cd pico/sha2-guest && \
+	cargo pico build
 
-	cd pico/transfer-eth/app && \
-	cargo pico build && \
-	cd ../prover && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release && \
-	cd ../../../..
+	cd pico/ecdsa-guest && \
+	cargo pico build
+
+	cd pico/transfer-eth-guest && \
+	cargo pico build
 
 perf-all:
 	make perf-sp1turbo
