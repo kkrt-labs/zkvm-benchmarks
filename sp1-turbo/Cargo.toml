@@ -1,20 +1,17 @@
 [workspace]
 members = [
-  "fibonacci/lib",
-  "fibonacci/program",
-  "fibonacci/script",
-  "sha2/lib",
-  "sha2/program",
-  "sha2/script",
-  "ecdsa/lib",
-  "ecdsa/program",
-  "ecdsa/script",
-  # "ethblock/helper",
-  # "ethblock/utils",
-  # "ethblock/lib",
-  # "ethblock/program",
-  # "ethblock/script",
-  "transfer-eth/program",
-  "transfer-eth/script"
+  "fibonacci-guest",
+  "sha2-guest",
+  "ecdsa-guest",
+  "transfer-eth-guest",
+  "host",
 ]
 resolver = "2"
+
+[workspace.dependencies]
+sp1-sdk = "4.2.0"
+sp1-zkvm = "4.2.0"
+sp1-build = "4.2.0"
+utils = { path = "../utils" }
+guests = { path = "../guests" }
+dotenv = "0.15.0"

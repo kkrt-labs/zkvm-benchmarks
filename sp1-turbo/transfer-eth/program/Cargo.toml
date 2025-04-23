@@ -1,9 +1,0 @@
-[package]
-version = "0.1.0"
-name = "transfer-eth-program"
-edition = "2021"
-
-[dependencies]
-sp1-zkvm = "4.1.0"
-serde = { version = "1.0.200", default-features = false, features = ["derive"] }
-revm-utils = {git = "https://github.com/ClankPan/revm-utils"}
