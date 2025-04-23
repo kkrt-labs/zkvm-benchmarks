@@ -1,18 +1,15 @@
 use jolt::Serializable;
-use std::time::{Duration, Instant};
-use utils::benchmark;
-
-type BenchResult = (Duration, usize, usize);
+use std::time::Instant;
+use utils::{benchmark, BenchResult, FIBONACCI_INPUTS};
 
 fn main() {
-    let ns = [10, 100, 1000, 10000, 100000];
     let csv_file = format!(
         "../benchmark_outputs/fib_jolt{}{}.csv",
         if cfg!(feature = "icicle") { "-gpu" } else { "" },
         ""
     );
 
-    benchmark(benchmark_fib, &ns, &csv_file, "n");
+    benchmark(benchmark_fib, &FIBONACCI_INPUTS, &csv_file);
 }
 
 fn benchmark_fib(n: u32) -> BenchResult {

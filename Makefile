@@ -101,7 +101,8 @@ bench-openvm:
 	RUST_BACKTRACE=1 RUSTFLAGS="-C target-cpu=native" cargo run --release --bin transfer-eth -F std
 
 bench-nexus:
-	cd nexus && RUSTFLAGS="-C target-cpu=native" cargo run --release
+	cd nexus && RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fib && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2
 
 bench-novanet:
 	cd novanet && \

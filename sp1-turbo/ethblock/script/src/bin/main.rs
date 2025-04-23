@@ -25,7 +25,6 @@ fn main() {
         bench_evm,
         &lengths,
         "../benchmark_outputs/ethblock_sp1turbo.csv",
-        "ethblock_arg",
     );
 }
 

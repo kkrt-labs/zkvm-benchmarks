@@ -19,12 +19,7 @@ type BenchResult = (Duration, usize, usize);
 #[allow(unused_variables, unused_doc_comments)]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let ns = [10, 100, 1000, 10000, 100000];
-    benchmark(
-        benchmark_fib,
-        &ns,
-        "../benchmark_outputs/fib_openvm.csv",
-        "n",
-    );
+    benchmark(benchmark_fib, &ns, "../benchmark_outputs/fib_openvm.csv");
 
     Ok(())
 }

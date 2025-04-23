@@ -1,13 +1,6 @@
-use std::time::{Duration, Instant};
 use jolt::Serializable;
-use utils::benchmark;
-
-use k256::{
-    ecdsa::Signature,
-    elliptic_curve::sec1::EncodedPoint,
-    Secp256k1,
-};
-type BenchResult = (Duration, usize, usize);
+use std::time::Instant;
+use utils::{benchmark, ecdsa_input, BenchResult, ECDSA_INPUTS};
 
 fn main() {
     let csv_file = format!(
@@ -16,37 +9,17 @@ fn main() {
         ""
     );
 
-    let lengths = [1];
-    benchmark(
-        bench_ecdsa,
-        &lengths,
-        &csv_file,
-        "n",
-    );
+    benchmark(bench_ecdsa, &ECDSA_INPUTS, &csv_file);
 }
 
-const MESSAGE: &[u8] = include_bytes!("../../../helper/ecdsa_signature/message.txt");
-const KEY: &[u8] = include_bytes!("../../../helper/ecdsa_signature/verifying_key.txt");
-const SIGNATURE: &[u8] = include_bytes!("../../../helper/ecdsa_signature/signature.txt");
-
 fn bench_ecdsa(_dummy: usize) -> BenchResult {
-
+    let input = ecdsa_input();
     let (prove_ecdsa_verify, _verify_ecdsa_verify) = ecdsa_guest::build_ecdsa_verify();
 
-    let message = hex::decode(MESSAGE).expect("Failed to decode hex of 'message'");
-
-    let encoded_point = EncodedPoint::<Secp256k1>::from_bytes(
-        &hex::decode(KEY).expect("Failed to decode hex of 'verifying_key'"),
-    )
-    .expect("Invalid encoded verifying_key bytes");
-
-    let bytes = hex::decode(SIGNATURE).expect("Failed to decode hex of 'signature'");
-    let signature = Signature::from_slice(&bytes).expect("Invalid signature bytes");
-
-    let program_summary = ecdsa_guest::analyze_ecdsa_verify(encoded_point, &message.clone(), signature);
+    let program_summary = ecdsa_guest::analyze_ecdsa_verify(input.clone());
 
     let start = Instant::now();
-    let (_output, proof) = prove_ecdsa_verify(encoded_point, &message, signature);
+    let (_output, proof) = prove_ecdsa_verify(input.clone());
     let end = Instant::now();
 
     (

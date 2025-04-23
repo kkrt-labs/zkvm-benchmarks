@@ -23,7 +23,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         benchmark_sha2,
         &lengths,
         "../benchmark_outputs/sha2_openvm.csv",
-        "n",
     );
 
     Ok(())

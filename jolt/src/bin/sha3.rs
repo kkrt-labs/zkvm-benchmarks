@@ -1,5 +1,5 @@
-use std::time::{Duration, Instant};
 use jolt::Serializable;
+use std::time::{Duration, Instant};
 use utils::benchmark;
 
 type BenchResult = (Duration, usize, usize);
@@ -11,7 +11,7 @@ fn main() {
         ""
     );
     let lengths = [32, 256, 512, 1024, 2048];
-    benchmark(benchmark_sha3, &lengths, &csv_file, "n");
+    benchmark(benchmark_sha3, &lengths, &csv_file);
 }
 
 fn benchmark_sha3(num_bytes: usize) -> BenchResult {

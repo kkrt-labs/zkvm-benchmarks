@@ -1,10 +1,10 @@
 use nexus_sdk::{
-    compile::{cargo::CargoPackager, Compile, Compiler},
-    stwo::seq::Stwo,
     ByGuestCompilation, Local, Prover, Verifiable, Viewable,
+    compile::{Compile, Compiler, cargo::CargoPackager},
+    stwo::seq::Stwo,
 };
 use std::time::Instant;
-use utils::{benchmark, size, BenchResult, SHA2_INPUTS};
+use utils::{BenchResult, SHA2_INPUTS, benchmark, size};
 
 const PACKAGE: &str = "sha2-guest";
 
@@ -13,7 +13,6 @@ fn main() {
         benchmark_sha2,
         &SHA2_INPUTS,
         "../benchmark_outputs/sha2_nexus.csv",
-        "n",
     );
 }
 
