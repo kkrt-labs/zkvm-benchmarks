@@ -99,7 +99,7 @@ pub struct TransactionInfo {
     pub to: Option<Address>,
 }
 
-const BYTES: &[u8] = include_bytes!("../../helper/block_state_caches/block_10889449.bin");
+const BYTES: &[u8] = include_bytes!("../../utils/block_state_caches/block_10889449.bin");
 
 pub fn trace_ethblock(num_txs: usize) -> bool {
     // Params

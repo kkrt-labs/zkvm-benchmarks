@@ -13,8 +13,9 @@ k256 = { version = "=0.13.3", features = [
 ], default-features = false, optional = true }
 getrandom = { version = "0.2", features = ["custom"], optional = true }
 serde = { version = "1.0", features = ["derive"], optional = true }
+revm-utils = {git = "https://github.com/ClankPan/revm-utils", optional = true }
 
 [features]
 default = ["no_std"]
-std = ["k256", "getrandom", "serde"]
+std = ["k256", "getrandom", "serde", "revm-utils"]
 no_std = ["sha2"]

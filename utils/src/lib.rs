@@ -38,9 +38,9 @@ fn get_current_memory_usage() -> Result<usize, std::io::Error> {
 }
 
 pub fn ecdsa_input() -> EcdsaVerifyInput<'static> {
-    const MESSAGE: &[u8] = include_bytes!("../../helper/ecdsa_signature/message.txt");
-    const KEY: &[u8] = include_bytes!("../../helper/ecdsa_signature/verifying_key.txt");
-    const SIGNATURE: &[u8] = include_bytes!("../../helper/ecdsa_signature/signature.txt");
+    const MESSAGE: &[u8] = include_bytes!("../../utils/ecdsa_signature/message.txt");
+    const KEY: &[u8] = include_bytes!("../../utils/ecdsa_signature/verifying_key.txt");
+    const SIGNATURE: &[u8] = include_bytes!("../../utils/ecdsa_signature/signature.txt");
 
     // Use a static variable to store the decoded message so it has a 'static lifetime
     static MESSAGE_DECODED: once_cell::sync::Lazy<Vec<u8>> = once_cell::sync::Lazy::new(|| {
