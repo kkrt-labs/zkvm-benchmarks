@@ -19,9 +19,9 @@ use k256::{ecdsa::Signature, elliptic_curve::sec1::EncodedPoint, Secp256k1};
 
 type BenchResult = (Duration, usize, usize);
 
-const MESSAGE: &[u8] = include_bytes!("../../../helper/ecdsa_signature/message.txt");
-const KEY: &[u8] = include_bytes!("../../../helper/ecdsa_signature/verifying_key.txt");
-const SIGNATURE: &[u8] = include_bytes!("../../../helper/ecdsa_signature/signature.txt");
+const MESSAGE: &[u8] = include_bytes!("../../../utils/ecdsa_signature/message.txt");
+const KEY: &[u8] = include_bytes!("../../../utils/ecdsa_signature/verifying_key.txt");
+const SIGNATURE: &[u8] = include_bytes!("../../../utils/ecdsa_signature/signature.txt");
 
 #[derive(Serialize, Deserialize)]
 pub struct SomeStruct {

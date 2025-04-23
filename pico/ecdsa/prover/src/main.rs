@@ -4,16 +4,15 @@ use pico_sdk::{client::DefaultProverClient, init_logger};
 use std::time::{Duration, Instant};
 use utils::benchmark;
 
-const MESSAGE_HEX: &[u8] = include_bytes!("../../../../helper/ecdsa_signature/message.txt");
-const KEY_HEX: &[u8] = include_bytes!("../../../../helper/ecdsa_signature/verifying_key.txt");
-const SIGNATURE_HEX: &[u8] = include_bytes!("../../../../helper/ecdsa_signature/signature.txt");
+const MESSAGE_HEX: &[u8] = include_bytes!("../../../../utils/ecdsa_signature/message.txt");
+const KEY_HEX: &[u8] = include_bytes!("../../../../utils/ecdsa_signature/verifying_key.txt");
+const SIGNATURE_HEX: &[u8] = include_bytes!("../../../../utils/ecdsa_signature/signature.txt");
 
 fn main() {
     benchmark(
         bench_ecdsa,
         &["1"],
         "../../../benchmark_outputs/ecdsa_pico.csv",
-        "value",
     );
 }
 

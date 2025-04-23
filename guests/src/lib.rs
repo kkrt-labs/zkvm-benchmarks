@@ -7,3 +7,5 @@ pub mod sha2;
 
 #[cfg(feature = "std")]
 pub mod ecdsa;
+#[cfg(feature = "std")]
+pub mod ethtransfer;

@@ -12,9 +12,9 @@ pub struct PublicValuesStruct {
     pub result: bool,
 }
 
-const MESSAGE: &[u8] = include_bytes!("../../../../helper/ecdsa_signature/message.txt");
-const KEY: &[u8] = include_bytes!("../../../../helper/ecdsa_signature/verifying_key.txt");
-const SIGNATURE: &[u8] = include_bytes!("../../../../helper/ecdsa_signature/signature.txt");
+const MESSAGE: &[u8] = include_bytes!("../../../../utils/ecdsa_signature/message.txt");
+const KEY: &[u8] = include_bytes!("../../../../utils/ecdsa_signature/verifying_key.txt");
+const SIGNATURE: &[u8] = include_bytes!("../../../../utils/ecdsa_signature/signature.txt");
 
 pub fn verify() -> bool {
     let message = hex::decode(MESSAGE).expect("Failed to decode hex of 'message'");

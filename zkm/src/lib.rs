@@ -1,7 +1,7 @@
-use std::time::{Duration, Instant};
 use std::fs::File;
 use std::io::BufReader;
 use std::ops::Range;
+use std::time::{Duration, Instant};
 
 use plonky2::field::goldilocks_field::GoldilocksField;
 use plonky2::plonk::config::{GenericConfig, PoseidonGoldilocksConfig};
@@ -16,11 +16,7 @@ use zkm_prover::proof;
 use zkm_prover::prover::prove;
 use zkm_prover::verifier::verify_proof;
 
-use k256::{
-    ecdsa::Signature,
-    elliptic_curve::sec1::EncodedPoint,
-    Secp256k1,
-};
+use k256::{ecdsa::Signature, elliptic_curve::sec1::EncodedPoint, Secp256k1};
 
 const FIBONACCI_ELF: &str = "./programs/fibonacci/elf/mips-zkm-zkvm-elf";
 const SHA2_ELF: &str = "./programs/sha2/elf/mips-zkm-zkvm-elf";
@@ -33,9 +29,9 @@ const ETHTRANSFER_ELF: &str = "./programs/transfer-eth/elf/mips-zkm-zkvm-elf";
 const SEG_SIZE: usize = 262144 * 8; // G
 type BenchResult = (Duration, usize, usize);
 
-const MESSAGE: &[u8] = include_bytes!("../../helper/ecdsa_signature/message.txt");
-const KEY: &[u8] = include_bytes!("../../helper/ecdsa_signature/verifying_key.txt");
-const SIGNATURE: &[u8] = include_bytes!("../../helper/ecdsa_signature/signature.txt");
+const MESSAGE: &[u8] = include_bytes!("../../utils/ecdsa_signature/message.txt");
+const KEY: &[u8] = include_bytes!("../../utils/ecdsa_signature/verifying_key.txt");
+const SIGNATURE: &[u8] = include_bytes!("../../utils/ecdsa_signature/signature.txt");
 
 const DEGREE_BITS_RANGE: [Range<usize>; 12] = [
     10..22,
@@ -79,9 +75,12 @@ pub fn benchmark_sha2_chain(iters: u32) -> BenchResult {
     };
     let end = Instant::now();
     let duration = end.duration_since(start);
-    println!("benchmark_sha2_chain end, duration: {:?}", duration.as_secs_f64());
+    println!(
+        "benchmark_sha2_chain end, duration: {:?}",
+        duration.as_secs_f64()
+    );
 
-    let _hash =  state.read_public_values::<[u8; 32]>();
+    let _hash = state.read_public_values::<[u8; 32]>();
 
     (duration, size, total_steps)
 }
@@ -107,9 +106,12 @@ pub fn benchmark_sha3_chain(iters: u32) -> BenchResult {
     };
     let end = Instant::now();
     let duration = end.duration_since(start);
-    println!("benchmark_sha3_chain end, duration: {:?}", duration.as_secs_f64());
+    println!(
+        "benchmark_sha3_chain end, duration: {:?}",
+        duration.as_secs_f64()
+    );
 
-    let _hash =  state.read_public_values::<[u8; 32]>();
+    let _hash = state.read_public_values::<[u8; 32]>();
 
     (duration, size, total_steps)
 }
@@ -136,7 +138,7 @@ pub fn benchmark_sha2(num_bytes: usize) -> BenchResult {
     let duration = end.duration_since(start);
     println!("benchmark_sha2 end, duration: {:?}", duration.as_secs_f64());
 
-    let _hash =  state.read_public_values::<[u8; 32]>();
+    let _hash = state.read_public_values::<[u8; 32]>();
 
     (duration, size, total_steps)
 }
@@ -163,7 +165,7 @@ pub fn benchmark_sha3(num_bytes: usize) -> BenchResult {
     let duration = end.duration_since(start);
     println!("benchmark_sha3 end, duration: {:?}", duration.as_secs_f64());
 
-    let _hash =  state.read_public_values::<[u8; 32]>();
+    let _hash = state.read_public_values::<[u8; 32]>();
 
     (duration, size, total_steps)
 }
@@ -187,7 +189,10 @@ pub fn benchmark_fibonacci(n: u32) -> BenchResult {
     };
     let end = Instant::now();
     let duration = end.duration_since(start);
-    println!("benchmark_fibonacc end, duration: {:?}", duration.as_secs_f64());
+    println!(
+        "benchmark_fibonacc end, duration: {:?}",
+        duration.as_secs_f64()
+    );
 
     let _output = state.read_public_values::<u128>();
     (duration, size, total_steps)
@@ -212,7 +217,10 @@ pub fn benchmark_bigmem(value: u32) -> BenchResult {
     };
     let end = Instant::now();
     let duration = end.duration_since(start);
-    println!("benchmark_bigmem end, duration: {:?}", duration.as_secs_f64());
+    println!(
+        "benchmark_bigmem end, duration: {:?}",
+        duration.as_secs_f64()
+    );
 
     let _output = state.read_public_values::<u32>();
     (duration, size, total_steps)
@@ -254,7 +262,6 @@ pub fn benchmark_ecdsa(_length: usize) -> BenchResult {
     (duration, size, total_steps)
 }
 
-
 pub fn benchmark_transfer_eth(n: usize) -> BenchResult {
     let mut state = load_elf_with_patch(ETHTRANSFER_ELF, vec![]);
     state.add_input_stream(&n);
@@ -274,19 +281,16 @@ pub fn benchmark_transfer_eth(n: usize) -> BenchResult {
     };
     let end = Instant::now();
     let duration = end.duration_since(start);
-    println!("benchmark_bigmem end, duration: {:?}", duration.as_secs_f64());
+    println!(
+        "benchmark_bigmem end, duration: {:?}",
+        duration.as_secs_f64()
+    );
 
     // let _output = state.read_public_values::<u32>();
     (duration, size, total_steps)
 }
 
-
-fn prove_single_seg_common(
-    seg_file: &str,
-    basedir: &str,
-    block: &str,
-    file: &str,
-) -> usize {
+fn prove_single_seg_common(seg_file: &str, basedir: &str, block: &str, file: &str) -> usize {
     let seg_reader = BufReader::new(File::open(seg_file).unwrap());
     let kernel = segment_kernel(basedir, block, file, seg_reader);
 
@@ -341,8 +345,9 @@ fn prove_multi_seg_common(
     let input_first = segment_kernel(basedir, block, file, seg_reader);
     let mut timing = TimingTree::new("prove root first", log::Level::Info);
     // let (mut agg_proof, mut updated_agg_public_values) =
-    let mut agg_receipt =
-        all_circuits.prove_root(&all_stark, &input_first, &config, &mut timing).unwrap();
+    let mut agg_receipt = all_circuits
+        .prove_root(&all_stark, &input_first, &config, &mut timing)
+        .unwrap();
 
     timing.filter(Duration::from_millis(100)).print();
     all_circuits.verify_root(agg_receipt.clone()).unwrap();
@@ -358,20 +363,24 @@ fn prove_multi_seg_common(
         let seg_reader = BufReader::new(File::open(seg_file).unwrap());
         let input = segment_kernel(basedir, block, file, seg_reader);
         timing = TimingTree::new("prove root second", log::Level::Info);
-        let receipt = all_circuits.prove_root_with_assumption(
-            &all_stark,
-            &input,
-            &config,
-            &mut timing,
-            assumptions.clone(),
-        ).unwrap();
+        let receipt = all_circuits
+            .prove_root_with_assumption(
+                &all_stark,
+                &input,
+                &config,
+                &mut timing,
+                assumptions.clone(),
+            )
+            .unwrap();
         timing.filter(Duration::from_millis(100)).print();
 
         all_circuits.verify_root(receipt.clone()).unwrap();
 
         timing = TimingTree::new("prove aggression", log::Level::Info);
         // We can duplicate the proofs here because the state hasn't mutated.
-        agg_receipt = all_circuits.prove_aggregation(false, &agg_receipt, false, &receipt).unwrap();
+        agg_receipt = all_circuits
+            .prove_aggregation(false, &agg_receipt, false, &receipt)
+            .unwrap();
         timing.filter(Duration::from_millis(100)).print();
         all_circuits.verify_aggregation(&agg_receipt).unwrap();
 
@@ -386,59 +395,63 @@ fn prove_multi_seg_common(
         let seg_reader = BufReader::new(File::open(&seg_file).unwrap());
         let input_first = segment_kernel(basedir, block, file, seg_reader);
         let mut timing = TimingTree::new("prove root first", log::Level::Info);
-        let root_receipt_first = all_circuits.prove_root_with_assumption(
-            &all_stark,
-            &input_first,
-            &config,
-            &mut timing,
-            assumptions.clone(),
-        ).unwrap();
+        let root_receipt_first = all_circuits
+            .prove_root_with_assumption(
+                &all_stark,
+                &input_first,
+                &config,
+                &mut timing,
+                assumptions.clone(),
+            )
+            .unwrap();
 
         timing.filter(Duration::from_millis(100)).print();
-        all_circuits.verify_root(root_receipt_first.clone()).unwrap();
+        all_circuits
+            .verify_root(root_receipt_first.clone())
+            .unwrap();
 
         let seg_file = format!("{}/{}", seg_dir, base_seg + (i << 1) + 1);
         log::info!("Process segment {}", seg_file);
         let seg_reader = BufReader::new(File::open(&seg_file).unwrap());
         let input = segment_kernel(basedir, block, file, seg_reader);
         let mut timing = TimingTree::new("prove root second", log::Level::Info);
-        let root_receipt = all_circuits.prove_root_with_assumption(
-            &all_stark,
-            &input,
-            &config,
-            &mut timing,
-            assumptions.clone(),
-        ).unwrap();
+        let root_receipt = all_circuits
+            .prove_root_with_assumption(
+                &all_stark,
+                &input,
+                &config,
+                &mut timing,
+                assumptions.clone(),
+            )
+            .unwrap();
         timing.filter(Duration::from_millis(100)).print();
 
         all_circuits.verify_root(root_receipt.clone()).unwrap();
 
         timing = TimingTree::new("prove aggression", log::Level::Info);
         // We can duplicate the proofs here because the state hasn't mutated.
-        let new_agg_receipt =
-            all_circuits.prove_aggregation(false, &root_receipt_first, false, &root_receipt).unwrap();
+        let new_agg_receipt = all_circuits
+            .prove_aggregation(false, &root_receipt_first, false, &root_receipt)
+            .unwrap();
         timing.filter(Duration::from_millis(100)).print();
         all_circuits.verify_aggregation(&new_agg_receipt).unwrap();
 
         timing = TimingTree::new("prove nested aggression", log::Level::Info);
 
         // We can duplicate the proofs here because the state hasn't mutated.
-        agg_receipt =
-            all_circuits.prove_aggregation(is_agg, &agg_receipt, true, &new_agg_receipt).unwrap();
+        agg_receipt = all_circuits
+            .prove_aggregation(is_agg, &agg_receipt, true, &new_agg_receipt)
+            .unwrap();
         is_agg = true;
         timing.filter(Duration::from_millis(100)).print();
 
         all_circuits.verify_aggregation(&agg_receipt).unwrap();
     }
 
-    let block_receipt =
-        all_circuits.prove_block(None, &agg_receipt).unwrap();
+    let block_receipt = all_circuits.prove_block(None, &agg_receipt).unwrap();
 
     let size = serde_json::to_string(&block_receipt).unwrap().len();
-    log::info!(
-        "proof size: {:?}",
-        size
-    );
+    log::info!("proof size: {:?}", size);
     total_timing.filter(Duration::from_millis(100)).print();
     size
 }
