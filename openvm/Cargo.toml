@@ -26,16 +26,6 @@ openvm-transpiler = { git = "https://github.com/openvm-org/openvm.git", rev = "3
 
 utils = { path = "../utils" }
 eyre = "0.6.12"
-serde = "1.0.26"
-hex = "0.4.3"
-k256 = { version = "=0.13.3", features = [
-  "arithmetic",
-  "serde",
-  "expose-field",
-  "std",
-  "ecdsa",
-], default-features = false }
-getrandom = { version = "0.2", features = ["custom"] }
 
 fibonacci-guest = { path = "./fibonacci-guest" }
 sha2-guest = { path = "./sha2-guest" }
