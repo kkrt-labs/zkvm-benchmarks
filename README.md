@@ -51,6 +51,12 @@ Architecture: Linux x86_64
 rustup target add riscv32i-unknown-none-elf
 ```
 
+### Install Nexus
+
+```bash
+rustup run nightly-2025-01-02 cargo install --git https://github.com/nexus-xyz/nexus-zkvm cargo-nexus --tag 'v0.3.1'
+```
+
 ### Install Risc Zero
 
 ```bash

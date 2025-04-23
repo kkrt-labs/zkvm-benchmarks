@@ -8,4 +8,4 @@ crate-type = ["cdylib"] # compile wasm without main
 
 [dependencies]
 zk-engine = { git = "https://github.com/ICME-Lab/zkEngine_dev", branch= "main" }
-guests = { path = "../../guests", features = ["no_std"] }
+guests = { path = "../../guests", features = ["fibonacci"] }

@@ -1,11 +1,11 @@
-#![cfg_attr(feature = "no_std", no_std)]
+#![cfg_attr(any(feature = "fibonacci", feature = "with-sha2"), no_std)]
 
-#[cfg(feature = "no_std")]
+#[cfg(feature = "fibonacci")]
 pub mod fib;
-#[cfg(feature = "no_std")]
+#[cfg(feature = "with-sha2")]
 pub mod sha2;
 
-#[cfg(feature = "std")]
+#[cfg(feature = "with-ecdsa")]
 pub mod ecdsa;
-#[cfg(feature = "std")]
+#[cfg(feature = "ethtransfer")]
 pub mod ethtransfer;
