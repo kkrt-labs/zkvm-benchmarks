@@ -18,3 +18,4 @@ openssl-*/
 novanet/wats/*
 !novanet/wats/.gitkeep
 __pycache__/
+*.pb

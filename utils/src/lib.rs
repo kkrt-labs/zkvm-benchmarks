@@ -15,6 +15,8 @@ use std::{
 
 use serde::Serialize;
 
+pub mod profile;
+
 pub type BenchResult = (Duration, usize, usize);
 type BenchMetrics = (Duration, usize, usize, usize);
 

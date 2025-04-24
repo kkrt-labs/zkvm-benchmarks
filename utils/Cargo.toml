@@ -17,3 +17,4 @@ k256 = { version = "=0.13.3", features = [
   "ecdsa",
 ], default-features = false }
 guests = { path = "../guests", features = ["with-ecdsa"] }
+pprof = { version = "0.14.0", features = ["prost-codec"] }
