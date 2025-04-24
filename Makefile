@@ -106,3 +106,95 @@ build-pico:
 
 	cd pico/transfer-eth-guest && \
 	cargo pico build
+
+perf-jolt:
+	cd jolt && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin profiling
+
+	pprof -svg \
+		--ignore='rayon::.*' \
+		--nodefraction=0.01 \
+  		--edgefraction=0.005 \
+		--call_tree=true \
+		--compact_labels=true \
+		--hide='__libc_.*' \
+		./jolt/target/release/profiling \
+		./profile_outputs/profile_jolt.pb \
+		> ./profile_outputs/profile_jolt.svg
+
+perf-sp1:
+	cd sp1 && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin profiling
+
+	pprof -svg \
+		--ignore='rayon::.*' \
+		--nodefraction=0.01 \
+  		--edgefraction=0.005 \
+		--call_tree=true \
+		--compact_labels=true \
+		--hide='__libc_.*' \
+		./sp1/target/release/profiling \
+		./profile_outputs/profile_sp1.pb \
+		> ./profile_outputs/profile_sp1.svg
+
+perf-openvm:
+	cd openvm && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin profiling
+
+	pprof -svg \
+		--ignore='rayon::.*' \
+		--nodefraction=0.01 \
+  		--edgefraction=0.005 \
+		--call_tree=true \
+		--compact_labels=true \
+		--hide='__libc_.*' \
+		./openvm/target/release/profiling \
+		./profile_outputs/profile_openvm.pb \
+		> ./profile_outputs/profile_openvm.svg
+
+
+perf-nexus:
+	cd nexus && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin profiling
+
+	pprof -svg \
+		--ignore='rayon::.*' \
+		--nodefraction=0.01 \
+  		--edgefraction=0.005 \
+		--call_tree=true \
+		--compact_labels=true \
+		--hide='__libc_.*' \
+		./nexus/target/release/profiling \
+		./profile_outputs/profile_nexus.pb \
+		> ./profile_outputs/profile_nexus.svg
+
+perf-pico:
+	cd pico && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin profiling
+
+	pprof -svg \
+		--ignore='rayon::.*' \
+		--nodefraction=0.01 \
+  		--edgefraction=0.005 \
+		--call_tree=true \
+		--compact_labels=true \
+		--hide='__libc_.*' \
+		./pico/target/release/profiling \
+		./profile_outputs/profile_pico.pb \
+		> ./profile_outputs/profile_pico.svg
+
+perf-zkm:
+	. ~/.zkm-toolchain/env && \
+	cd zkm && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin profiling
+
+	pprof -svg \
+		--ignore='rayon::.*' \
+		--nodefraction=0.01 \
+  		--edgefraction=0.005 \
+		--call_tree=true \
+		--compact_labels=true \
+		--hide='__libc_.*' \
+		./zkm/target/release/profiling \
+		./profile_outputs/profile_zkm.pb \
+		> ./profile_outputs/profile_zkm.svg
