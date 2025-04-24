@@ -25,6 +25,9 @@ jolt = { package = "jolt-sdk", git = "https://github.com/a16z/jolt", rev = "b22e
 utils = { path = "../utils" }
 hex = "0.4.3"
 
+pprof = { version = "0.14.0", features = ["protobuf-codec", "prost-codec", "flamegraph"] }
+prost = "0.12.1"
+
 sha2-chain-guest = { path = "./sha2-chain-guest" }
 sha3-chain-guest = { path = "./sha3-chain-guest" }
 sha2-guest = { path = "./sha2-guest" }
