@@ -5,9 +5,9 @@ bench-all:
 	make bench-sp1-gpu
 	make bench-risczero
 	make bench-risczero-gpu
-	make bench-zkm
 	make bench-openvm
 	make bench-pico
+	make bench-zkm
 
 bench-jolt:
 	cd jolt && \
@@ -48,19 +48,12 @@ bench-sp1-gpu:
 	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin transfer-eth -- --n 100
 
 bench-zkm:
-	# rust toolchain path: ~/.zkm-toolchain/rust-toolchain-x86-64-unknown-linux-gnu-20241217/bin
 	. ~/.zkm-toolchain/env && \
-	export LD_LIBRARY_PATH=/usr/lib64:$LD_LIBRARY_PATH && \
 	cd zkm && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --bin fibo --release && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --bin fibonacci --release && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --bin sha2 --release && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --bin ecdsa --release && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --bin transfer-eth --release
-
-bench-zkm2:
-	cd zkm2 && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --bin fibonacci --release && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --bin sha2 --release
 
 bench-risczero:
 	cd risczero && \

@@ -10,19 +10,19 @@ We are so welcome to your contribution!
 
 ||Fibonacci|SHA2|ECDSA|ETHTransfer|Notes|
 |-|-|-|-|-|-|
-|[Jolt (CPU/GPU)](./jolt/)|✅|✅|✅|✅|Optimization by GPU is still only partially implemented|
-|[Nexus](./nexus/)|✅|✅|✅|❌||
-|[Novanet](./novanet/)|✅|❌|❌|❌||
-|[OpenVM](./openvm/)|✅|✅|✅|✅||
-|[Pico](./pico/)|✅|✅|✅|✅||
-|[Powdr](./powdr/)|❌|❌|❌|❌||
-|[RISC Zero (CPU/GPU)](./risczero)|✅|✅|✅|✅||
 |[SP1 (CPU/GPU)](./sp1)|✅|✅|✅|✅||
+|[RISC Zero (CPU/GPU)](./risczero)|✅|✅|✅|✅||
 |[ZKM](./zkm)|✅|✅|✅|✅||
+|[Novanet](./novanet/)|✅|❌|❌|❌||
 |Ceno|||||[No SDK yet](https://github.com/orgs/scroll-tech/projects/20)|
+|[OpenVM](./openvm/)|✅|✅|✅|✅||
+|[Jolt (CPU/GPU)](./jolt/)|✅|✅|✅|✅|Optimization by GPU is still only partially implemented|
+|[Nexus](./nexus/)|✅|✅|❌|❌|no_std is not supported yet|
+|[Pico](./pico/)|✅|✅|✅|✅||
 |zkWASM||||||
 |Valida|||||[The repo is currently private, and the latest docker image is not available.](https://github.com/lita-xyz/valida-releases)|
 |Snarkify||||||
+|Zisk||||||
 
 ## Hardware Requirement
 
@@ -57,9 +57,8 @@ rustup run nightly-2025-01-02 cargo install --git https://github.com/nexus-xyz/n
 ### Install Risc Zero
 
 ```bash
-cargo install cargo-binstall
-cargo binstall cargo-risczero
-cargo risczero install
+curl -L https://risczero.com/install | bash
+rzup install
 ```
 
 ### Install SP1
@@ -79,32 +78,6 @@ sp1up
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/zkMIPS/toolchain/refs/heads/main/setup.sh | sh
 source ~/.zkm-toolchain/env
-```
-
-When Open SSL error occurs:
-
-```bash
-wget https://github.com/openssl/openssl/releases/download/openssl-3.3.2/openssl-3.3.2.tar.gz -O openssl-3.3.2.tar.gz
-tar -xvzf openssl-3.3.2.tar.gz
-cd openssl-3.3.2
-./config --prefix=/usr zlib-dynamic --openssldir=/etc/ssl shared
-make test
-sudo make install
-export LD_LIBRARY_PATH=/usr/lib64:$LD_LIBRARY_PATH
-```
-
-### Install zkm2
-
-```bash
-curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/zkMIPS/toolchain/refs/heads/main/setup.sh | sh
-```
-
-- Modify ~/.cargo/config:
-
-```bash
-[target.mips-unknown-linux-musl]
-linker = "<path-to>/mips-linux-muslsf-cross/bin/mips-linux-muslsf-gcc"
-rustflags = ["--cfg", 'target_os="zkvm"',"-C", "target-feature=+crt-static", "-C", "link-arg=-g"]
 ```
 
 ### Install Open VM

@@ -1,7 +1,0 @@
-[package]
-version = "0.1.0"
-name = "fibonacci"
-edition = "2021"
-
-[dependencies]
-zkm2-zkvm = { workspace= true }
