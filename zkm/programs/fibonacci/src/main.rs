@@ -1,19 +1,10 @@
 #![no_std]
 #![no_main]
-
-zkm_runtime::entrypoint!(main);
+zkm_zkvm::entrypoint!(main);
+use guests::fib;
 
 pub fn main() {
-    let n = zkm_runtime::io::read::<u32>();
-
-    let mut a: u128 = 0;
-    let mut b: u128 = 1;
-    let mut sum: u128;
-    for _ in 1..n {
-        sum = a + b;
-        a = b;
-        b = sum;
-    }
-
-    zkm_runtime::io::commit(&b);
+    let n = zkm_zkvm::io::read::<u32>();
+    let result = fib::fib(n);
+    zkm_zkvm::io::commit(&result);
 }

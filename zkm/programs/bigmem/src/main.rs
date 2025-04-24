@@ -1,16 +1,14 @@
-#![no_std]
 #![no_main]
 
 use core::hint::black_box;
-
-zkm_runtime::entrypoint!(main);
+zkm_zkvm::entrypoint!(main);
 
 pub fn main() {
-    let value = zkm_runtime::io::read::<u32>();
+    let value = zkm_zkvm::io::read::<u32>();
 
     let array = [value; 128000];
     black_box(array);
     let result = array[16000];
 
-    zkm_runtime::io::commit(&result);
+    zkm_zkvm::io::commit(&result);
 }

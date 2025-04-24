@@ -6,63 +6,17 @@ edition = "2021"
 
 [dependencies]
 utils = { path = "../utils" }
-zkm-build = { git = "https://github.com/zkMIPS/zkm", rev = "262318f", default-features = false }
-zkm-prover = { git = "https://github.com/zkMIPS/zkm", rev = "262318f", default-features = false }
-zkm-emulator = { git = "https://github.com/zkMIPS/zkm", rev = "262318f", default-features = false }
-plonky2 = { git = "https://github.com/zkMIPS/plonky2.git", branch = "zkm_dev" }
-#starky = { git = "https://github.com/zkMIPS/plonky2.git", branch = "zkm_dev" }
-plonky2_util = { git = "https://github.com/zkMIPS/plonky2.git", branch = "zkm_dev" }
-plonky2_maybe_rayon = { git = "https://github.com/zkMIPS/plonky2.git", branch = "zkm_dev" }
-
-log = { version = "0.4.14", default-features = false }
-serde = { version = "1.0.144", features = ["derive"] }
-serde_json = "1.0"
-byteorder = "1.5.0"
-hex = "0.4"
-env_logger = "0.11.5"
-k256 = { version = "=0.13.3", features = [
-  "arithmetic",
-  "serde",
-  "expose-field",
-  "std",
-  "ecdsa",
-], default-features = false }
+hex = "0.4.3"
+bincode = "1.3.3"
+serde = "1.0.204"
+serde_json = "1.0.132"
+tendermint-light-client-verifier = { version = "0.35.0", default-features = false, features = [
+  "rust-crypto",
+] }
+serde_cbor = "0.11.2"
+zkm-build = { git = "https://github.com/zkMIPS/zkMIPS.git" }
+zkm-core-machine = { git = "https://github.com/zkMIPS/zkMIPS.git" }
+zkm-sdk = { git = "https://github.com/zkMIPS/zkMIPS.git" }
 
 [build-dependencies]
-zkm-build = { git = "https://github.com/zkMIPS/zkm", rev = "262318f", default-features = false }
-
-[[bin]]
-name = "fibo"
-path = "src/bin/fibonacci.rs"
-
-[[bin]]
-name = "bigmem"
-path = "src/bin/bigmem.rs"
-
-[[bin]]
-name = "sha2"
-path = "src/bin/sha2.rs"
-
-[[bin]]
-name = "sha3"
-path = "src/bin/sha3.rs"
-
-[[bin]]
-name = "sha2-chain"
-path = "src/bin/sha2_chain.rs"
-
-[[bin]]
-name = "sha3-chain"
-path = "src/bin/sha3_chain.rs"
-
-[[bin]]
-name = "ecdsa"
-path = "src/bin/ecdsa.rs"
-
-[[bin]]
-name = "transfer-eth"
-path = "src/bin/transfer-eth.rs"
-
-[[bin]]
-name = "all"
-path = "src/main.rs"
+zkm-build = { git = "https://github.com/zkMIPS/zkMIPS.git" }

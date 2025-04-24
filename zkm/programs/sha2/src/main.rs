@@ -1,18 +1,12 @@
-#![no_std]
 #![no_main]
 
-use sha2::{Digest, Sha256};
+use guests::sha2;
 extern crate alloc;
-use alloc::vec::Vec;
 
-zkm_runtime::entrypoint!(main);
+zkm_zkvm::entrypoint!(main);
 
 pub fn main() {
-    let input: Vec<u8> = zkm_runtime::io::read();
-
-    let mut hasher = Sha256::new();
-    hasher.update(input);
-    let result = hasher.finalize();
-
-    zkm_runtime::io::commit::<[u8; 32]>(&result.into());
+    let input: Vec<u8> = zkm_zkvm::io::read();
+    let result = sha2::sha2(&input);
+    zkm_zkvm::io::commit::<[u8; 32]>(&result.into());
 }

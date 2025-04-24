@@ -1,13 +1,12 @@
-use utils::benchmark;
+use utils::{benchmark, SHA2_INPUTS};
 use zkm_script::{benchmark_sha3, init_logger};
 
 fn main() {
     init_logger();
 
-    let lengths = [32, 256, 512, 1024, 2048];
     benchmark(
         benchmark_sha3,
-        &lengths,
+        &SHA2_INPUTS,
         "../benchmark_outputs/sha3_zkm.csv",
     );
 }

@@ -6,15 +6,17 @@ members = [
   "sha2-chain",
   "sha3",
   "sha3-chain",
+  "tendermint",
   "ecdsa",
   "transfer-eth",
 ]
 resolver = "2"
 
 [workspace.dependencies]
-zkm-runtime = { git = "https://github.com/zkMIPS/zkm", rev = "262318f" }
+zkm-zkvm = { git = "https://github.com/zkMIPS/zkMIPS.git" }
 serde = "1.0.204"
 serde_json = "1.0.132"
+guests = { path = "../../guests" }
 
 [workspace.package]
 version = "1.1.0"

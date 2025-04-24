@@ -1,13 +1,12 @@
-use utils::benchmark;
-use zkm_script::{benchmark_transfer_eth, init_logger};
+use utils::{benchmark, ETHTRANSFER_INPUTS};
+use zkm_script::{bench_ethtransfer, init_logger};
 
 fn main() {
     init_logger();
 
-    let ns = [1, 10, 100];
     benchmark(
-        benchmark_transfer_eth,
-        &ns,
+        bench_ethtransfer,
+        &ETHTRANSFER_INPUTS,
         "../benchmark_outputs/ethtransfer_zkm.csv",
     );
 }

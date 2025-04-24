@@ -1,14 +1,12 @@
-#![no_std]
 #![no_main]
 
 use sha2::{Digest, Sha256};
-extern crate alloc;
 
-zkm_runtime::entrypoint!(main);
+zkm_zkvm::entrypoint!(main);
 
 pub fn main() {
-    let input: [u8; 32] = zkm_runtime::io::read();
-    let num_iters: u32 = zkm_runtime::io::read();
+    let input: [u8; 32] = zkm_zkvm::io::read();
+    let num_iters: u32 = zkm_zkvm::io::read();
     let mut hash = input;
     for _ in 0..num_iters {
         let mut hasher = Sha256::new();
@@ -17,5 +15,5 @@ pub fn main() {
         hash = Into::<[u8; 32]>::into (*res);
     }
 
-    zkm_runtime::io::commit::<[u8; 32]>(&hash.into());
+    zkm_zkvm::io::commit::<[u8; 32]>(&hash.into());
 }

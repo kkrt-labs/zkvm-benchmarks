@@ -4,4 +4,4 @@ name = "bigmem"
 edition = "2021"
 
 [dependencies]
-zkm-runtime = { workspace= true }
+zkm-zkvm = { workspace= true }
