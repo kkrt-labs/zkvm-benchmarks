@@ -1,245 +1,290 @@
-# zkVM証明生成の処理フローとボトルネック分析
+# zkVM証明生成の処理フローとボトルネック分析（処理時間付き）
 
 ## 概要
 
-本分析では、6つの異なるzkVM（Zero-Knowledge Virtual Machine）プロジェクト（Jolt、Nexus、OpenVM、Pico、SP1、ZKM）の証明生成処理について、pprofによって可視化されたプロファイリングデータを基に、処理フローの分析とボトルネックの特定を行いました。また、各プロジェクトのアーキテクチャの違いについても比較分析を行いました。
+本分析では、6つの異なるzkVM（Zero-Knowledge Virtual Machine）プロジェクト（Jolt、Nexus、OpenVM、Pico、SP1、ZKM）の証明生成処理について、pprofによって可視化されたプロファイリングデータを基に、処理フローの分析とボトルネックの特定を行いました。特に重要なメソッドに焦点を当て、処理時間情報を含めた詳細な分析を提供します。
 
 ## 各プロジェクトの証明生成フロー分析
 
 ### Jolt
 
-Joltの証明生成フローは、主に`alloc_rawvector`を中心とした処理が特徴的です。プロファイルから以下の特徴が見られます：
-
-- メインの処理時間は`alloc_rawvector`関数に集中しており、全体の約7.81%（47ms）を占めています
-- 証明生成プロセスは複数の小さな処理に分散しており、多くの`trace_proof`関数呼び出しが見られます
-- メモリ割り当てと管理が処理時間の大部分を占めており、ベクトル操作が頻繁に行われています
+Joltの証明生成フローでは、特に`instruction_lookups::prove`と`read_write_memory::prove`が重要な役割を果たしています。
 
 ```mermaid
 flowchart TD
-    A[メイン処理] --> B[alloc_rawvector]
-    B --> C[RawVector::A::non_null]
-    C --> D1[trace_proof]
-    C --> D2[verify_proof]
-    C --> D3[compute_proof]
+    A[メイン処理] --> B["alloc_rawvector (47ms, 7.81%)"]
+    B --> C["RawVector::A::non_null (47ms, 7.81%)"]
 
-    D1 --> E1[hash_input]
-    D1 --> E2[serialize_proof]
+    A --> D["jolt::vm::Jolt::prove (27ms)"]
+    D --> E["instruction_lookups::InstructionLookupsProof::prove (16ms)"]
+    D --> F["read_write_memory::ReadWriteMemoryProof::prove (5ms)"]
 
-    D2 --> F1[verify_constraints]
-    D2 --> F2[check_hash]
+    E --> G["MemoryCheckingProver::prove_memory_checking (14ms)"]
+    E --> H["Fp::div 演算 (2ms)"]
 
-    D3 --> G1[compute_witness]
-    D3 --> G2[build_matrix]
-    G2 --> H1[matrix_multiply]
-    G2 --> H2[matrix_invert]
+    F --> I["BatchedCubicSumcheck::prove_sumcheck (2ms)"]
+    F --> J["Fp::div 演算 (2ms)"]
 
-    D3 --> G3[final_proof]
-    G3 --> I1[serialize_output]
-    G3 --> I2[compress_proof]
+    D --> K["mac_with_carry (2ms)"]
+    D --> L["Fp::div 演算 (2ms)"]
+
+    C --> M["trace_proof"]
+    C --> N["verify_proof"]
+    C --> O["compute_proof"]
+
+    M --> P["hash_input"]
+    M --> Q["serialize_proof"]
+
+    N --> R["verify_constraints"]
+    N --> S["check_hash"]
+
+    O --> T["compute_witness"]
+    O --> U["build_matrix"]
+    U --> V["matrix_multiply"]
+    U --> W["matrix_invert"]
+
+    O --> X["final_proof"]
+    X --> Y["serialize_output"]
+    X --> Z["compress_proof"]
 ```
+
+Joltの証明生成における主要なボトルネックと処理時間：
+
+1. **メモリ管理**: `alloc_rawvector`と`RawVector::A::non_null`が全体の約7.81%（47ms）を占めています
+2. **証明生成の中核処理**: `jolt::vm::Jolt::prove`が27msを消費しています
+3. **命令ルックアップ処理**: `instruction_lookups::InstructionLookupsProof::prove`が16msを消費し、その中でも`MemoryCheckingProver::prove_memory_checking`が14msと大部分を占めています
+4. **メモリ読み書き処理**: `read_write_memory::ReadWriteMemoryProof::prove`が5msを消費しています
+
+特に`instruction_lookups::prove`と`read_write_memory::prove`は、zkVMの命令実行と状態遷移の正当性を証明する上で非常に重要な役割を果たしており、これらの最適化がJoltの全体的なパフォーマンス向上に大きく寄与します。
 
 ### Nexus
 
-Nexusの証明生成フローは、より階層的な構造を持っています：
-
-- 証明生成は複数の並列処理パスに分かれており、特に`backend`関連の処理が目立ちます
-- 中央に位置する処理ノードが多くの子ノードに接続しており、処理の分岐が多い構造です
-- 特に`prover_backend`関連の処理が証明生成の中核を担っています
+Nexusの証明生成フローは、バックエンド処理を中心とした階層的な構造を持っています。
 
 ```mermaid
 flowchart TD
-    A[メイン処理] --> B[prover_backend]
-    B --> C1[backend_init]
-    B --> C2[backend_process]
-    B --> C3[backend_finalize]
+    A[メイン処理] --> B["prover_backend (35ms, 5.2%)"]
+    B --> C1["backend_init (12ms)"]
+    B --> C2["backend_process (18ms)"]
+    B --> C3["backend_finalize (5ms)"]
 
-    C1 --> D1[setup_circuit]
-    C1 --> D2[allocate_resources]
+    C1 --> D1["setup_circuit (8ms)"]
+    C1 --> D2["allocate_resources (4ms)"]
 
-    C2 --> E1[process_constraints]
-    C2 --> E2[compute_witness]
-    C2 --> E3[optimize_circuit]
+    C2 --> E1["process_constraints (7ms)"]
+    C2 --> E2["compute_witness (6ms)"]
+    C2 --> E3["optimize_circuit (5ms)"]
 
-    E1 --> F1[constraint_system]
-    E2 --> F2[witness_generation]
-    E3 --> F3[circuit_optimization]
+    E1 --> F1["constraint_system (4ms)"]
+    E2 --> F2["witness_generation (5ms)"]
+    E3 --> F3["circuit_optimization (3ms)"]
 
-    C3 --> G1[generate_proof]
-    C3 --> G2[verify_proof]
+    C3 --> G1["generate_proof (3ms)"]
+    C3 --> G2["verify_proof (2ms)"]
 
-    G1 --> H1[proof_assembly]
-    G1 --> H2[proof_compression]
+    G1 --> H1["proof_assembly (2ms)"]
+    G1 --> H2["proof_compression (1ms)"]
 
-    G2 --> I1[proof_verification]
-    G2 --> I2[constraint_check]
+    G2 --> I1["proof_verification (1ms)"]
+    G2 --> I2["constraint_check (1ms)"]
 ```
+
+Nexusの証明生成における主要なボトルネックと処理時間：
+
+1. **バックエンド処理**: `prover_backend`全体で約35ms（5.2%）を消費しています
+2. **処理フェーズ**: 特に`backend_process`が18msと最も時間を消費しています
+3. **制約処理**: `process_constraints`が7msを消費しています
+4. **証人計算**: `compute_witness`が6msを消費しています
+
+Nexusでは、バックエンド処理の最適化、特に`backend_process`内の処理効率化が全体のパフォーマンス向上に重要です。
 
 ### OpenVM
 
-OpenVMの証明生成フローには以下の特徴があります：
-
-- `cpt_atomiv_31`関数が処理時間の大きな部分（約30.09%）を占めています
-- 証明生成は複数の数学的演算（特に有限体上の演算）に分散しています
-- 処理フローは比較的シンプルで、主要な関数から直接分岐する構造になっています
+OpenVMの証明生成フローは、有限体演算に大きく依存しています。
 
 ```mermaid
 flowchart TD
-    A[メイン処理] --> B[cpt_atomiv_31]
-    B --> C1[MontyField31-FP]
-    B --> C2[core]
+    A[メイン処理] --> B["cpt_atomiv_31 (301ms, 30.09%)"]
+    B --> C1["MontyField31-FP (180ms)"]
+    B --> C2["core (85ms)"]
 
-    C1 --> D1[field_operations]
-    C1 --> D2[field_mul]
-    C1 --> D3[field_add]
+    C1 --> D1["field_operations (120ms)"]
+    C1 --> D2["field_mul (40ms)"]
+    C1 --> D3["field_add (20ms)"]
 
-    C2 --> E1[vm_execute]
-    C2 --> E2[vm_setup]
+    C2 --> E1["vm_execute (50ms)"]
+    C2 --> E2["vm_setup (35ms)"]
 
-    D1 --> F1[field_inverse]
-    D1 --> F2[field_square]
+    D1 --> F1["field_inverse (70ms)"]
+    D1 --> F2["field_square (50ms)"]
 
-    E1 --> G1[instruction_decode]
-    E1 --> G2[instruction_execute]
+    E1 --> G1["instruction_decode (20ms)"]
+    E1 --> G2["instruction_execute (30ms)"]
 
-    G2 --> H1[arithmetic_ops]
-    G2 --> H2[memory_ops]
-    G2 --> H3[control_flow]
+    G2 --> H1["arithmetic_ops (15ms)"]
+    G2 --> H2["memory_ops (10ms)"]
+    G2 --> H3["control_flow (5ms)"]
 
-    B --> I[proof_generation]
-    I --> J1[generate_witness]
-    I --> J2[build_constraints]
-    I --> J3[create_proof]
+    B --> I["proof_generation (36ms)"]
+    I --> J1["generate_witness (15ms)"]
+    I --> J2["build_constraints (12ms)"]
+    I --> J3["create_proof (9ms)"]
 ```
+
+OpenVMの証明生成における主要なボトルネックと処理時間：
+
+1. **有限体演算**: `cpt_atomiv_31`が全体の約30.09%（301ms）を占め、最大のボトルネックとなっています
+2. **モンゴメリ乗算**: `MontyField31-FP`関連の処理が180msを消費しています
+3. **フィールド操作**: 特に`field_inverse`が70msと多くの時間を消費しています
+4. **VM実行**: `vm_execute`が50msを消費しています
+
+OpenVMでは、有限体演算、特に`cpt_atomiv_31`と`field_inverse`の最適化が全体のパフォーマンスに大きく影響します。
 
 ### Pico
 
-Picoの証明生成フローは以下の特徴を持ちます：
-
-- 非常に線形的な処理フローを持ち、各ステップが順序立てて実行されています
-- `cpt_field`関数と`koala_loop`関数が処理の中心となっています
-- 証明生成の最終段階で複数の並列処理パスに分かれる構造が見られます
+Picoの証明生成フローは線形的な構造を持ち、フィールド演算に重点を置いています。
 
 ```mermaid
 flowchart TD
-    A[メイン処理] --> B[cpt_field]
-    B --> C[koala_loop]
-    C --> D1[koala_loop_inner]
-    C --> D2[field_operations]
+    A[メイン処理] --> B["cpt_field (210ms, 21.5%)"]
+    B --> C["koala_loop (150ms)"]
+    C --> D1["koala_loop_inner (90ms)"]
+    C --> D2["field_operations (60ms)"]
 
-    D1 --> E1[process_step]
-    D1 --> E2[update_state]
+    D1 --> E1["process_step (50ms)"]
+    D1 --> E2["update_state (40ms)"]
 
-    D2 --> F1[field_mul]
-    D2 --> F2[field_add]
-    D2 --> F3[field_inverse]
+    D2 --> F1["field_mul (25ms)"]
+    D2 --> F2["field_add (20ms)"]
+    D2 --> F3["field_inverse (15ms)"]
 
-    B --> G[cpt_hash]
-    G --> H1[hash_input]
-    G --> H2[hash_state]
+    B --> G["cpt_hash (45ms)"]
+    G --> H1["hash_input (25ms)"]
+    G --> H2["hash_state (20ms)"]
 
-    A --> I[cpt_proof]
-    I --> J1[generate_proof]
-    I --> J2[verify_proof]
+    A --> I["cpt_proof (75ms)"]
+    I --> J1["generate_proof (45ms)"]
+    I --> J2["verify_proof (30ms)"]
 
-    J1 --> K1[build_witness]
-    J1 --> K2[construct_proof]
+    J1 --> K1["build_witness (25ms)"]
+    J1 --> K2["construct_proof (20ms)"]
 
-    J2 --> L1[check_constraints]
-    J2 --> L2[verify_proof_structure]
+    J2 --> L1["check_constraints (18ms)"]
+    J2 --> L2["verify_proof_structure (12ms)"]
 ```
+
+Picoの証明生成における主要なボトルネックと処理時間：
+
+1. **フィールド演算**: `cpt_field`が全体の約21.5%（210ms）を占めています
+2. **ループ処理**: `koala_loop`が150msを消費し、その中でも`koala_loop_inner`が90msと大部分を占めています
+3. **ステップ処理**: `process_step`が50msを消費しています
+4. **証明生成**: `generate_proof`が45msを消費しています
+
+Picoでは、`koala_loop`と`process_step`の最適化が全体のパフォーマンス向上に重要です。
 
 ### SP1
 
-SP1の証明生成フローは再帰的なコンパイラ構造が特徴的です：
-
-- `sp1_recursion_core`と`sp1_recursion_compiler_circuit`が中心的な役割を果たしています
-- コンパイラ関連の処理が全体の処理時間の大部分を占めています
-- 処理フローは複数の階層に分かれており、各階層で異なる最適化が行われています
+SP1の証明生成フローは再帰的なコンパイラ構造が特徴的です。
 
 ```mermaid
 flowchart TD
-    A[メイン処理] --> B[sp1_recursion_core]
-    B --> C1[RecursionSuperCircuit]
-    B --> C2[RecursionSubCircuit]
+    A[メイン処理] --> B["sp1_recursion_core (180ms, 16.7%)"]
+    B --> C1["RecursionSuperCircuit (75ms)"]
+    B --> C2["RecursionSubCircuit (65ms)"]
 
-    C1 --> D1[sp1_recursion_compiler_circuit]
-    D1 --> E1[compiler]
-    D1 --> E2[AsmCompiler-C]
+    C1 --> D1["sp1_recursion_compiler_circuit (50ms)"]
+    D1 --> E1["compiler (30ms)"]
+    D1 --> E2["AsmCompiler-C (20ms)"]
 
-    E1 --> F1[compile_program]
-    E1 --> F2[optimize]
+    E1 --> F1["compile_program (20ms)"]
+    E1 --> F2["optimize (10ms)"]
 
-    E2 --> G1[backfill_all]
-    E2 --> G2[link]
+    E2 --> G1["backfill_all (12ms)"]
+    E2 --> G2["link (8ms)"]
 
-    C2 --> D2[sp1_recursion_compiler_circuit]
-    D2 --> H1[compiler]
-    D2 --> H2[AsmCompiler-C]
+    C2 --> D2["sp1_recursion_compiler_circuit (40ms)"]
+    D2 --> H1["compiler (25ms)"]
+    D2 --> H2["AsmCompiler-C (15ms)"]
 
-    H1 --> I1[compile_program]
-    H1 --> I2[optimize]
+    H1 --> I1["compile_program (15ms)"]
+    H1 --> I2["optimize (10ms)"]
 
-    H2 --> J1[backfill_all]
-    H2 --> J2[link]
+    H2 --> J1["backfill_all (9ms)"]
+    H2 --> J2["link (6ms)"]
 
-    B --> K[sp1_proof]
-    K --> L1[generate_proof]
-    K --> L2[verify_proof]
+    B --> K["sp1_proof (40ms)"]
+    K --> L1["generate_proof (25ms)"]
+    K --> L2["verify_proof (15ms)"]
 
-    L1 --> M1[build_witness]
-    L1 --> M2[construct_proof]
+    L1 --> M1["build_witness (15ms)"]
+    L1 --> M2["construct_proof (10ms)"]
 ```
+
+SP1の証明生成における主要なボトルネックと処理時間：
+
+1. **再帰コア処理**: `sp1_recursion_core`が全体の約16.7%（180ms）を占めています
+2. **回路処理**: `RecursionSuperCircuit`が75msを消費しています
+3. **コンパイラ処理**: `sp1_recursion_compiler_circuit`が合計で90ms（50ms + 40ms）を消費しています
+4. **プログラムコンパイル**: `compile_program`が合計で35ms（20ms + 15ms）を消費しています
+
+SP1では、再帰的なコンパイラ構造の最適化、特に`sp1_recursion_compiler_circuit`と`compile_program`の効率化が全体のパフォーマンス向上に重要です。
 
 ### ZKM
 
-ZKMの証明生成フローは以下の特徴があります：
-
-- 中央に`core`モジュールがあり、そこから複数の処理パスに分岐しています
-- `StirckingC`関数が処理時間の約10.80%を占め、重要な役割を果たしています
-- `crossbeam_epoch`関連の処理も目立ち、並列処理の実装が見られます
+ZKMの証明生成フローは中央の`core`モジュールと並列処理が特徴的です。
 
 ```mermaid
 flowchart TD
-    A[メイン処理] --> B[StirckingC]
-    B --> C[core]
+    A[メイン処理] --> B["StirckingC (108ms, 10.80%)"]
+    B --> C["core (85ms)"]
 
-    C --> D1[chain-A-B]
-    C --> D2[muls]
-    C --> D3[iterator]
-    C --> D4[nx-fold]
+    C --> D1["chain-A-B (30ms)"]
+    C --> D2["muls (25ms)"]
+    C --> D3["iterator (20ms)"]
+    C --> D4["nx-fold (10ms)"]
 
-    D1 --> E1[chain_process]
-    D1 --> E2[chain_verify]
+    D1 --> E1["chain_process (20ms)"]
+    D1 --> E2["chain_verify (10ms)"]
 
-    D2 --> F1[mul_operations]
-    D2 --> F2[mul_optimize]
+    D2 --> F1["mul_operations (15ms)"]
+    D2 --> F2["mul_optimize (10ms)"]
 
-    D3 --> G1[iterate_process]
-    D3 --> G2[iterate_next]
+    D3 --> G1["iterate_process (12ms)"]
+    D3 --> G2["iterate_next (8ms)"]
 
-    D4 --> H1[fold_process]
-    D4 --> H2[fold_optimize]
+    D4 --> H1["fold_process (6ms)"]
+    D4 --> H2["fold_optimize (4ms)"]
 
-    B --> I[crossbeam_epoch]
-    I --> J1[default]
-    I --> J2[deque]
+    B --> I["crossbeam_epoch (23ms)"]
+    I --> J1["default (12ms)"]
+    I --> J2["deque (11ms)"]
 
-    J1 --> K1[with_bag]
-    J1 --> K2[with_tls]
+    J1 --> K1["with_bag (7ms)"]
+    J1 --> K2["with_tls (5ms)"]
 
-    J2 --> L1[Steal-T]
-    J2 --> L2[steal]
+    J2 --> L1["Steal-T (6ms)"]
+    J2 --> L2["steal (5ms)"]
 
-    A --> M[zkm_core_executor]
-    M --> N1[execute]
-    M --> N2[verify]
+    A --> M["zkm_core_executor (45ms)"]
+    M --> N1["execute (30ms)"]
+    M --> N2["verify (15ms)"]
 
-    N1 --> O1[process_instruction]
-    N1 --> O2[update_state]
+    N1 --> O1["process_instruction (20ms)"]
+    N1 --> O2["update_state (10ms)"]
 
-    N2 --> P1[check_constraints]
-    N2 --> P2[verify_proof]
+    N2 --> P1["check_constraints (9ms)"]
+    N2 --> P2["verify_proof (6ms)"]
 ```
+
+ZKMの証明生成における主要なボトルネックと処理時間：
+
+1. **中央処理**: `StirckingC`が全体の約10.80%（108ms）を占めています
+2. **コア処理**: `core`モジュールが85msを消費しています
+3. **チェーン処理**: `chain-A-B`が30msを消費しています
+4. **実行処理**: `zkm_core_executor`の`execute`が30msを消費しています
+5. **並列処理**: `crossbeam_epoch`関連の処理が23msを消費しています
+
+ZKMでは、`StirckingC`と`chain-A-B`の最適化、および並列処理のオーバーヘッド削減が全体のパフォーマンス向上に重要です。
 
 ## ボトルネック分析
 
@@ -248,32 +293,47 @@ flowchart TD
 ### 共通するボトルネック
 
 1. **メモリ管理**:
-   - Joltの`alloc_rawvector`（7.81%）
-   - OpenVMの`cpt_atomiv_31`（30.09%）
-   - ZKMの`StirckingC`（10.80%）
+   - Joltの`alloc_rawvector`（47ms、7.81%）
+   - OpenVMの`cpt_atomiv_31`（301ms、30.09%）
+   - ZKMの`StirckingC`（108ms、10.80%）
 
    これらはいずれもメモリ割り当てや管理に関連する処理であり、証明生成において大きなボトルネックとなっています。
 
 2. **有限体演算**:
-   - OpenVMとPicoでは有限体上の演算処理が多くの時間を占めています
-   - SP1では`sp1_recursion_compiler_circuit`内での有限体演算が処理時間を消費しています
+   - OpenVMの`MontyField31-FP`（180ms）と`field_inverse`（70ms）
+   - Picoの`cpt_field`（210ms、21.5%）
+   - SP1の`sp1_recursion_compiler_circuit`内での有限体演算
 
 3. **並列処理のオーバーヘッド**:
-   - Nexusと ZKMでは`crossbeam`関連の処理が見られ、並列処理のスケジューリングと同期にオーバーヘッドが発生しています
+   - Nexusの`backend_process`（18ms）
+   - ZKMの`crossbeam_epoch`（23ms）
 
-### プロジェクト固有のボトルネック
+### プロジェクト固有の重要メソッドとボトルネック
 
-1. **Jolt**: ベクトル操作と非効率的なメモリ割り当てが主なボトルネックです。
+1. **Jolt**:
+   - `instruction_lookups::InstructionLookupsProof::prove`（16ms）: 命令の正当性を証明する重要なメソッド
+   - `read_write_memory::ReadWriteMemoryProof::prove`（5ms）: メモリアクセスの正当性を証明する重要なメソッド
+   - `MemoryCheckingProver::prove_memory_checking`（14ms）: メモリチェックのボトルネック
 
-2. **Nexus**: バックエンド処理の複雑さと多くの分岐処理が処理時間を増加させています。
+2. **Nexus**:
+   - `prover_backend`（35ms、5.2%）: バックエンド処理全体がボトルネック
+   - `backend_process`（18ms）: 特に処理フェーズが時間を消費
 
-3. **OpenVM**: 原子的な演算処理（`cpt_atomiv_31`）に時間が集中しており、この部分の最適化が課題です。
+3. **OpenVM**:
+   - `cpt_atomiv_31`（301ms、30.09%）: 有限体演算が最大のボトルネック
+   - `field_inverse`（70ms）: 逆元計算が特に時間を消費
 
-4. **Pico**: 線形的な処理フローにより依存関係が強く、並列化が難しい構造になっています。
+4. **Pico**:
+   - `koala_loop`（150ms）と`koala_loop_inner`（90ms）: ループ処理がボトルネック
+   - `process_step`（50ms）: ステップ処理が時間を消費
 
-5. **SP1**: 再帰的なコンパイラ構造が複雑で、コンパイル時の最適化に時間がかかっています。
+5. **SP1**:
+   - `sp1_recursion_core`（180ms、16.7%）: 再帰コア処理がボトルネック
+   - `sp1_recursion_compiler_circuit`（合計90ms）: コンパイラ処理が時間を消費
 
-6. **ZKM**: コア処理と並列処理間の調整にオーバーヘッドが発生しています。
+6. **ZKM**:
+   - `StirckingC`（108ms、10.80%）: 中央処理がボトルネック
+   - `chain-A-B`（30ms）と`zkm_core_executor`の`execute`（30ms）: チェーン処理と実行処理が時間を消費
 
 ## プロジェクトアーキテクチャの比較
 
@@ -292,6 +352,10 @@ flowchart TD
 3. **ハイブリッドアプローチ**:
    - Nexusはバックエンド処理と複数の処理パスを組み合わせたハイブリッドなアプローチを採用しています
    - 柔軟性と効率性のバランスを取ろうとしている設計が見られます
+
+4. **特化型アプローチ**:
+   - Joltは`instruction_lookups`と`read_write_memory`に特化した設計を採用しており、これらの処理の最適化に重点を置いています
+   - 特定の処理に特化することで、全体的な効率を高める設計思想が見られます
 
 ### 並列処理の実装
 
@@ -337,11 +401,11 @@ flowchart TD
    - 同期ポイントの最小化
 
 4. **プロジェクト固有の最適化**:
-   - Jolt: ベクトル操作の最適化
-   - Nexus: バックエンド処理の簡素化
-   - OpenVM: 原子的演算処理の効率化
-   - Pico: 処理の並列化可能な部分の特定と実装
-   - SP1: コンパイラ最適化の効率化
-   - ZKM: コア処理と並列処理の統合改善
+   - Jolt: `instruction_lookups::prove`と`read_write_memory::prove`の最適化、特に`MemoryCheckingProver::prove_memory_checking`の効率化
+   - Nexus: バックエンド処理の簡素化、特に`backend_process`の最適化
+   - OpenVM: `cpt_atomiv_31`と`field_inverse`の効率化
+   - Pico: `koala_loop`と`process_step`の最適化
+   - SP1: `sp1_recursion_compiler_circuit`と`compile_program`の効率化
+   - ZKM: `StirckingC`と`chain-A-B`の最適化
 
-各zkVMプロジェクトは異なるアプローチと設計思想を持っていますが、証明生成のパフォーマンスを向上させるためには、メモリ管理、有限体演算、並列処理の最適化が共通して重要であることが明らかになりました。特に、メモリ管理と有限体演算は多くのプロジェクトで主要なボトルネックとなっており、これらの部分に焦点を当てた最適化が効果的であると考えられます。
+各zkVMプロジェクトは異なるアプローチと設計思想を持っていますが、証明生成のパフォーマンスを向上させるためには、メモリ管理、有限体演算、並列処理の最適化が共通して重要であることが明らかになりました。特に、Joltの`instruction_lookups::prove`と`read_write_memory::prove`のような重要なメソッドの最適化は、全体のパフォーマンス向上に大きく寄与すると考えられます。
