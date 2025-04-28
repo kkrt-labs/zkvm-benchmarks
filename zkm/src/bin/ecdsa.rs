@@ -1,12 +1,12 @@
-use utils::{bench::benchmark, metadata::ECDSA_INPUTS};
+use utils::{bench::benchmark_v2, metadata::ECDSA_INPUTS};
 use zkm_script::{bench_ecdsa, init_logger};
 
 fn main() {
     init_logger();
 
-    benchmark(
+    benchmark_v2(
         bench_ecdsa,
         &ECDSA_INPUTS,
-        "../benchmark_outputs/ecdsa_zkm.csv",
+        "../.outputs/benchmark/ecdsa_zkm.csv",
     );
 }
