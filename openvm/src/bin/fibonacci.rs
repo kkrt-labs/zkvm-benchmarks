@@ -10,22 +10,24 @@ use openvm_sdk::{
     Sdk, StdIn,
 };
 use openvm_stark_sdk::config::FriParameters;
-use utils::{bench::benchmark, metadata::FIBONACCI_INPUTS, size, bench::BenchResult};
+use utils::{bench::benchmark_v2, bench::Metrics, metadata::FIBONACCI_INPUTS, size};
 
 // ANCHOR_END: dependencies
 
 #[allow(unused_variables, unused_doc_comments)]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    benchmark(
+    benchmark_v2(
         benchmark_fib,
         &FIBONACCI_INPUTS,
-        "../benchmark_outputs/fib_openvm.csv",
+        "../.outputs/benchmark/fib_openvm.csv",
     );
 
     Ok(())
 }
 
-fn benchmark_fib(n: u32) -> BenchResult {
+fn benchmark_fib(n: u32) -> Metrics {
+    let mut metrics: Metrics = Metrics::new(n as usize);
+
     // ANCHOR: vm_config
     let vm_config = SdkVmConfig::builder()
         .system(Default::default())
@@ -49,7 +51,7 @@ fn benchmark_fib(n: u32) -> BenchResult {
 
     // ANCHOR: transpilation
     // 3. Transpile the ELF into a VmExe
-    let exe = sdk.transpile(elf, vm_config.transpiler()).unwrap();
+    let exe = sdk.transpile(elf.clone(), vm_config.transpiler()).unwrap();
     // ANCHOR_END: transpilation
 
     // ANCHOR: execution
@@ -58,10 +60,13 @@ fn benchmark_fib(n: u32) -> BenchResult {
     stdin.write(&n);
 
     // 5. Run the program
-    let output = sdk
+    let start = Instant::now();
+    let _ = sdk
         .execute(exe.clone(), vm_config.clone(), stdin.clone())
         .unwrap();
-    println!("public values output: {:?}", output);
+    metrics.exec_duration = start.elapsed();
+    metrics.cycles = elf.instructions.len() as u64;
+
     // ANCHOR_END: execution
 
     // ANCHOR: proof_generation
@@ -79,18 +84,21 @@ fn benchmark_fib(n: u32) -> BenchResult {
     // 9a. Generate a proof
     // let proof = sdk.generate_app_proof(app_pk.clone(), app_committed_exe.clone(), stdin.clone()).unwrap();
     // 9b. Generate a proof with an AppProver with custom fields
-    let start = Instant::now();
     let app_prover = AppProver::new(app_pk.app_vm_pk.clone(), app_committed_exe.clone())
         .with_program_name("test_program");
+    let start = Instant::now();
     let proof = app_prover.generate_app_proof(stdin.clone());
     // ANCHOR_END: proof_generation
-    let end = Instant::now();
+    metrics.proof_duration = start.elapsed();
+    metrics.proof_bytes = size(&proof);
 
     // ANCHOR: verification
     // 10. Verify your program
     let app_vk = app_pk.get_app_vk();
+    let start = Instant::now();
     sdk.verify_app_proof(&app_vk, &proof).unwrap();
+    metrics.verify_duration = start.elapsed();
     // ANCHOR_END: verification
 
-    (end.duration_since(start), size(&proof), 0x0)
+    metrics
 }
