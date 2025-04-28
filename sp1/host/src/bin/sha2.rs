@@ -31,13 +31,13 @@ fn main() {
         benchmark(
             bench_sha2,
             &[n],
-            format!("../.outputs/benchmark/sha2_sp1turbo-gpu-{}.csv", n).as_str(),
+            format!("../.outputs/benchmark/sha2_sp1-gpu-{}.csv", n).as_str(),
         );
     } else {
         benchmark(
             bench_sha2,
             &SHA2_INPUTS,
-            "../.outputs/benchmark/sha2_sp1turbo.csv",
+            "../.outputs/benchmark/sha2_sp1.csv",
         );
     }
 }

@@ -23,13 +23,13 @@ fn main() {
         benchmark(
             bench_ecdsa,
             &ECDSA_INPUTS,
-            "../.outputs/benchmark/ecdsa_sp1turbo-gpu.csv",
+            "../.outputs/benchmark/ecdsa_sp1-gpu.csv",
         );
     } else {
         benchmark(
             bench_ecdsa,
             &ECDSA_INPUTS,
-            "../.outputs/benchmark/ecdsa_sp1turbo.csv",
+            "../.outputs/benchmark/ecdsa_sp1.csv",
         );
     }
 }

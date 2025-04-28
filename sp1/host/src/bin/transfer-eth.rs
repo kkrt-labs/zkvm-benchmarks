@@ -31,13 +31,13 @@ fn main() {
         benchmark(
             bench_evm,
             &[n],
-            format!("../.outputs/benchmark/ethtransfer_sp1turbo-gpu-{}.csv", n).as_str(),
+            format!("../.outputs/benchmark/ethtransfer_sp1-gpu-{}.csv", n).as_str(),
         );
     } else {
         benchmark(
             bench_evm,
             &ETHTRANSFER_INPUTS,
-            "../.outputs/benchmark/ethtransfer_sp1turbo.csv",
+            "../.outputs/benchmark/ethtransfer_sp1.csv",
         );
     }
 }

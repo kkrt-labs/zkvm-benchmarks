@@ -32,13 +32,13 @@ fn main() {
         benchmark(
             bench_fib,
             &[n],
-            format!("../.outputs/benchmark/fib_sp1turbo-gpu-{}.csv", n).as_str(),
+            format!("../.outputs/benchmark/fib_sp1-gpu-{}.csv", n).as_str(),
         );
     } else {
         benchmark(
             bench_fib,
             &FIBONACCI_INPUTS,
-            "../.outputs/benchmark/fib_sp1turbo.csv",
+            "../.outputs/benchmark/fib_sp1.csv",
         );
     }
 }
