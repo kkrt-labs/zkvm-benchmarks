@@ -13,28 +13,30 @@
 
 use sp1_sdk::{include_elf, ProverClient, SP1Stdin};
 use std::time::Instant;
-use utils::{bench::benchmark, ecdsa_input, metadata::ECDSA_INPUTS, size, bench::BenchResult};
+use utils::{bench::benchmark_v2, bench::Metrics, ecdsa_input, metadata::ECDSA_INPUTS, size};
 
 /// The ELF (executable and linkable format) file for the Succinct RISC-V zkVM.
 pub const ECDSA_ELF: &[u8] = include_elf!("ecdsa-guest");
 
 fn main() {
     if std::env::var("SP1_PROVER").unwrap_or_default() == "cuda" {
-        benchmark(
+        benchmark_v2(
             bench_ecdsa,
             &ECDSA_INPUTS,
-            "../benchmark_outputs/ecdsa_sp1turbo-gpu.csv",
+            "../.outputs/benchmark/ecdsa_sp1turbo-gpu.csv",
         );
     } else {
-        benchmark(
+        benchmark_v2(
             bench_ecdsa,
             &ECDSA_INPUTS,
-            "../benchmark_outputs/ecdsa_sp1turbo.csv",
+            "../.outputs/benchmark/ecdsa_sp1turbo.csv",
         );
     }
 }
 
-fn bench_ecdsa(_dummy: usize) -> BenchResult {
+fn bench_ecdsa(n: usize) -> Metrics {
+    let mut metrics: Metrics = Metrics::new(n);
+
     let input = ecdsa_input();
     // Setup the logger.
     sp1_sdk::utils::setup_logger();
@@ -48,11 +50,10 @@ fn bench_ecdsa(_dummy: usize) -> BenchResult {
     stdin.write(&input);
 
     // Execute the program
+    let start = Instant::now();
     let (_, report) = client.execute(ECDSA_ELF, &stdin).run().unwrap();
-    println!("Program executed successfully.");
-
-    // Record the number of cycles executed.
-    println!("Number of cycles: {}", report.total_instruction_count());
+    metrics.exec_duration = start.elapsed();
+    metrics.cycles = report.total_instruction_count() as u64;
 
     // Setup the program for proving.
     let (pk, vk) = client.setup(ECDSA_ELF);
@@ -63,17 +64,13 @@ fn bench_ecdsa(_dummy: usize) -> BenchResult {
         .prove(&pk, &stdin)
         .run()
         .expect("failed to generate proof");
-    let end = Instant::now();
-    let duration = end.duration_since(start);
-
-    println!("Successfully generated proof!");
+    metrics.proof_duration = start.elapsed();
+    metrics.proof_bytes = size(&proof);
 
     // Verify the proof.
+    let start = Instant::now();
     client.verify(&proof, &vk).expect("failed to verify proof");
+    metrics.verify_duration = start.elapsed();
 
-    (
-        duration,
-        size(&proof),
-        report.total_instruction_count() as usize,
-    )
+    metrics
 }

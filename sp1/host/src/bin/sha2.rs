@@ -13,7 +13,7 @@
 
 use sp1_sdk::{include_elf, ProverClient, SP1Stdin};
 use std::time::Instant;
-use utils::{bench::benchmark, metadata::SHA2_INPUTS, size, bench::BenchResult};
+use utils::{bench::benchmark_v2, bench::Metrics, metadata::SHA2_INPUTS, sha2_input, size};
 
 /// The ELF (executable and linkable format) file for the Succinct RISC-V zkVM.
 pub const SHA2_ELF: &[u8] = include_elf!("sha2-guest");
@@ -28,21 +28,23 @@ fn main() {
             .expect("Please provide a value for --n")
             .parse()
             .expect("Value for --n should be a valid u32");
-        benchmark(
+        benchmark_v2(
             bench_sha2,
             &[n],
-            format!("../benchmark_outputs/sha2_sp1turbo-gpu-{}.csv", n).as_str(),
+            format!("../.outputs/benchmark/sha2_sp1turbo-gpu-{}.csv", n).as_str(),
         );
     } else {
-        benchmark(
+        benchmark_v2(
             bench_sha2,
             &SHA2_INPUTS,
-            "../benchmark_outputs/sha2_sp1turbo.csv",
+            "../.outputs/benchmark/sha2_sp1turbo.csv",
         );
     }
 }
 
-fn bench_sha2(num_bytes: usize) -> BenchResult {
+fn bench_sha2(num_bytes: usize) -> Metrics {
+    let mut metrics: Metrics = Metrics::new(num_bytes as usize);
+
     // Setup the logger.
     sp1_sdk::utils::setup_logger();
     dotenv::dotenv().ok();
@@ -52,15 +54,14 @@ fn bench_sha2(num_bytes: usize) -> BenchResult {
 
     // Setup the inputs.
     let mut stdin = SP1Stdin::new();
-    let input = vec![5u8; num_bytes];
+    let input = sha2_input(num_bytes);
     stdin.write(&input);
 
     // Execute the program
+    let start = Instant::now();
     let (_, report) = client.execute(SHA2_ELF, &stdin).run().unwrap();
-    println!("Program executed successfully.");
-
-    // Record the number of cycles executed.
-    println!("Number of cycles: {}", report.total_instruction_count());
+    metrics.exec_duration = start.elapsed();
+    metrics.cycles = report.total_instruction_count() as u64;
 
     // Setup the program for proving.
     let (pk, vk) = client.setup(SHA2_ELF);
@@ -71,17 +72,15 @@ fn bench_sha2(num_bytes: usize) -> BenchResult {
         .prove(&pk, &stdin)
         .run()
         .expect("failed to generate proof");
-    let end = Instant::now();
-    let duration = end.duration_since(start);
+    metrics.proof_duration = start.elapsed();
+    metrics.proof_bytes = size(&proof);
 
     println!("Successfully generated proof!");
 
     // Verify the proof.
+    let start = Instant::now();
     client.verify(&proof, &vk).expect("failed to verify proof");
+    metrics.verify_duration = start.elapsed();
 
-    (
-        duration,
-        size(&proof),
-        report.total_instruction_count() as usize,
-    )
+    metrics
 }

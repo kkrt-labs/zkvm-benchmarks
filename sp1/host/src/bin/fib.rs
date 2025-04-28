@@ -13,7 +13,7 @@
 
 use sp1_sdk::{include_elf, ProverClient, SP1Stdin};
 use std::time::Instant;
-use utils::{bench::benchmark, size, bench::BenchResult, metadata::FIBONACCI_INPUTS};
+use utils::{bench::benchmark_v2, bench::Metrics, metadata::FIBONACCI_INPUTS, size};
 
 /// The ELF (executable and linkable format) file for the Succinct RISC-V zkVM.
 pub const FIBONACCI_ELF: &[u8] = include_elf!("fibonacci-guest");
@@ -29,21 +29,23 @@ fn main() {
             .parse()
             .expect("Value for --n should be a valid u32");
 
-        benchmark(
+        benchmark_v2(
             bench_fib,
             &[n],
-            format!("../benchmark_outputs/fib_sp1turbo-gpu-{}.csv", n).as_str(),
+            format!("../.outputs/benchmark/fib_sp1turbo-gpu-{}.csv", n).as_str(),
         );
     } else {
-        benchmark(
+        benchmark_v2(
             bench_fib,
             &FIBONACCI_INPUTS,
-            "../benchmark_outputs/fib_sp1turbo.csv",
+            "../.outputs/benchmark/fib_sp1turbo.csv",
         );
     }
 }
 
-fn bench_fib(n: u32) -> BenchResult {
+fn bench_fib(n: u32) -> Metrics {
+    let mut metrics: Metrics = Metrics::new(n as usize);
+
     // Setup the logger.
     sp1_sdk::utils::setup_logger();
     dotenv::dotenv().ok();
@@ -55,17 +57,14 @@ fn bench_fib(n: u32) -> BenchResult {
     let mut stdin = SP1Stdin::new();
     stdin.write(&n);
 
-    println!("n: {}", n);
-
     // Execute the program
+    let start = Instant::now();
     let (_output, report) = client.execute(FIBONACCI_ELF, &stdin).run().unwrap();
-    println!("Program executed successfully.");
-
-    // Record the number of cycles executed.
-    println!("Number of cycles: {}", report.total_instruction_count());
+    metrics.exec_duration = start.elapsed();
+    metrics.cycles = report.total_instruction_count();
 
     // Setup the program for proving.
-    let (pk, _vk) = client.setup(FIBONACCI_ELF);
+    let (pk, vk) = client.setup(FIBONACCI_ELF);
 
     let start = Instant::now();
     // Generate the proof
@@ -73,17 +72,13 @@ fn bench_fib(n: u32) -> BenchResult {
         .prove(&pk, &stdin)
         .run()
         .expect("failed to generate proof");
-    let end = Instant::now();
-    let duration = end.duration_since(start);
-
-    println!("Successfully generated proof!");
+    metrics.proof_duration = start.elapsed();
+    metrics.proof_bytes = size(&proof);
 
     // Verify the proof.
-    // client.verify(&proof, &vk).expect("failed to verify proof");
+    let start = Instant::now();
+    client.verify(&proof, &vk).expect("failed to verify proof");
+    metrics.verify_duration = start.elapsed();
 
-    (
-        duration,
-        size(&proof),
-        report.total_instruction_count() as usize,
-    )
+    metrics
 }
