@@ -1,18 +1,22 @@
 use pico_sdk::{client::DefaultProverClient, init_logger};
 use std::time::Instant;
-use utils::{bench::benchmark, ecdsa_input, load_elf, bench::BenchResult, metadata::ECDSA_INPUTS};
+use utils::{
+    bench::Metrics, bench::benchmark_v2, ecdsa_input, load_elf, metadata::ECDSA_INPUTS, size,
+};
 
 fn main() {
-    benchmark(
+    benchmark_v2(
         bench_ecdsa,
         &ECDSA_INPUTS,
-        "../../benchmark_outputs/ecdsa_pico.csv",
+        "../.outputs/benchmark/ecdsa_pico.csv",
     );
 }
 
-fn bench_ecdsa(_fixed: usize) -> BenchResult {
+fn bench_ecdsa(n: usize) -> Metrics {
+    let mut metrics: Metrics = Metrics::new(n as usize);
+
     init_logger();
-    let elf = load_elf("../ecdsa-guest/elf/riscv32im-pico-zkvm-elf");
+    let elf = load_elf("./ecdsa-guest/elf/riscv32im-pico-zkvm-elf");
     let client = DefaultProverClient::new(&elf);
     let stdin_builder = client.get_stdin_builder();
 
@@ -20,12 +24,9 @@ fn bench_ecdsa(_fixed: usize) -> BenchResult {
     stdin_builder.borrow_mut().write(&input);
 
     let now = Instant::now();
-    client.prove_fast().expect("Failed to generate proof");
-    let duration = now.elapsed();
+    let proof = client.prove_fast().expect("Failed to generate proof");
+    metrics.proof_duration = now.elapsed();
+    metrics.proof_bytes = size(&proof.proofs);
 
-    println!("Successfully generated proof! Duration: {:?}", duration);
-
-    (
-        duration, 0x0, 0x0, // placeholder values for proof size and instruction cycles
-    )
+    metrics
 }
