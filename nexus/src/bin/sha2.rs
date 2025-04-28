@@ -4,12 +4,12 @@ use nexus_sdk::{
     stwo::seq::Stwo,
 };
 use std::time::Instant;
-use utils::{bench::Metrics, bench::benchmark_v2, metadata::SHA2_INPUTS, sha2_input, size};
+use utils::{bench::Metrics, bench::benchmark, metadata::SHA2_INPUTS, sha2_input, size};
 
 const PACKAGE: &str = "sha2-guest";
 
 fn main() {
-    benchmark_v2(
+    benchmark(
         benchmark_sha2,
         &SHA2_INPUTS,
         "../.outputs/benchmark/sha2_nexus.csv",

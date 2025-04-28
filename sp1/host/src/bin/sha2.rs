@@ -13,7 +13,7 @@
 
 use sp1_sdk::{include_elf, ProverClient, SP1Stdin};
 use std::time::Instant;
-use utils::{bench::benchmark_v2, bench::Metrics, metadata::SHA2_INPUTS, sha2_input, size};
+use utils::{bench::benchmark, bench::Metrics, metadata::SHA2_INPUTS, sha2_input, size};
 
 /// The ELF (executable and linkable format) file for the Succinct RISC-V zkVM.
 pub const SHA2_ELF: &[u8] = include_elf!("sha2-guest");
@@ -28,13 +28,13 @@ fn main() {
             .expect("Please provide a value for --n")
             .parse()
             .expect("Value for --n should be a valid u32");
-        benchmark_v2(
+        benchmark(
             bench_sha2,
             &[n],
             format!("../.outputs/benchmark/sha2_sp1turbo-gpu-{}.csv", n).as_str(),
         );
     } else {
-        benchmark_v2(
+        benchmark(
             bench_sha2,
             &SHA2_INPUTS,
             "../.outputs/benchmark/sha2_sp1turbo.csv",

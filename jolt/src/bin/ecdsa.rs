@@ -1,6 +1,6 @@
 use jolt::Serializable;
 use std::time::Instant;
-use utils::{bench::benchmark_v2, bench::Metrics, ecdsa_input, metadata::ECDSA_INPUTS};
+use utils::{bench::benchmark, bench::Metrics, ecdsa_input, metadata::ECDSA_INPUTS};
 
 fn main() {
     let csv_file = format!(
@@ -9,7 +9,7 @@ fn main() {
         ""
     );
 
-    benchmark_v2(bench_ecdsa, &ECDSA_INPUTS, &csv_file);
+    benchmark(bench_ecdsa, &ECDSA_INPUTS, &csv_file);
 }
 
 fn bench_ecdsa(size: usize) -> Metrics {

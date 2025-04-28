@@ -1,9 +1,9 @@
 use pico_sdk::{client::DefaultProverClient, init_logger};
 use std::time::Instant;
-use utils::{bench::Metrics, bench::benchmark_v2, load_elf, metadata::ETHTRANSFER_INPUTS, size};
+use utils::{bench::Metrics, bench::benchmark, load_elf, metadata::ETHTRANSFER_INPUTS, size};
 
 fn main() {
-    benchmark_v2(
+    benchmark(
         bench_transfer_eth,
         &ETHTRANSFER_INPUTS,
         "../.outputs/benchmark/ethtransfer_pico.csv",

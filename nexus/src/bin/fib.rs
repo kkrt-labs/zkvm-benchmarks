@@ -4,12 +4,12 @@ use nexus_sdk::{
     stwo::seq::Stwo,
 };
 use std::time::Instant;
-use utils::{bench::Metrics, bench::benchmark_v2, metadata::FIBONACCI_INPUTS, size};
+use utils::{bench::Metrics, bench::benchmark, metadata::FIBONACCI_INPUTS, size};
 
 const PACKAGE: &str = "fibonacci-guest";
 
 fn main() {
-    benchmark_v2(
+    benchmark(
         benchmark_fib,
         &FIBONACCI_INPUTS,
         "../.outputs/benchmark/fib_nexus.csv",

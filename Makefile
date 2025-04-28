@@ -88,11 +88,11 @@ bench-novanet:
 	RUSTFLAGS="-C target-cpu=native" RUST_LOG=debug cargo run --release -p runner --  --guest "fib" --benchmark-args 10 100 --compress --wat fib/fib.wat
 
 bench-pico:
-	cd pico/host && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fib && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2 && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin ecdsa && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin transfer-eth
+	cd pico && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin fib && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin sha2 && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin ecdsa && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin transfer-eth
 
 build-pico:
 	cd pico/fibonacci-guest && \

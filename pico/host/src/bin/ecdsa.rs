@@ -1,11 +1,11 @@
 use pico_sdk::{client::DefaultProverClient, init_logger};
 use std::time::Instant;
 use utils::{
-    bench::Metrics, bench::benchmark_v2, ecdsa_input, load_elf, metadata::ECDSA_INPUTS, size,
+    bench::Metrics, bench::benchmark, ecdsa_input, load_elf, metadata::ECDSA_INPUTS, size,
 };
 
 fn main() {
-    benchmark_v2(
+    benchmark(
         bench_ecdsa,
         &ECDSA_INPUTS,
         "../.outputs/benchmark/ecdsa_pico.csv",

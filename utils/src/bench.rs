@@ -3,8 +3,6 @@ use serde::Serialize;
 use serde_with::{serde_as, DurationNanoSeconds};
 use std::{
     fmt::Display,
-    fs::File,
-    io::Write,
     sync::{
         atomic::{AtomicBool, AtomicUsize, Ordering},
         Arc,
@@ -13,22 +11,6 @@ use std::{
     time::Duration,
 };
 use tabled::{settings::Style, Table, Tabled};
-
-pub type BenchResult = (Duration, usize, usize);
-type BenchMetrics = (Duration, usize, usize, usize);
-
-pub fn benchmark<T: Display + Clone, F>(func: F, inputs: &[T], file: &str)
-where
-    F: Fn(T) -> BenchResult,
-{
-    let mut results = Vec::new();
-    for input in inputs {
-        let ((duration, size, cycles), peak_memory) = measure_peak_memory(|| func(input.clone()));
-        results.push((duration, size, cycles, peak_memory));
-    }
-
-    write_csv(file, inputs, &results);
-}
 
 fn get_current_memory_usage() -> Result<usize, std::io::Error> {
     let content = std::fs::read_to_string("/proc/self/status")?;
@@ -66,31 +48,6 @@ pub fn measure_peak_memory<R, F: FnOnce() -> R>(func: F) -> (R, usize) {
     monitor.join().unwrap();
 
     (result, peak.load(Ordering::Relaxed))
-}
-
-pub fn write_csv<T: Display>(file: &str, inputs: &[T], results: &[BenchMetrics]) {
-    let mut file = File::create(file).unwrap();
-    file.write_all(
-        format!("n,cycles,prover time (ms),proof size (bytes),peak memory (MB)\n").as_bytes(),
-    )
-    .unwrap();
-    inputs
-        .iter()
-        .zip(results)
-        .for_each(|(input, (duration, size, cycles, peak_memory))| {
-            file.write_all(
-                format!(
-                    "{},{},{},{},{}\n",
-                    input,
-                    cycles,
-                    duration.as_millis(),
-                    size,
-                    peak_memory
-                )
-                .as_bytes(),
-            )
-            .unwrap();
-        });
 }
 
 #[serde_as]
@@ -140,7 +97,7 @@ impl Metrics {
     }
 }
 
-pub fn benchmark_v2<T: Display + Clone, F>(func: F, inputs: &[T], file: &str)
+pub fn benchmark<T: Display + Clone, F>(func: F, inputs: &[T], file: &str)
 where
     F: Fn(T) -> Metrics,
 {
@@ -151,10 +108,10 @@ where
         results.push(metrics);
     }
 
-    write_csv_v2(file, &results);
+    write_csv(file, &results);
 }
 
-pub fn write_csv_v2(out_path: &str, results: &[Metrics]) {
+pub fn write_csv(out_path: &str, results: &[Metrics]) {
     let mut out = csv::WriterBuilder::new().from_path(out_path).unwrap();
 
     let mut all_metrics = Vec::new();

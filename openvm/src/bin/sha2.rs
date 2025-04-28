@@ -10,13 +10,13 @@ use openvm_sdk::{
     Sdk, StdIn,
 };
 use openvm_stark_sdk::config::FriParameters;
-use utils::{bench::benchmark_v2, bench::Metrics, metadata::SHA2_INPUTS, sha2_input, size};
+use utils::{bench::benchmark, bench::Metrics, metadata::SHA2_INPUTS, sha2_input, size};
 
 // ANCHOR_END: dependencies
 
 #[allow(unused_variables, unused_doc_comments)]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    benchmark_v2(
+    benchmark(
         benchmark_sha2,
         &SHA2_INPUTS,
         "../.outputs/benchmark/sha2_openvm.csv",

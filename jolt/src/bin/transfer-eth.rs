@@ -1,6 +1,6 @@
 use jolt::Serializable;
 use std::time::Instant;
-use utils::{bench::benchmark_v2, bench::Metrics, metadata::ETHTRANSFER_INPUTS};
+use utils::{bench::benchmark, bench::Metrics, metadata::ETHTRANSFER_INPUTS};
 
 fn main() {
     let csv_file = format!(
@@ -9,7 +9,7 @@ fn main() {
         ""
     );
 
-    benchmark_v2(benchmark_transfer_eth, &ETHTRANSFER_INPUTS, &csv_file);
+    benchmark(benchmark_transfer_eth, &ETHTRANSFER_INPUTS, &csv_file);
 }
 
 fn benchmark_transfer_eth(n: usize) -> Metrics {

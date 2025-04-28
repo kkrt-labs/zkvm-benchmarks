@@ -4,7 +4,7 @@ use risc0_zkvm::serde::to_vec;
 use risc0_zkvm::{
     get_prover_server, sha::Digest, ExecutorEnv, ExecutorImpl, ProverOpts, VerifierContext,
 };
-use utils::{bench::benchmark_v2, bench::Metrics, ecdsa_input, metadata::ECDSA_INPUTS};
+use utils::{bench::benchmark, bench::Metrics, ecdsa_input, metadata::ECDSA_INPUTS};
 
 pub fn main() {
     let csv_file = format!(
@@ -12,7 +12,7 @@ pub fn main() {
         if cfg!(feature = "cuda") { "-gpu" } else { "" },
         ""
     );
-    benchmark_v2(benchmark_ecdsa, &ECDSA_INPUTS, &csv_file);
+    benchmark(benchmark_ecdsa, &ECDSA_INPUTS, &csv_file);
 }
 
 fn benchmark_ecdsa(input: usize) -> Metrics {

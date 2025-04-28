@@ -3,7 +3,7 @@ use risc0_zkvm::{
     get_prover_server, sha::Digest, ExecutorEnv, ExecutorImpl, ProverOpts, VerifierContext,
 };
 use std::time::Instant;
-use utils::{bench::benchmark_v2, bench::Metrics, metadata::SHA2_INPUTS, sha2_input};
+use utils::{bench::benchmark, bench::Metrics, metadata::SHA2_INPUTS, sha2_input};
 
 pub fn main() {
     let csv_file = format!(
@@ -11,7 +11,7 @@ pub fn main() {
         if cfg!(feature = "cuda") { "-gpu" } else { "" },
         ""
     );
-    benchmark_v2(benchmark_sha2, &SHA2_INPUTS, &csv_file);
+    benchmark(benchmark_sha2, &SHA2_INPUTS, &csv_file);
 }
 
 fn benchmark_sha2(num_bytes: usize) -> Metrics {

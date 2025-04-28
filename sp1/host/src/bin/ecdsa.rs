@@ -13,20 +13,20 @@
 
 use sp1_sdk::{include_elf, ProverClient, SP1Stdin};
 use std::time::Instant;
-use utils::{bench::benchmark_v2, bench::Metrics, ecdsa_input, metadata::ECDSA_INPUTS, size};
+use utils::{bench::benchmark, bench::Metrics, ecdsa_input, metadata::ECDSA_INPUTS, size};
 
 /// The ELF (executable and linkable format) file for the Succinct RISC-V zkVM.
 pub const ECDSA_ELF: &[u8] = include_elf!("ecdsa-guest");
 
 fn main() {
     if std::env::var("SP1_PROVER").unwrap_or_default() == "cuda" {
-        benchmark_v2(
+        benchmark(
             bench_ecdsa,
             &ECDSA_INPUTS,
             "../.outputs/benchmark/ecdsa_sp1turbo-gpu.csv",
         );
     } else {
-        benchmark_v2(
+        benchmark(
             bench_ecdsa,
             &ECDSA_INPUTS,
             "../.outputs/benchmark/ecdsa_sp1turbo.csv",

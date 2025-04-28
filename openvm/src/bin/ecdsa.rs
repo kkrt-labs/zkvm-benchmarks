@@ -10,11 +10,11 @@ use openvm_sdk::{
     Sdk, StdIn,
 };
 use openvm_stark_sdk::config::FriParameters;
-use utils::{bench::benchmark_v2, bench::Metrics, ecdsa_input, metadata::ECDSA_INPUTS, size};
+use utils::{bench::benchmark, bench::Metrics, ecdsa_input, metadata::ECDSA_INPUTS, size};
 
 #[allow(unused_variables, unused_doc_comments)]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    benchmark_v2(
+    benchmark(
         benchmark_ecdsa,
         &ECDSA_INPUTS,
         "../.outputs/benchmark/ecdsa_openvm.csv",

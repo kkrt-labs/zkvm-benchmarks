@@ -13,7 +13,7 @@
 
 use sp1_sdk::{include_elf, ProverClient, SP1Stdin};
 use std::time::Instant;
-use utils::{bench::benchmark_v2, bench::Metrics, metadata::FIBONACCI_INPUTS, size};
+use utils::{bench::benchmark, bench::Metrics, metadata::FIBONACCI_INPUTS, size};
 
 /// The ELF (executable and linkable format) file for the Succinct RISC-V zkVM.
 pub const FIBONACCI_ELF: &[u8] = include_elf!("fibonacci-guest");
@@ -29,13 +29,13 @@ fn main() {
             .parse()
             .expect("Value for --n should be a valid u32");
 
-        benchmark_v2(
+        benchmark(
             bench_fib,
             &[n],
             format!("../.outputs/benchmark/fib_sp1turbo-gpu-{}.csv", n).as_str(),
         );
     } else {
-        benchmark_v2(
+        benchmark(
             bench_fib,
             &FIBONACCI_INPUTS,
             "../.outputs/benchmark/fib_sp1turbo.csv",

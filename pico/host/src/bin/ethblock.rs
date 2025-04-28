@@ -1,6 +1,6 @@
 use pico_sdk::{client::DefaultProverClient, init_logger};
 use std::time::Instant;
-use utils::{bench::benchmark, load_elf, bench::BenchResult};
+use utils::{bench::Metrics, bench::benchmark, load_elf, size};
 
 fn main() {
     let lengths = [1];
@@ -11,7 +11,9 @@ fn main() {
     );
 }
 
-fn bench_ethblock(num_txs: usize) -> BenchResult {
+fn bench_ethblock(num_txs: usize) -> Metrics {
+    let mut metrics: Metrics = Metrics::new(num_txs);
+
     init_logger();
     let elf = load_elf("../ethblock-guest/elf/riscv32im-pico-zkvm-elf");
     let client = DefaultProverClient::new(&elf);
@@ -19,12 +21,9 @@ fn bench_ethblock(num_txs: usize) -> BenchResult {
     stdin_builder.borrow_mut().write(&num_txs);
 
     let now = Instant::now();
-    client.prove_fast().expect("Failed to generate proof");
-    let duration = now.elapsed();
+    let proof = client.prove_fast().expect("Failed to generate proof");
+    metrics.proof_duration = now.elapsed();
+    metrics.proof_bytes = size(&proof.proofs);
 
-    println!("Successfully generated proof! Duration: {:?}", duration);
-
-    (
-        duration, 0x0, 0x0, // placeholder values for proof size and instruction cycles
-    )
+    metrics
 }
