@@ -1,31 +1,36 @@
 use jolt::Serializable;
 use std::time::Instant;
-use utils::{bench::benchmark, bench::BenchResult, metadata::SHA2_INPUTS};
+use utils::{bench::benchmark_v2, bench::Metrics, metadata::SHA2_INPUTS, sha2_input};
 
 fn main() {
     let csv_file = format!(
-        "../benchmark_outputs/sha2_jolt{}{}.csv",
+        "../.outputs/benchmark/sha2_jolt{}{}.csv",
         if cfg!(feature = "icicle") { "-gpu" } else { "" },
         ""
     );
 
-    benchmark(benchmark_sha2, &SHA2_INPUTS, &csv_file);
+    benchmark_v2(benchmark_sha2, &SHA2_INPUTS, &csv_file);
 }
 
-fn benchmark_sha2(num_bytes: usize) -> BenchResult {
-    let (prove_sha2, _verify_sha2) = sha2_guest::build_sha2();
+fn benchmark_sha2(num_bytes: usize) -> Metrics {
+    let mut metrics = Metrics::new(num_bytes as usize);
 
-    let input = vec![5u8; num_bytes];
-    let input = input.as_slice();
-    let program_summary = sha2_guest::analyze_sha2(input);
+    let (prove_sha2, verify_sha2) = sha2_guest::build_sha2();
+
+    let input = sha2_input(num_bytes);
+    let start = Instant::now();
+    let program_summary = sha2_guest::analyze_sha2(&input);
+    metrics.exec_duration = start.elapsed();
+    metrics.cycles = program_summary.processed_trace.len() as u64;
 
     let start = Instant::now();
-    let (_output, proof) = prove_sha2(input);
-    let end = Instant::now();
+    let (_output, proof) = prove_sha2(&input);
+    metrics.proof_duration = start.elapsed();
+    metrics.proof_bytes = proof.size().unwrap();
 
-    (
-        end.duration_since(start),
-        proof.size().unwrap(),
-        program_summary.processed_trace.len(),
-    )
+    let start = Instant::now();
+    let _verify_result = verify_sha2(proof);
+    metrics.verify_duration = start.elapsed();
+
+    metrics
 }

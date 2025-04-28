@@ -1,28 +1,34 @@
 use jolt::Serializable;
 use std::time::Instant;
-use utils::{bench::benchmark, bench::BenchResult, metadata::FIBONACCI_INPUTS};
+use utils::{bench::benchmark_v2, bench::Metrics, metadata::FIBONACCI_INPUTS};
 
 fn main() {
     let csv_file = format!(
-        "../benchmark_outputs/fib_jolt{}{}.csv",
+        "../.outputs/benchmark/fib_jolt{}{}.csv",
         if cfg!(feature = "icicle") { "-gpu" } else { "" },
         ""
     );
 
-    benchmark(benchmark_fib, &FIBONACCI_INPUTS, &csv_file);
+    benchmark_v2(benchmark_fib, &FIBONACCI_INPUTS, &csv_file);
 }
 
-fn benchmark_fib(n: u32) -> BenchResult {
-    let (prove_fib, _verify_fib) = fibonacci_guest::build_fib();
+fn benchmark_fib(n: u32) -> Metrics {
+    let mut metrics = Metrics::new(n as usize);
+    let (prove_fib, verify_fib) = fibonacci_guest::build_fib();
+
+    let start = Instant::now();
     let program_summary = fibonacci_guest::analyze_fib(n);
+    metrics.exec_duration = start.elapsed();
+    metrics.cycles = program_summary.processed_trace.len() as u64;
 
     let start = Instant::now();
     let (_output, proof) = prove_fib(n);
-    let end = Instant::now();
+    metrics.proof_duration = start.elapsed();
+    metrics.proof_bytes = proof.size().unwrap();
 
-    (
-        end.duration_since(start),
-        proof.size().unwrap(),
-        program_summary.processed_trace.len(),
-    )
+    let start = Instant::now();
+    let _verify_result = verify_fib(proof);
+    metrics.verify_duration = start.elapsed();
+
+    metrics
 }
