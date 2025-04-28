@@ -1,6 +1,6 @@
 use pico_sdk::{client::DefaultProverClient, init_logger};
 use std::time::Instant;
-use utils::{benchmark, load_elf, BenchResult};
+use utils::{bench::benchmark, load_elf, bench::BenchResult};
 
 fn main() {
     let lengths = [1];

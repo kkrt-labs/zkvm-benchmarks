@@ -1,6 +1,6 @@
 use pico_sdk::{client::DefaultProverClient, init_logger};
 use std::time::Instant;
-use utils::{benchmark, ecdsa_input, load_elf, BenchResult, ECDSA_INPUTS};
+use utils::{bench::benchmark, ecdsa_input, load_elf, bench::BenchResult, metadata::ECDSA_INPUTS};
 
 fn main() {
     benchmark(

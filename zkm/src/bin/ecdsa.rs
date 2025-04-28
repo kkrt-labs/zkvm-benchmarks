@@ -1,4 +1,4 @@
-use utils::{benchmark, ECDSA_INPUTS};
+use utils::{bench::benchmark, metadata::ECDSA_INPUTS};
 use zkm_script::{bench_ecdsa, init_logger};
 
 fn main() {

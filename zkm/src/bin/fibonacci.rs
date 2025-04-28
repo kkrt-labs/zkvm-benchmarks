@@ -1,4 +1,4 @@
-use utils::{benchmark, FIBONACCI_INPUTS};
+use utils::{bench::benchmark, metadata::FIBONACCI_INPUTS};
 use zkm_script::{bench_fibonacci, init_logger};
 
 fn main() {

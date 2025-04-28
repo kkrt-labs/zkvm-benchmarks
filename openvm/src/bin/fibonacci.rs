@@ -10,7 +10,7 @@ use openvm_sdk::{
     Sdk, StdIn,
 };
 use openvm_stark_sdk::config::FriParameters;
-use utils::{benchmark, size, BenchResult, FIBONACCI_INPUTS};
+use utils::{bench::benchmark, metadata::FIBONACCI_INPUTS, size, bench::BenchResult};
 
 // ANCHOR_END: dependencies
 

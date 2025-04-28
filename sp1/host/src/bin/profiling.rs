@@ -34,7 +34,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 .run()
                 .expect("failed to generate proof");
         },
-        "../profile_outputs/profile_sp1.pb",
+        "../.outputs/profiling/profile_sp1.pb",
     )?;
 
     println!("Profiling complete!");

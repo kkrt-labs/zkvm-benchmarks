@@ -57,17 +57,17 @@ bench-zkm:
 
 bench-risczero:
 	cd risczero && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release -- --out ../benchmark_outputs/fib_risczero.csv fibonacci && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release -- --out ../benchmark_outputs/sha2_risczero.csv big-sha2 && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release -- --out ../benchmark_outputs/ecdsa_risczero.csv ecdsa-verify && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release -- --out ../benchmark_outputs/ethtransfer_risczero.csv transfer-eth
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2 && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin ecdsa && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin transfer-eth
 
 bench-risczero-gpu:
 	cd risczero && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release -F cuda -- --out ../benchmark_outputs/fib_risczero-gpu.csv fibonacci && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release -F cuda -- --out ../benchmark_outputs/sha2_risczero-gpu.csv big-sha2 && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release -F cuda -- --out ../benchmark_outputs/ecdsa_risczero-gpu.csv ecdsa-verify && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release -F cuda -- --out ../benchmark_outputs/ethtransfer_risczero-gpu.csv transfer-eth
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -F cuda --bin fibonacci && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -F cuda --bin sha2 && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -F cuda --bin ecdsa && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -F cuda --bin transfer-eth
 
 bench-powdr:
 	cd powdr && RUSTFLAGS='-C target-cpu=native' cargo run --release

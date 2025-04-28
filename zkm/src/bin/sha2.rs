@@ -1,4 +1,4 @@
-use utils::{benchmark, SHA2_INPUTS};
+use utils::{bench::benchmark, metadata::SHA2_INPUTS};
 use zkm_script::{benchmark_sha2, init_logger};
 
 fn main() {

@@ -13,7 +13,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         || {
             client.prove_fast().expect("Failed to generate proof");
         },
-        "../profile_outputs/profile_pico.pb",
+        "../.outputs/profiling/profile_pico.pb",
     )?;
 
     Ok(())

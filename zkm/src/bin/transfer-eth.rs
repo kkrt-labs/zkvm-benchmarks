@@ -1,4 +1,4 @@
-use utils::{benchmark, ETHTRANSFER_INPUTS};
+use utils::{bench::benchmark, metadata::ETHTRANSFER_INPUTS};
 use zkm_script::{bench_ethtransfer, init_logger};
 
 fn main() {

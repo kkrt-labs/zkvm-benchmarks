@@ -1,7 +1,7 @@
 use std::time::Instant;
 
 use serde::{Deserialize, Serialize};
-use utils::{ecdsa_input, size, BenchResult};
+use utils::{ecdsa_input, size, bench::BenchResult};
 use zkm_build::include_elf;
 use zkm_sdk::{ProverClient, ZKMStdin};
 

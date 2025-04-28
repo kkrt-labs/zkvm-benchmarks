@@ -13,7 +13,7 @@
 
 use sp1_sdk::{include_elf, ProverClient, SP1Stdin};
 use std::time::Instant;
-use utils::{benchmark, size, BenchResult, ETHTRANSFER_INPUTS};
+use utils::{bench::benchmark, metadata::ETHTRANSFER_INPUTS, size, bench::BenchResult};
 
 /// The ELF (executable and linkable format) file for the Succinct RISC-V zkVM.
 pub const EVM_ELF: &[u8] = include_elf!("transfer-eth-guest");

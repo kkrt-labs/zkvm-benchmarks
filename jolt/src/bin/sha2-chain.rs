@@ -1,6 +1,6 @@
 use jolt::Serializable;
 use std::time::Instant;
-use utils::{benchmark, BenchResult};
+use utils::{bench::benchmark, bench::BenchResult};
 
 fn main() {
     let csv_file = format!(

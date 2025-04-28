@@ -21,7 +21,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 .prove_with_input::<u32, ()>(&n, &())
                 .expect("failed to prove program");
         },
-        "../profile_outputs/profile_nexus.pb",
+        "../.outputs/profiling/profile_nexus.pb",
     )?;
 
     Ok(())

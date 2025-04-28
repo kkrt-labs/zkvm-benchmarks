@@ -13,7 +13,7 @@
 
 use sp1_sdk::{include_elf, ProverClient, SP1Stdin};
 use std::time::Instant;
-use utils::{benchmark, ecdsa_input, size, BenchResult, ECDSA_INPUTS};
+use utils::{bench::benchmark, ecdsa_input, metadata::ECDSA_INPUTS, size, bench::BenchResult};
 
 /// The ELF (executable and linkable format) file for the Succinct RISC-V zkVM.
 pub const ECDSA_ELF: &[u8] = include_elf!("ecdsa-guest");

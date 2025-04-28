@@ -4,7 +4,7 @@ use nexus_sdk::{
     stwo::seq::Stwo,
 };
 use std::time::Instant;
-use utils::{BenchResult, SHA2_INPUTS, benchmark, size};
+use utils::{bench::BenchResult, bench::benchmark, metadata::SHA2_INPUTS, size};
 
 const PACKAGE: &str = "sha2-guest";
 

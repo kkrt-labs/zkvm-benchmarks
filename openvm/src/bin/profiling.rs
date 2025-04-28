@@ -77,7 +77,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         || {
             let _proof = app_prover.generate_app_proof(stdin.clone());
         },
-        "../profile_outputs/profile_openvm.pb",
+        "../.outputs/profiling/profile_openvm.pb",
     )?;
 
     Ok(())

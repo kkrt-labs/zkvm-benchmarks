@@ -10,7 +10,7 @@ use zk_engine::{
     wasm_snark::{StepSize, WasmSNARK},
 };
 
-use utils::{benchmark, size};
+use utils::{bench::benchmark, size};
 type BenchResult = (Duration, usize, usize);
 
 // Curve Cycle to prove/verify on

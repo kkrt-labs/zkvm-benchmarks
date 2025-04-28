@@ -20,7 +20,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         || {
             let _proof = client.prove(&pk, stdin.clone()).run().unwrap();
         },
-        "../profile_outputs/profile_zkm.pb",
+        "../.outputs/profiling/profile_zkm.pb",
     )?;
 
     Ok(())

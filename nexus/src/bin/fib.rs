@@ -4,7 +4,7 @@ use nexus_sdk::{
     stwo::seq::Stwo,
 };
 use std::time::Instant;
-use utils::{BenchResult, FIBONACCI_INPUTS, benchmark, size};
+use utils::{bench::BenchResult, bench::benchmark, metadata::FIBONACCI_INPUTS, size};
 
 const PACKAGE: &str = "fibonacci-guest";
 

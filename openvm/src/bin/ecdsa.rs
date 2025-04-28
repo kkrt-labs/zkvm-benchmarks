@@ -10,7 +10,7 @@ use openvm_sdk::{
     Sdk, StdIn,
 };
 use openvm_stark_sdk::config::FriParameters;
-use utils::{benchmark, ecdsa_input, size, BenchResult, ECDSA_INPUTS};
+use utils::{bench::benchmark, bench::BenchResult, ecdsa_input, metadata::ECDSA_INPUTS, size};
 
 #[allow(unused_variables, unused_doc_comments)]
 fn main() -> Result<(), Box<dyn std::error::Error>> {

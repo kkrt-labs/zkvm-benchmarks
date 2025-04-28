@@ -1,6 +1,6 @@
 use jolt::Serializable;
 use std::time::{Duration, Instant};
-use utils::benchmark;
+use utils::bench::benchmark;
 
 type BenchResult = (Duration, usize, usize);
 

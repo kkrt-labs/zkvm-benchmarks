@@ -1,6 +1,6 @@
 use jolt::Serializable;
 use std::time::Instant;
-use utils::{benchmark, ecdsa_input, BenchResult, ECDSA_INPUTS};
+use utils::{bench::benchmark, bench::BenchResult, ecdsa_input, metadata::ECDSA_INPUTS};
 
 fn main() {
     let csv_file = format!(
@@ -17,6 +17,8 @@ fn bench_ecdsa(_dummy: usize) -> BenchResult {
     let (prove_ecdsa_verify, _verify_ecdsa_verify) = ecdsa_guest::build_ecdsa_verify();
 
     let program_summary = ecdsa_guest::analyze_ecdsa_verify(input.clone());
+    // save_summary_to_json(&program_summary, "../.outputs/traces/ecdsa_jolt.json")
+    //     .expect("Failed to save program summary");
 
     let start = Instant::now();
     let (_output, proof) = prove_ecdsa_verify(input.clone());

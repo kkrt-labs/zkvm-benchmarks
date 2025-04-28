@@ -13,7 +13,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         || {
             let (_output, _proof) = prove_ecdsa_verify(input);
         },
-        "../profile_outputs/profile_jolt.pb",
+        "../.outputs/profiling/profile_jolt.pb",
     )?;
 
     println!("Profiling complete!");

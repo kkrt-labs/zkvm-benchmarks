@@ -1,6 +1,6 @@
 use pico_sdk::{client::DefaultProverClient, init_logger};
 use std::time::Instant;
-use utils::{benchmark, load_elf, BenchResult, FIBONACCI_INPUTS};
+use utils::{bench::benchmark, load_elf, bench::BenchResult, metadata::FIBONACCI_INPUTS};
 
 fn main() {
     benchmark(

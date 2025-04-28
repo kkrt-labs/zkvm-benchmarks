@@ -13,7 +13,7 @@
 
 use sp1_sdk::{include_elf, ProverClient, SP1Stdin};
 use std::time::Instant;
-use utils::{benchmark, size, BenchResult, FIBONACCI_INPUTS};
+use utils::{bench::benchmark, size, bench::BenchResult, metadata::FIBONACCI_INPUTS};
 
 /// The ELF (executable and linkable format) file for the Succinct RISC-V zkVM.
 pub const FIBONACCI_ELF: &[u8] = include_elf!("fibonacci-guest");

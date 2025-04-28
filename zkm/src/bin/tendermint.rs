@@ -1,4 +1,4 @@
-use utils::benchmark;
+use utils::bench::benchmark;
 use zkm_script::{bench_tendermint, init_logger};
 
 fn main() {
