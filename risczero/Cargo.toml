@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [workspace]
-members = ["methods", "shared"]
+members = ["methods"]
 
 [workspace.dependencies]
 risc0-build = "2.0.1"
@@ -20,7 +20,6 @@ human-repr = { version = "1.0", features = ["1024"] }
 k256 = { version = "0.13", features = ["serde"] }
 rand = "0.8"
 rand_core = "0.6"
-risc0-benchmark-lib = { path = "shared" }
 risc0-benchmark-methods = { path = "methods" }
 risc0-zkvm = { version = "2.0.1", features = ["prove"] }
 serde = { version = "1.0", features = ["derive"] }

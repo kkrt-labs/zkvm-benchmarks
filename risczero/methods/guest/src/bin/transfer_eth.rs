@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use guests::ethtransfer;
 use risc0_zkvm::guest::env;
 
 fn main() {
     let iterations: usize = env::read();
-    let answer: bool = revm_utils::transfer_eth_n_times(iterations);
+    let answer: bool = ethtransfer::ethtransfer(iterations);
     env::commit(&answer);
 }
