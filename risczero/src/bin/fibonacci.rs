@@ -21,11 +21,12 @@ use risc0_zkvm::{
 use utils::{bench::benchmark_v2, bench::Metrics, metadata::FIBONACCI_INPUTS};
 
 pub fn main() {
-    benchmark_v2(
-        benchmark_fib,
-        &FIBONACCI_INPUTS,
-        "../.outputs/benchmark/fib_risczero.csv",
+    let csv_file = format!(
+        "../.outputs/benchmark/fib_risczero{}{}.csv",
+        if cfg!(feature = "cuda") { "-gpu" } else { "" },
+        ""
     );
+    benchmark_v2(benchmark_fib, &FIBONACCI_INPUTS, &csv_file);
 }
 
 fn benchmark_fib(input: u32) -> Metrics {

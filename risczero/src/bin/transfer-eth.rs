@@ -7,11 +7,12 @@ use risc0_zkvm::{
 use utils::{bench::benchmark_v2, bench::Metrics, metadata::ETHTRANSFER_INPUTS};
 
 pub fn main() {
-    benchmark_v2(
-        benchmark_ethtransfer,
-        &ETHTRANSFER_INPUTS,
-        "../.outputs/benchmark/ethtransfer_risczero.csv",
+    let csv_file = format!(
+        "../.outputs/benchmark/ethtransfer_risczero{}{}.csv",
+        if cfg!(feature = "cuda") { "-gpu" } else { "" },
+        ""
     );
+    benchmark_v2(benchmark_ethtransfer, &ETHTRANSFER_INPUTS, &csv_file);
 }
 
 fn benchmark_ethtransfer(iterations: usize) -> Metrics {

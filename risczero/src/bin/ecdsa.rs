@@ -7,11 +7,12 @@ use risc0_zkvm::{
 use utils::{bench::benchmark_v2, bench::Metrics, ecdsa_input, metadata::ECDSA_INPUTS};
 
 pub fn main() {
-    benchmark_v2(
-        benchmark_ecdsa,
-        &ECDSA_INPUTS,
-        "../.outputs/benchmark/ecdsa_risczero.csv",
+    let csv_file = format!(
+        "../.outputs/benchmark/ecdsa_risczero{}{}.csv",
+        if cfg!(feature = "cuda") { "-gpu" } else { "" },
+        ""
     );
+    benchmark_v2(benchmark_ecdsa, &ECDSA_INPUTS, &csv_file);
 }
 
 fn benchmark_ecdsa(input: usize) -> Metrics {

@@ -6,11 +6,12 @@ use std::time::Instant;
 use utils::{bench::benchmark_v2, bench::Metrics, metadata::SHA2_INPUTS, sha2_input};
 
 pub fn main() {
-    benchmark_v2(
-        benchmark_sha2,
-        &SHA2_INPUTS,
-        "../.outputs/benchmark/sha2_risczero.csv",
+    let csv_file = format!(
+        "../.outputs/benchmark/sha2_risczero{}{}.csv",
+        if cfg!(feature = "cuda") { "-gpu" } else { "" },
+        ""
     );
+    benchmark_v2(benchmark_sha2, &SHA2_INPUTS, &csv_file);
 }
 
 fn benchmark_sha2(num_bytes: usize) -> Metrics {
