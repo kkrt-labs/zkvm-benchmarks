@@ -18,3 +18,5 @@ k256 = { version = "=0.13.3", features = [
 ], default-features = false }
 guests = { path = "../guests", features = ["with-ecdsa"] }
 pprof = { version = "0.14.0", features = ["prost-codec"] }
+tracing-chrome = "0.7.1"
+tracing-subscriber = "0.3.18"

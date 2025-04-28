@@ -115,7 +115,6 @@ perf-jolt:
 		--ignore='rayon::.*' \
 		--nodefraction=0.01 \
   		--edgefraction=0.005 \
-		--call_tree=true \
 		--compact_labels=true \
 		--hide='__libc_.*' \
 		./jolt/target/release/profiling \
@@ -130,7 +129,6 @@ perf-sp1:
 		--ignore='rayon::.*' \
 		--nodefraction=0.01 \
   		--edgefraction=0.005 \
-		--call_tree=true \
 		--compact_labels=true \
 		--hide='__libc_.*' \
 		./sp1/target/release/profiling \
@@ -145,7 +143,6 @@ perf-openvm:
 		--ignore='rayon::.*' \
 		--nodefraction=0.01 \
   		--edgefraction=0.005 \
-		--call_tree=true \
 		--compact_labels=true \
 		--hide='__libc_.*' \
 		./openvm/target/release/profiling \
@@ -161,7 +158,6 @@ perf-nexus:
 		--ignore='rayon::.*' \
 		--nodefraction=0.01 \
   		--edgefraction=0.005 \
-		--call_tree=true \
 		--compact_labels=true \
 		--hide='__libc_.*' \
 		./nexus/target/release/profiling \
@@ -176,7 +172,6 @@ perf-pico:
 		--ignore='rayon::.*' \
 		--nodefraction=0.01 \
   		--edgefraction=0.005 \
-		--call_tree=true \
 		--compact_labels=true \
 		--hide='__libc_.*' \
 		./pico/target/release/profiling \
@@ -192,9 +187,22 @@ perf-zkm:
 		--ignore='rayon::.*' \
 		--nodefraction=0.01 \
   		--edgefraction=0.005 \
-		--call_tree=true \
 		--compact_labels=true \
 		--hide='__libc_.*' \
 		./zkm/target/release/profiling \
 		./profile_outputs/profile_zkm.pb \
 		> ./profile_outputs/profile_zkm.svg
+
+perf-risczero:
+	cd risczero && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin profiling
+
+	pprof -svg \
+		--ignore='rayon::.*' \
+		--nodefraction=0.01 \
+  		--edgefraction=0.005 \
+		--compact_labels=true \
+		--hide='__libc_.*' \
+		./risczero/target/release/profiling \
+		./profile_outputs/profile_risczero.pb \
+		> ./profile_outputs/profile_risczero.svg

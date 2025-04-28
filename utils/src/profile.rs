@@ -1,6 +1,9 @@
 use pprof::protos::Message;
+use std::any::Any;
 use std::fs::File;
 use std::io::Write;
+use tracing_chrome::ChromeLayerBuilder;
+use tracing_subscriber::{self, prelude::*};
 
 pub fn profile_func<F>(func: F, file_path: &str) -> Result<(), Box<dyn std::error::Error>>
 where
@@ -27,4 +30,17 @@ where
     };
 
     Ok(())
+}
+
+pub fn init_trace() {
+    let mut layers = Vec::new();
+    let mut guards: Vec<Box<dyn Any>> = vec![];
+
+    let (chrome_layer, guard) = ChromeLayerBuilder::new().build();
+    layers.push(chrome_layer.boxed());
+    guards.push(Box::new(guard));
+
+    tracing_subscriber::registry().with(layers).init();
+
+    println!("Running tracing-chrome. Files will be saved as trace-<some timestamp>.json and can be viewed in chrome://tracing.");
 }

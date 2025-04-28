@@ -4522,6 +4522,8 @@ dependencies = [
  "k256",
  "pprof",
  "serde",
+ "tracing-chrome",
+ "tracing-subscriber",
 ]
 
 [[package]]

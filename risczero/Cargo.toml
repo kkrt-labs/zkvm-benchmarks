@@ -28,6 +28,7 @@ serde_with = "3.8"
 tabled = "0.15"
 tracing = { version = "0.1", default-features = false }
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+utils = { path = "../utils" }
 
 [features]
 cuda = ["risc0-zkvm/cuda"]

@@ -1,19 +1,19 @@
-use utils::profile::profile_func;
+use utils::{ecdsa_input, profile::profile_func};
 use zkm_script::init_logger;
 
 use zkm_build::include_elf;
 use zkm_sdk::{ProverClient, ZKMStdin};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let n = 10;
+    let input = ecdsa_input();
     init_logger();
 
     let mut stdin = ZKMStdin::new();
-    stdin.write(&n);
+    stdin.write(&input);
 
-    const FIBONACCI_ELF: &[u8] = include_elf!("fibonacci");
+    const ELF: &[u8] = include_elf!("ecdsa-bench");
     let client = ProverClient::cpu();
-    let (pk, vk) = client.setup(FIBONACCI_ELF);
+    let (pk, vk) = client.setup(ELF);
 
     println!("benchmark start");
     profile_func(

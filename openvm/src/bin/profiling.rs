@@ -10,13 +10,13 @@ use openvm_sdk::{
     Sdk, StdIn,
 };
 use openvm_stark_sdk::config::FriParameters;
-use utils::profile::profile_func;
+use utils::{ecdsa_input, profile::profile_func};
 
 // ANCHOR_END: dependencies
 
 #[allow(unused_variables, unused_doc_comments)]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let n = 10;
+    let input = ecdsa_input();
     // ANCHOR: vm_config
     let vm_config = SdkVmConfig::builder()
         .system(Default::default())
@@ -32,7 +32,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // 2a. Build the ELF with guest options and a target filter.
     let guest_opts = GuestOptions::default();
-    let target_path = "fibonacci-guest";
+    let target_path = "ecdsa-guest";
     let elf = sdk
         .build(guest_opts, target_path, &Default::default())
         .unwrap();
@@ -46,7 +46,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // ANCHOR: execution
     // 4. Format your input into StdIn
     let mut stdin = StdIn::default();
-    stdin.write(&n);
+    stdin.write(&input);
 
     // 5. Run the program
     let output = sdk

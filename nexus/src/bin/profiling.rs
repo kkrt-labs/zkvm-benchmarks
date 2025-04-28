@@ -8,7 +8,7 @@ use utils::profile::profile_func;
 const PACKAGE: &str = "fibonacci-guest";
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let n = 10;
+    let n = 100000;
     println!("Compiling guest program...");
     let mut prover_compiler = Compiler::<CargoPackager>::new(PACKAGE);
     let prover: Stwo<Local> =
