@@ -1,13 +1,14 @@
 bench-all:
-	make bench-jolt
-	make bench-jolt-gpu
-	make bench-sp1
-	make bench-sp1-gpu
-	make bench-risczero
-	make bench-risczero-gpu
-	make bench-openvm
-	make bench-pico
+	# make bench-jolt
+	# make bench-jolt-gpu
+	# make bench-sp1
+	# make bench-sp1-gpu
+	# make bench-risczero
+	# make bench-risczero-gpu
+	# make bench-openvm
+	# make bench-pico
 	make bench-zkm
+	make bench-nexus
 
 bench-jolt:
 	cd jolt && \

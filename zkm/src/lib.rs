@@ -38,6 +38,7 @@ fn bench_zkm(elf: &[u8], stdin: ZKMStdin, size_label: usize) -> Metrics {
     metrics.proof_duration = start.elapsed();
     metrics.proof_bytes = size(&proof);
 
+    // Sometimes the verification is failed with commitment error.
     let start = Instant::now();
     client.verify(&proof, &vk).expect("verification failed");
     metrics.verify_duration = start.elapsed();

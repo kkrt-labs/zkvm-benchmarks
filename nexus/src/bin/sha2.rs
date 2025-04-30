@@ -31,7 +31,7 @@ fn benchmark_sha2(num_bytes: usize) -> Metrics {
         .run_with_input::<Vec<u8>, ()>(&input, &())
         .expect("failed to run program");
     metrics.exec_duration = start.elapsed();
-    metrics.cycles = elf.instructions.len() as u64;
+    metrics.elf_line_counts = elf.instructions.len() as u64;
 
     let start = Instant::now();
     let (view, proof) = prover

@@ -65,6 +65,8 @@ pub struct Metrics {
     pub verify_duration: Duration,
     #[tabled(display_with = "display_cycles")]
     pub cycles: u64,
+    #[tabled(display_with = "display_cycles")]
+    pub elf_line_counts: u64,
     #[tabled(display_with = "display_bytes")]
     pub proof_bytes: usize,
     #[tabled(display_with = "display_bytes")]
@@ -91,6 +93,7 @@ impl Metrics {
             proof_duration: Duration::default(),
             verify_duration: Duration::default(),
             cycles: 0,
+            elf_line_counts: 0,
             proof_bytes: 0,
             peak_memory: 0,
         }

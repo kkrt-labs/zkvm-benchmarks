@@ -3,10 +3,6 @@ name = "transfer-eth-guest"
 version = "0.1.0"
 edition = "2021"
 
-[[bin]]
-name = "transfer-eth-guest"
-path = "src/lib.rs"
-
 [features]
 guest = []
 

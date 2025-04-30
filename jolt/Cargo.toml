@@ -5,12 +5,8 @@ edition = "2021"
 
 [workspace]
 members = [
-    "sha2-chain-guest",
-    "sha3-chain-guest",
     "sha2-guest",
-    "sha3-guest",
     "fibonacci-guest",
-    "bigmem-guest",
     "ecdsa-guest",
     "transfer-eth-guest"
 ]
@@ -25,12 +21,8 @@ jolt = { package = "jolt-sdk", git = "https://github.com/a16z/jolt", rev = "b22e
 utils = { path = "../utils" }
 hex = "0.4.3"
 
-sha2-chain-guest = { path = "./sha2-chain-guest" }
-sha3-chain-guest = { path = "./sha3-chain-guest" }
 sha2-guest = { path = "./sha2-guest" }
-sha3-guest = { path = "./sha3-guest" }
 fibonacci-guest = { path = "./fibonacci-guest" }
-bigmem-guest = { path = "./bigmem-guest" }
 ecdsa-guest = {path = "./ecdsa-guest"}
 transfer-eth-guest = {path = "./transfer-eth-guest"}
 
