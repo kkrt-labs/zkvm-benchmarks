@@ -9,3 +9,5 @@ pub mod sha2;
 pub mod ecdsa;
 #[cfg(feature = "ethtransfer")]
 pub mod ethtransfer;
+#[cfg(feature = "evm")]
+pub mod revm;

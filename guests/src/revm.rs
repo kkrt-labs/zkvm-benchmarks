@@ -1,10 +1,13 @@
+use core::convert::Infallible;
 use revm::{
     context::transaction::AccessList, primitives::TxKind, Context, ExecuteCommitEvm, MainBuilder,
     MainContext,
 };
 use revm_database::{CacheDB, StateBuilder};
 use serde::{Deserialize, Serialize};
-use std::convert::Infallible;
+
+extern crate alloc;
+use alloc::vec::Vec;
 
 use revm::{
     primitives::{Address, Bytes, B256, U256},
@@ -14,9 +17,6 @@ use revm::{
 
 #[derive(Serialize, Deserialize)]
 pub struct DummyDB {}
-
-pub mod eth_transfer;
-pub use eth_transfer::*;
 
 impl DummyDB {
     pub fn new() -> Self {
@@ -149,11 +149,7 @@ pub fn trace_ethblock(num_txs: usize) -> bool {
             };
         });
 
-        let res = evm.replay_commit();
-
-        if let Err(error) = res {
-            println!("Got error: {:?}", error);
-        }
+        let _res = evm.replay_commit();
     }
 
     true

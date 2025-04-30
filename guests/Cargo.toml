@@ -14,6 +14,10 @@ k256 = { version = "=0.13.3", features = [
 getrandom = { version = "0.2", features = ["custom"], optional = true }
 serde = { version = "1.0", features = ["derive"], optional = true }
 revm-utils = {git = "https://github.com/ClankPan/revm-utils", optional = true }
+revm = { version="=22.0.1", default-features = false, features = ["serde"], optional = true }
+revm-database = {version="=3.0.0", default-features = false, features = ["serde"], optional = true }
+alloy-eip2930 = { version = "0.1.0", features = ["serde"], optional = true }
+bincode = { version = "1.3.3", optional = true }
 
 [features]
 default = ["fibonacci"]
@@ -21,3 +25,4 @@ fibonacci = []
 with-sha2 = ["sha2"]
 with-ecdsa = ["k256", "getrandom", "serde"]
 ethtransfer = ["revm-utils"]
+evm = ["revm", "revm-database", "alloy-eip2930", "bincode", "serde"]

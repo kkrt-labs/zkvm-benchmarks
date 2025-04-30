@@ -5,4 +5,4 @@ edition = "2024"
 
 [dependencies]
 pico-sdk = { workspace = true }
-ethblock-utils = {path = "../../ethblock-utils"}
+guests = { path = "../../guests", features = ["evm"] }

@@ -1530,19 +1530,8 @@ dependencies = [
 name = "ethblock-guest"
 version = "0.1.0"
 dependencies = [
- "ethblock-utils",
+ "guests",
  "pico-sdk",
-]
-
-[[package]]
-name = "ethblock-utils"
-version = "0.1.0"
-dependencies = [
- "alloy-eip2930 0.1.0",
- "bincode",
- "revm 22.0.0",
- "revm-database 3.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde",
 ]
 
 [[package]]
@@ -1763,8 +1752,12 @@ dependencies = [
 name = "guests"
 version = "0.1.0"
 dependencies = [
+ "alloy-eip2930 0.1.0",
+ "bincode",
  "getrandom 0.2.16",
  "k256",
+ "revm 22.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "revm-database 3.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "revm-utils",
  "serde",
  "sha2",
@@ -3520,9 +3513,9 @@ checksum = "2b15c43186be67a4fd63bee50d0303afffcef381492ebe2c5d87f324e1b8815c"
 
 [[package]]
 name = "revm"
-version = "22.0.0"
+version = "22.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "85eb66316c261a8ffd266e3c295991d703e810b29b57006dfea08481e81e2f56"
+checksum = "f5378e95ffe5c8377002dafeb6f7d370a55517cef7d6d6c16fc552253af3b123"
 dependencies = [
  "revm-bytecode 3.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "revm-context 3.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -3868,7 +3861,7 @@ source = "git+https://github.com/ClankPan/revm-utils#d85a8c6863085941eae54cb84c7
 dependencies = [
  "alloy-eip2930 0.1.0",
  "bincode",
- "revm 22.0.1",
+ "revm 22.0.1 (git+https://github.com/bluealloy/revm)",
  "revm-database 3.0.0 (git+https://github.com/bluealloy/revm)",
  "serde",
 ]

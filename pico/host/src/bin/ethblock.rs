@@ -7,7 +7,7 @@ fn main() {
     benchmark(
         bench_ethblock,
         &lengths,
-        "../../benchmark_outputs/ethblock_pico.csv",
+        "../.outputs/benchmark/ethblock_pico.csv",
     );
 }
 
@@ -15,7 +15,7 @@ fn bench_ethblock(num_txs: usize) -> Metrics {
     let mut metrics: Metrics = Metrics::new(num_txs);
 
     init_logger();
-    let elf = load_elf("../ethblock-guest/elf/riscv32im-pico-zkvm-elf");
+    let elf = load_elf("./ethblock-guest/elf/riscv32im-pico-zkvm-elf");
     let client = DefaultProverClient::new(&elf);
     let stdin_builder = client.get_stdin_builder();
     stdin_builder.borrow_mut().write(&num_txs);
