@@ -2,6 +2,9 @@ use guests::ecdsa::EcdsaVerifyInput;
 use k256::{ecdsa::Signature, elliptic_curve::sec1::EncodedPoint, Secp256k1};
 use rand::{rngs::StdRng, RngCore, SeedableRng};
 use std::fs;
+use std::fs::File;
+use std::io::Write;
+use std::path::Path;
 
 use serde::Serialize;
 
@@ -47,4 +50,13 @@ pub fn load_elf(path: &str) -> Vec<u8> {
 
 pub fn size<T: Serialize>(item: &T) -> usize {
     bincode::serialized_size(item).unwrap() as usize
+}
+
+pub fn write_json<T: Serialize>(data: &T, output_path: &str) {
+    let json_data = serde_json::to_string_pretty(&data).expect("Failed to serialize to JSON");
+    let path = Path::new(&output_path);
+
+    let mut file = File::create(path).expect("Failed to create file");
+    file.write_all(json_data.as_bytes())
+        .expect("Failed to write to file");
 }

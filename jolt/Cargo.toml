@@ -25,6 +25,8 @@ sha2-guest = { path = "./sha2-guest" }
 fibonacci-guest = { path = "./fibonacci-guest" }
 ecdsa-guest = {path = "./ecdsa-guest"}
 transfer-eth-guest = {path = "./transfer-eth-guest"}
+serde = { version = "1.0", features = ["derive"]}
+serde_json = { version = "1.0"}
 
 [patch.crates-io]
 ark-ff = { git = "https://github.com/a16z/arkworks-algebra", branch = "optimize/field-from-u64" }

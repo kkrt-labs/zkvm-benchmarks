@@ -13,7 +13,7 @@
 
 use sp1_sdk::{include_elf, ProverClient, SP1Stdin};
 use std::time::Instant;
-use utils::{bench::benchmark, bench::Metrics, metadata::FIBONACCI_INPUTS, size};
+use utils::{bench::benchmark, bench::Metrics, metadata::FIBONACCI_INPUTS, size, write_json};
 
 /// The ELF (executable and linkable format) file for the Succinct RISC-V zkVM.
 pub const FIBONACCI_ELF: &[u8] = include_elf!("fibonacci-guest");
@@ -62,6 +62,11 @@ fn bench_fib(n: u32) -> Metrics {
     let (_output, report) = client.execute(FIBONACCI_ELF, &stdin).run().unwrap();
     metrics.exec_duration = start.elapsed();
     metrics.cycles = report.total_instruction_count();
+
+    write_json(
+        &report.opcode_counts,
+        &format!("../.outputs/traces/fib_sp1_{}.json", n),
+    );
 
     // Setup the program for proving.
     let (pk, vk) = client.setup(FIBONACCI_ELF);

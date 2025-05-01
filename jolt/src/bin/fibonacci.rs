@@ -1,6 +1,6 @@
 use jolt::Serializable;
 use std::time::Instant;
-use utils::{bench::benchmark, bench::Metrics, metadata::FIBONACCI_INPUTS};
+use utils::{bench::benchmark, bench::Metrics, metadata::FIBONACCI_INPUTS, write_json};
 
 const TARGET_DIR: &str = "./fibonacci-guest";
 
@@ -28,6 +28,11 @@ fn benchmark_fib(n: u32) -> Metrics {
     let program_summary = fibonacci_guest::analyze_fib(n);
     metrics.exec_duration = start.elapsed();
     metrics.cycles = program_summary.processed_trace.len() as u64;
+
+    write_json(
+        &program_summary,
+        format!("../.outputs/traces/fib_jolt_{}.json", n).into(),
+    );
 
     let start = Instant::now();
     let (output, proof) = prover(n);
