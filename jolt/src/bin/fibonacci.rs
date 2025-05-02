@@ -31,7 +31,7 @@ fn benchmark_fib(n: u32) -> Metrics {
 
     write_json(
         &program_summary,
-        format!("../.outputs/traces/fib_jolt_{}.json", n).into(),
+        &format!("../.outputs/traces/fib_jolt_{}.json", n),
     );
 
     let start = Instant::now();

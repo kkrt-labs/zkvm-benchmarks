@@ -12,6 +12,7 @@ bench-all:
 
 bench-jolt:
 	cd jolt && \
+	rustup override set nightly && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2 && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin ecdsa && \
@@ -19,6 +20,7 @@ bench-jolt:
 
 bench-jolt-gpu:
 	cd jolt && \
+	rustup override set nightly && \
 	ICICLE_BACKEND_INSTALL_DIR=$$(pwd)/target/release/deps/icicle/lib/backend RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci -F icicle && \
 	ICICLE_BACKEND_INSTALL_DIR=$$(pwd)/target/release/deps/icicle/lib/backend RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2 -F icicle && \
 	ICICLE_BACKEND_INSTALL_DIR=$$(pwd)/target/release/deps/icicle/lib/backend RUSTFLAGS="-C target-cpu=native" cargo run --release --bin ecdsa -F icicle && \
@@ -75,13 +77,15 @@ bench-powdr:
 
 bench-openvm:
 	cd openvm && \
+	rustup override set nightly-2024-10-30 && \
 	RUST_BACKTRACE=1 RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci && \
 	RUST_BACKTRACE=1 RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2 && \
 	RUST_BACKTRACE=1 RUSTFLAGS="-C target-cpu=native" cargo run --release --bin ecdsa -F std && \
 	RUST_BACKTRACE=1 RUSTFLAGS="-C target-cpu=native" cargo run --release --bin transfer-eth -F std
 
 bench-nexus:
-	cd nexus && RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fib && \
+	cd nexus && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fib && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2
 
 bench-novanet:

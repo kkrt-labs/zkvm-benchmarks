@@ -3,7 +3,7 @@
 use guests::fib;
 
 #[nexus_rt::main]
-fn main(n: u32) -> u128 {
+fn main(n: u32) -> u32 {
     let result = fib::fib(n);
     result
 }

@@ -2378,8 +2378,6 @@ dependencies = [
  "fibonacci-guest",
  "hex",
  "jolt-sdk",
- "serde",
- "serde_json",
  "sha2-guest",
  "transfer-eth-guest",
  "utils",
