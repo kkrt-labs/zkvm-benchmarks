@@ -1,0 +1,18 @@
+FROM zkvm-benchmarks-base
+
+# Install SP1 dependencies
+RUN curl -L https://sp1.succinct.xyz | bash && \
+    export PATH="$PATH:$HOME/.sp1/bin" && \
+    sp1up
+
+# Copy project files
+COPY sp1 /root/workspace/sp1
+
+# Set working directory
+WORKDIR /root/workspace/sp1
+
+# Run benchmarks
+CMD ["sh", "-c", "RUSTFLAGS='-C target-cpu=native' cargo run --release -p host --bin fib && \
+    RUSTFLAGS='-C target-cpu=native' cargo run --release -p host --bin sha2 && \
+    RUSTFLAGS='-C target-cpu=native' cargo run --release -p host --bin ecdsa && \
+    RUSTFLAGS='-C target-cpu=native' cargo run --release -p host --bin transfer-eth"]

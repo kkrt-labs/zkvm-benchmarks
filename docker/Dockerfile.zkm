@@ -1,0 +1,18 @@
+FROM zkvm-benchmarks-base
+
+# Install ZKM dependencies
+RUN curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/zkMIPS/toolchain/refs/heads/main/setup.sh | sh && \
+    echo "source ~/.zkm-toolchain/env" >> ~/.bashrc
+
+# Copy project files
+COPY zkm /root/workspace/zkm
+
+# Set working directory
+WORKDIR /root/workspace/zkm
+
+# Run benchmarks
+CMD ["sh", "-c", "source ~/.zkm-toolchain/env && \
+    RUSTFLAGS='-C target-cpu=native' cargo run --bin fibonacci --release && \
+    RUSTFLAGS='-C target-cpu=native' cargo run --bin sha2 --release && \
+    RUSTFLAGS='-C target-cpu=native' cargo run --bin ecdsa --release && \
+    RUSTFLAGS='-C target-cpu=native' cargo run --bin transfer-eth --release"]

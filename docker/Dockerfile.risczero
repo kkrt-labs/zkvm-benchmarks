@@ -1,0 +1,18 @@
+FROM zkvm-benchmarks-base
+
+# Install RISC Zero dependencies
+RUN curl -L https://risczero.com/install | bash && \
+    export PATH="$PATH:$HOME/.risc0/bin" && \
+    rzup install
+
+# Copy project files
+COPY risczero /root/workspace/risczero
+
+# Set working directory
+WORKDIR /root/workspace/risczero
+
+# Run benchmarks
+CMD ["sh", "-c", "RUSTFLAGS='-C target-cpu=native' cargo run --release --bin fibonacci && \
+    RUSTFLAGS='-C target-cpu=native' cargo run --release --bin sha2 && \
+    RUSTFLAGS='-C target-cpu=native' cargo run --release --bin ecdsa && \
+    RUSTFLAGS='-C target-cpu=native' cargo run --release --bin transfer-eth"]

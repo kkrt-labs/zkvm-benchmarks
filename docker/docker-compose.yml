@@ -1,0 +1,106 @@
+version: '3.8'
+
+services:
+  base:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.base
+    image: zkvm-benchmarks-base
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  jolt:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.jolt
+    volumes:
+      - ../.outputs:/root/.outputs
+    depends_on:
+      base:
+        condition: service_completed_successfully
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  nexus:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.nexus
+    volumes:
+      - ../.outputs:/root/.outputs
+    depends_on:
+      base:
+        condition: service_completed_successfully
+
+  openvm:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.openvm
+    volumes:
+      - ../.outputs:/root/.outputs
+    depends_on:
+      base:
+        condition: service_completed_successfully
+
+  pico:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.pico
+    volumes:
+      - ../.outputs:/root/.outputs
+    depends_on:
+      base:
+        condition: service_completed_successfully
+
+  risczero:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.risczero
+    volumes:
+      - ../.outputs:/root/.outputs
+    depends_on:
+      base:
+        condition: service_completed_successfully
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  sp1:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.sp1
+    volumes:
+      - ../.outputs:/root/.outputs
+    depends_on:
+      base:
+        condition: service_completed_successfully
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  zkm:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.zkm
+    volumes:
+      - ../.outputs:/root/.outputs
+    depends_on:
+      base:
+        condition: service_completed_successfully

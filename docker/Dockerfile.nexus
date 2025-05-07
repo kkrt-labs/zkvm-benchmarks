@@ -1,0 +1,15 @@
+FROM zkvm-benchmarks-base
+
+# Install Nexus dependencies
+RUN rustup target add riscv32i-unknown-none-elf && \
+    rustup run nightly-2025-01-02 cargo install --git https://github.com/nexus-xyz/nexus-zkvm cargo-nexus --tag 'v0.3.1'
+
+# Copy project files
+COPY nexus /root/workspace/nexus
+
+# Set working directory
+WORKDIR /root/workspace/nexus
+
+# Run benchmarks
+CMD ["sh", "-c", "RUSTFLAGS='-C target-cpu=native' cargo run --release --bin fib && \
+    RUSTFLAGS='-C target-cpu=native' cargo run --release --bin sha2"]
