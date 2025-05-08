@@ -19,7 +19,7 @@ services:
       context: ..
       dockerfile: docker/Dockerfile.jolt
     volumes:
-      - ../.outputs:/root/.outputs
+      - ../.outputs:/root/workspace/.outputs
     depends_on:
       base:
         condition: service_completed_successfully
@@ -36,7 +36,7 @@ services:
       context: ..
       dockerfile: docker/Dockerfile.nexus
     volumes:
-      - ../.outputs:/root/.outputs
+      - ../.outputs:/root/workspace/.outputs
     depends_on:
       base:
         condition: service_completed_successfully
@@ -46,7 +46,7 @@ services:
       context: ..
       dockerfile: docker/Dockerfile.openvm
     volumes:
-      - ../.outputs:/root/.outputs
+      - ../.outputs:/root/workspace/.outputs
     depends_on:
       base:
         condition: service_completed_successfully
@@ -56,7 +56,7 @@ services:
       context: ..
       dockerfile: docker/Dockerfile.pico
     volumes:
-      - ../.outputs:/root/.outputs
+      - ../.outputs:/root/workspace/.outputs
     depends_on:
       base:
         condition: service_completed_successfully
@@ -66,7 +66,7 @@ services:
       context: ..
       dockerfile: docker/Dockerfile.risczero
     volumes:
-      - ../.outputs:/root/.outputs
+      - ../.outputs:/root/workspace/.outputs
     depends_on:
       base:
         condition: service_completed_successfully
@@ -83,7 +83,7 @@ services:
       context: ..
       dockerfile: docker/Dockerfile.sp1
     volumes:
-      - ../.outputs:/root/.outputs
+      - ../.outputs:/root/workspace/.outputs
     depends_on:
       base:
         condition: service_completed_successfully
@@ -100,7 +100,7 @@ services:
       context: ..
       dockerfile: docker/Dockerfile.zkm
     volumes:
-      - ../.outputs:/root/.outputs
+      - ../.outputs:/root/workspace/.outputs
     depends_on:
       base:
         condition: service_completed_successfully
