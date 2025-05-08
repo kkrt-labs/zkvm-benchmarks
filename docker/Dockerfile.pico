@@ -1,0 +1,18 @@
+FROM zkvm-benchmarks-base
+
+# Install Pico dependencies
+RUN rustup install nightly-2024-11-27 && \
+    rustup component add rust-src --toolchain nightly-2024-11-27 && \
+    cargo +nightly-2024-11-27 install --git https://github.com/brevis-network/pico pico-cli
+
+# Copy project files
+COPY pico /root/workspace/pico
+
+# Set working directory
+WORKDIR /root/workspace/pico
+
+# Run benchmarks
+CMD ["sh", "-c", "RUSTFLAGS='-C target-cpu=native' cargo run --release -p host --bin fib && \
+    RUSTFLAGS='-C target-cpu=native' cargo run --release -p host --bin sha2 && \
+    RUSTFLAGS='-C target-cpu=native' cargo run --release -p host --bin ecdsa && \
+    RUSTFLAGS='-C target-cpu=native' cargo run --release -p host --bin transfer-eth"]

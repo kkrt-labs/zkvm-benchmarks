@@ -2,7 +2,47 @@ This repo is used for academic workshop, with the title "Benchmarking zkVMs: Eff
 
 # zkVM Benchmarks
 
-See bench result [here](./benchmark_outputs)
+See bench result [here](./outputs/benchmark)
+
+## Prerequisite
+
+- [Rust](https://www.rust-lang.org/tools/install)
+- [Cuda Toolkit](https://developer.nvidia.com/cuda-toolkit)
+- [Cuda Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
+
+## Running
+
+### Option 1. Local
+
+Firstly, install all toolchains:
+
+- Jolt: https://jolt.a16zcrypto.com/usage/quickstart.html#installing
+- Nexus: https://docs.nexus.xyz/zkvm/proving/sdk#1-install-the-nexus-zkvm
+- RISC Zero: https://dev.risczero.com/api/zkvm/install
+- SP1: https://docs.succinct.xyz/docs/sp1/getting-started/install
+- ZKM: https://docs.zkm.io/introduction/installation.html
+- OpenVM: https://book.openvm.dev/getting-started/install.html
+- Pico: https://docs.brevis.network/getting-started/installation
+
+Then, run:
+
+```bash
+make bench-all
+```
+
+or
+
+```bash
+make bench-<sp1|sp1-gpu|jolt|jolt-gpu|nexus|openvm|pico|risczero|risczero-gpu|zkm>
+```
+
+### Option 2. Docker
+
+```
+cd docker
+docker compose build base
+docker compose run <sp1|jolt|nexus|openvm|pico|risczero|zkm>
+```
 
 ## Current status
 
@@ -16,8 +56,8 @@ We are so welcome to your contribution!
 |[Novanet](./novanet/)|✅|❌|❌|❌||
 |Ceno|||||[No SDK yet](https://github.com/orgs/scroll-tech/projects/20)|
 |[OpenVM](./openvm/)|✅|✅|✅|✅||
-|[Jolt (CPU/GPU)](./jolt/)|✅|✅|✅|✅|Optimization by GPU is still only partially implemented|
-|[Nexus](./nexus/)|✅|✅|❌|❌|no_std is not supported yet|
+|[Jolt (CPU/GPU)](./jolt/)|✅|✅|✅|✅|It's still in development. GPU Acceleration is still only partially implemented.|
+|[Nexus](./nexus/)|✅|✅|❌|❌|`std` is not supported yet.|
 |[Pico](./pico/)|✅|✅|✅|✅||
 |zkWASM||||||
 |Valida|||||[The repo is currently private, and the latest docker image is not available.](https://github.com/lita-xyz/valida-releases)|
@@ -26,128 +66,9 @@ We are so welcome to your contribution!
 
 ## Hardware Requirement
 
-Architecture: Linux x86_64
-(When I tried to build on my Mac/M1 using docker, some toolchains were unable to build.)
-
-||CPU Cores|RAM|GPU RAM|
-|-|-|-|-|
-|Jolt|8|100GB|8GB|
-|Nexus|8|32GB|-|
-|Novanet|8|32GB|-|
-|OpenVM|8|32GB|-|
-|Pico|8|32GB|-|
-|RISC Zero|8|32GB|8GB|
-|SP1|8|64GB|24GB|
-|ZKM|8|80GB|-|
-
-## Installation
-
-### Install Jolt/Nexus
-
-```bash
-rustup target add riscv32i-unknown-none-elf
-```
-
-### Install Nexus
-
-```bash
-rustup run nightly-2025-01-02 cargo install --git https://github.com/nexus-xyz/nexus-zkvm cargo-nexus --tag 'v0.3.1'
-```
-
-### Install Risc Zero
-
-```bash
-curl -L https://risczero.com/install | bash
-rzup install
-```
-
-### Install SP1
-
-```bash
-curl -L https://sp1.succinct.xyz | bash
-```
-
-Follow the instructions outputted by this command then run:
-
-```bash
-sp1up
-```
-
-### Install zkm
-
-```bash
-curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/zkMIPS/toolchain/refs/heads/main/setup.sh | sh
-source ~/.zkm-toolchain/env
-```
-
-### Install Open VM
-
-```bash
-cargo +nightly install --git http://github.com/openvm-org/openvm.git cargo-openvm
-cargo openvm --version
-```
-
-### Install Novanet
-
-Novanet (zkEngine) requires the wasm2wat tool to build a guest programs into WebAssembly Text Fromat.
-https://github.com/WebAssembly/wabt?tab=readme-ov-file#installing-prebuilt-binaries
-
-and install wasm32 target:
-```bash
-rustup target add wasm32-unknown-unknown
-```
-
-#### MacOS
-```bash
-brew install wabt
-```
-
-#### Linux
-```bash
-sudo apt install wabt
-```
-
-#### Others
-Please build `wabt` from [here](https://github.com/WebAssembly/wabt) on your own.
-
-### Install Pico
-```bash
-rustup install nightly-2024-11-27
-rustup component add rust-src --toolchain nightly-2024-11-27
-cargo +nightly-2024-11-27 install --git https://github.com/brevis-network/pico pico-cli
-```
-
-## Running
-
-To run all benchmarks run:
-
-```bash
-make bench-all
-```
-
-The benchmark results should be outputted in CSV form in `benchmark_outputs`.
-
-To run an individual benchmark run `make bench-zkm`, `make bench-jolt`, `make bench-risczero` or ... .
-
-## Profiling
-
-First, you need to install these tools:
-- flamegraph
-
-Then, run this command:
-
-```
-make perf-all
-```
-
-## Disclaimer
-
-_This code is being provided as is. No guarantee, representation or warranty is being made, express or implied, as to the safety or correctness of the code. It has not been audited and as such there can be no assurance it will work as intended, and users may experience delays, failures, errors, omissions or loss of transmitted information. Nothing in this repo should be construed as investment advice or legal advice for any particular facts or circumstances and is not meant to replace competent counsel. It is strongly advised for you to contact a reputable attorney in your jurisdiction for any questions or concerns with respect thereto. a16z is not liable for any use of the foregoing, and users should proceed with caution and use at their own risk. See a16z.com/disclosures for more info._
-
-## Submission Guide
-
-If you want to add new zkVM schemes for this benchmark, please follow them:
-
-1. Submit issue
-2. Assign
-3. Create PR
+|||
+|-|-|
+|Architecture|Linux x86_64|
+|vCPU|8|
+|RAM|128 GB|
+|VRAM|24GB|

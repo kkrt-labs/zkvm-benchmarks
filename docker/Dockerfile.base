@@ -1,0 +1,24 @@
+FROM nvidia/cuda:12.5.0-runtime-ubuntu22.04
+
+# Install basic dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    wget \
+    git \
+    libssl-dev \
+    pkg-config \
+    cmake \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Rust nightly
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain nightly
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+# Create output directory
+RUN mkdir -p /root/workspace/.outputs/benchmark
+
+COPY guests /root/workspace/guests
+COPY utils /root/workspace/utils
+
+WORKDIR /root/workspace
