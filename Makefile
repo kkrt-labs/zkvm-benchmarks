@@ -48,7 +48,9 @@ bench-sp1-gpu:
 	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin ecdsa && \
 	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin transfer-eth -- --n 1 && \
 	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin transfer-eth -- --n 10 && \
-	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin transfer-eth -- --n 100
+	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin transfer-eth -- --n 100 && \
+	chmod +x agg-sp1gpu-csv.sh && \
+	./agg-sp1gpu-csv.sh ./.outputs/benchmark
 
 bench-zkm:
 	. ~/.zkm-toolchain/env && \
