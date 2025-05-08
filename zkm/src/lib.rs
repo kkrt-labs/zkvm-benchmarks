@@ -4,15 +4,9 @@ use utils::{bench::Metrics, ecdsa_input, sha2_input, size};
 use zkm_build::include_elf;
 use zkm_sdk::{ProverClient, ZKMStdin};
 
-mod tendermint;
-pub use tendermint::bench_tendermint;
-
 const FIBONACCI_ELF: &[u8] = include_elf!("fibonacci");
 const SHA2_ELF: &[u8] = include_elf!("sha2-bench");
-const SHA2_CHAIN_ELF: &[u8] = include_elf!("sha2-chain");
-const SHA3_CHAIN_ELF: &[u8] = include_elf!("sha3-chain");
 const SHA3_ELF: &[u8] = include_elf!("sha3-bench");
-const BIGMEM_ELF: &[u8] = include_elf!("bigmem");
 const ECDSA_ELF: &[u8] = include_elf!("ecdsa-bench");
 const ETHTRANSFER_ELF: &[u8] = include_elf!("transfer-eth");
 
@@ -46,22 +40,6 @@ fn bench_zkm(elf: &[u8], stdin: ZKMStdin, size_label: usize) -> Metrics {
     metrics
 }
 
-pub fn benchmark_sha2_chain(iters: u32) -> Metrics {
-    let mut stdin = ZKMStdin::new();
-    let input = [5u8; 32];
-    stdin.write(&input);
-    stdin.write(&iters);
-    bench_zkm(SHA2_CHAIN_ELF, stdin, iters as usize)
-}
-
-pub fn benchmark_sha3_chain(iters: u32) -> Metrics {
-    let mut stdin = ZKMStdin::new();
-    let input = [5u8; 32];
-    stdin.write(&input);
-    stdin.write(&iters);
-    bench_zkm(SHA3_CHAIN_ELF, stdin, iters as usize)
-}
-
 pub fn benchmark_sha2(num_bytes: usize) -> Metrics {
     let input = sha2_input(num_bytes);
     let mut stdin = ZKMStdin::new();
@@ -80,12 +58,6 @@ pub fn bench_fibonacci(n: u32) -> Metrics {
     let mut stdin = ZKMStdin::new();
     stdin.write(&n);
     bench_zkm(FIBONACCI_ELF, stdin, n as usize)
-}
-
-pub fn bench_bigmem(value: u32) -> Metrics {
-    let mut stdin = ZKMStdin::new();
-    stdin.write(&value);
-    bench_zkm(BIGMEM_ELF, stdin, value as usize)
 }
 
 pub fn bench_ecdsa(n: usize) -> Metrics {

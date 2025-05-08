@@ -1,8 +1,26 @@
+######## ① Go Image Layer ###############################
+FROM golang:1.22.4-bookworm AS go-builder
+######################################################################
+
 FROM zkvm-benchmarks-base
+SHELL ["/bin/bash", "-c"]
+
+# --- Go runtime ------------------------------------------------------
+COPY --from=go-builder /usr/local/go /usr/local/go
+ENV PATH="/usr/local/go/bin:${PATH}"
+# --------------------------------------------------------------------
+
+# --- libclang for bindgen -----------------------
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        clang-14 libclang-14-dev llvm-14-dev \
+    && rm -rf /var/lib/apt/lists/*
+ENV LIBCLANG_PATH=/usr/lib/llvm-14/lib
+# --------------------------------------------------------------------
 
 # Install ZKM dependencies
-RUN curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/zkMIPS/toolchain/refs/heads/main/setup.sh | sh && \
-    echo "source ~/.zkm-toolchain/env" >> ~/.bashrc
+RUN curl --proto '=https' --tlsv1.2 -sSf \
+      https://raw.githubusercontent.com/zkMIPS/toolchain/refs/heads/main/setup.sh | bash && \
+    export PATH="$PATH:$HOME/.zkm-toolchain/bin"
 
 # Copy project files
 COPY zkm /root/workspace/zkm
@@ -11,7 +29,7 @@ COPY zkm /root/workspace/zkm
 WORKDIR /root/workspace/zkm
 
 # Run benchmarks
-CMD ["sh", "-c", "source ~/.zkm-toolchain/env && \
+CMD ["bash", "-c", ". ~/.zkm-toolchain/env && \
     RUSTFLAGS='-C target-cpu=native' cargo run --bin fibonacci --release && \
     RUSTFLAGS='-C target-cpu=native' cargo run --bin sha2 --release && \
     RUSTFLAGS='-C target-cpu=native' cargo run --bin ecdsa --release && \

@@ -12,4 +12,7 @@ COPY pico /root/workspace/pico
 WORKDIR /root/workspace/pico
 
 # Run benchmarks
-CMD ["sh", "-c", "RUSTFLAGS='-C target-cpu=native' cargo run --release"]
+CMD ["sh", "-c", "RUSTFLAGS='-C target-cpu=native' cargo run --release -p host --bin fib && \
+    RUSTFLAGS='-C target-cpu=native' cargo run --release -p host --bin sha2 && \
+    RUSTFLAGS='-C target-cpu=native' cargo run --release -p host --bin ecdsa && \
+    RUSTFLAGS='-C target-cpu=native' cargo run --release -p host --bin transfer-eth"]
