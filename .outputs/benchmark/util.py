@@ -14,8 +14,8 @@ PLOT_ORDER = PROJECT_ORDER[::-1]
 
 # Adjusted max values to prevent value overflow
 METRICS = {
-    'proof_duration': {'title': 'Proof Duration', 'unit': 's', 'divisor': 1e9, 'max_value': 400, 'min_value': 0.1},
-    'verify_duration': {'title': 'Verify Duration', 'unit': 'ms', 'divisor': 1e6, 'max_value': 2200, 'min_value': 0.001},
+    'proof_duration': {'title': 'Prover Time', 'unit': 's', 'divisor': 1e9, 'max_value': 400, 'min_value': 0.1},
+    'verify_duration': {'title': 'Verifier Time', 'unit': 'ms', 'divisor': 1e6, 'max_value': 2200, 'min_value': 1},  # 最小値を1msに変更
     'proof_bytes': {'title': 'Proof Size', 'unit': 'KB', 'divisor': 1024, 'max_value': 11000, 'min_value': 10},
     'peak_memory': {'title': 'Peak Memory', 'unit': 'GB', 'divisor': 1024**3, 'max_value': 140, 'min_value': 0.1}
 }
@@ -172,35 +172,38 @@ def create_fixed_size_grid(df):
 
     plt.show()
 
-def create_scaling_charts(df):
-    """Create scaling charts for each program with all metrics in one figure"""
+def create_scaling_grid(df):
+    """Create a grid of scaling line charts for all programs and metrics"""
 
-    # For each program, create a figure with all metrics
-    for program in PROGRAMS:
-        # Filter data for this program
-        program_df = df[df['program'] == program].copy()  # Create copy to avoid warning
+    PROGRAMS_NEW = ['fib', 'sha2', 'ethtransfer']
 
-        if program_df.empty:
-            print(f"No data available for {program}")
-            continue
+    # Create a figure with subplots - programs as rows, metrics as columns
+    fig, axes = plt.subplots(len(PROGRAMS_NEW), len(METRICS),
+                            figsize=(20, 16),
+                            constrained_layout=True)
 
-        # Create a figure with subplots - one for each metric
-        fig, axes = plt.subplots(2, 2, figsize=(16, 12), constrained_layout=True)
-        axes = axes.flatten()
+    # Title for the entire grid
+    fig.suptitle('Scaling Comparison', fontsize=20)
 
-        # Title for the entire figure
-        fig.suptitle(f'{program.upper()} Scaling Comparison', fontsize=18)
+    # Process each cell in the grid
+    for i, program in enumerate(PROGRAMS_NEW):
+        for j, (metric_name, metric_info) in enumerate(METRICS.items()):
+            ax = axes[i, j]
 
-        # Process each metric
-        for i, (metric_name, metric_info) in enumerate(METRICS.items()):
-            ax = axes[i]
+            # Filter data for this program
+            program_df = df[df['program'] == program].copy()  # Create copy to avoid warning
 
-            # For each project in fixed order, create a line
+            if program_df.empty:
+                ax.text(0.5, 0.5, f"No data for {program}",
+                        ha='center', va='center', transform=ax.transAxes)
+                continue
+
+            # For each project, create a line
             legend_handles = []
             legend_labels = []
 
-            for project in PROJECT_ORDER:  # Keep original order for line graphs
-                project_df = program_df[program_df['project'] == project].copy()  # Create copy to avoid warning
+            for project in PROJECT_ORDER:
+                project_df = program_df[program_df['project'] == project].copy()
 
                 if not project_df.empty:
                     # Sort by size and convert values
@@ -220,37 +223,48 @@ def create_scaling_charts(df):
                     line, = ax.plot(project_df['size'], project_df['converted_value'],
                                    marker='o', color=color, label=project)
 
-                    # Add to legend
-                    legend_handles.append(line)
-                    legend_labels.append(project)
+                    # Add to legend only for the first row and column
+                    if i == 0 and j == 0:
+                        legend_handles.append(line)
+                        legend_labels.append(project)
 
                     # Add project name at the end of the line
                     if len(project_df) > 0:
                         last_x = project_df['size'].iloc[-1]
                         last_y = project_df['converted_value'].iloc[-1]
                         ax.annotate(project, xy=(last_x, last_y), xytext=(5, 0),
-                                   textcoords='offset points', va='center', fontsize=9)
+                                  textcoords='offset points', va='center', fontsize=9)
 
             # Set both axes to log scale
             ax.set_xscale('log')
             ax.set_yscale('log')
 
-            # Set y-axis limits with adjusted max value
+            # Set y-axis limits
             ax.set_ylim(metric_info['min_value'], metric_info['max_value'])
 
-            # Add title for this subplot
-            ax.set_title(f'{metric_info["title"]} ({metric_info["unit"]})', fontsize=12)
+            # Add titles only for the top row
+            if i == 0:
+                ax.set_title(f'{metric_info["title"]}\n({metric_info["unit"]})', fontsize=12)
 
-            # Add x and y labels
-            ax.set_xlabel('Size', fontsize=10)
-            ax.set_ylabel(metric_info['title'], fontsize=10)
+            # Add program name to the leftmost column
+            if j == 0:
+                ax.set_ylabel(f'{program.upper()}', fontsize=12, rotation=0, ha='right')
+
+            # Add x-label only for the bottom row
+            if i == len(PROGRAMS_NEW) - 1:
+                ax.set_xlabel('Size', fontsize=10)
 
             # Add grid lines for both axes
             ax.grid(True, which='major', alpha=0.3, linestyle='-')
-            ax.grid(True, which='minor', alpha=0.1, linestyle='--')
+            ax.grid(True, which='minor', axis='x', alpha=0.1, linestyle='--')
 
-            # Add legend if it's the first subplot
-            if i == 0 and legend_handles:
-                ax.legend(legend_handles, legend_labels, loc='upper left', fontsize=8)
+    # Add a common legend at the top of the figure
+    if 'legend_handles' in locals() and legend_handles:
+        fig.legend(legend_handles, legend_labels,
+                  loc='upper center', ncol=len(legend_handles),
+                  bbox_to_anchor=(0.5, 0.98), fontsize=10)
 
-        plt.show()
+        # Adjust the subplot positions to make room for the legend
+        plt.subplots_adjust(top=0.9)
+
+    plt.show()
