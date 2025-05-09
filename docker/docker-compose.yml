@@ -95,6 +95,53 @@ services:
               count: all
               capabilities: [gpu]
 
+  sp1-gpu:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.sp1
+    volumes:
+      - ../.outputs:/root/workspace/.outputs
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/bin/docker:/usr/bin/docker
+      - /usr/local/cuda:/usr/local/cuda
+      - /usr/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu-host
+    depends_on:
+      base:
+        condition: service_completed_successfully
+    network_mode: "host"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    privileged: true
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - SP1_CUDA_CONTAINER_RUNTIME=nvidia
+      - SP1_CUDA_SERVER_TIMEOUT=300
+      - SP1_CUDA_SERVER_HOST=0.0.0.0
+      - SP1_CUDA_NVCC_ARGS="-gencode arch=compute_75,code=sm_75"
+      - SP1_CUDA_USE_HOST_MEMORY=true
+    command: >
+      bash -c "
+      RUST_BACKTRACE=full SP1_PROVER=cuda RUSTFLAGS='-C target-cpu=native' cargo run --release -p host --bin fib -- --n 10 &&
+      RUST_BACKTRACE=full SP1_PROVER=cuda RUSTFLAGS='-C target-cpu=native' cargo run --release -p host --bin fib -- --n 100 &&
+      RUST_BACKTRACE=full SP1_PROVER=cuda RUSTFLAGS='-C target-cpu=native' cargo run --release -p host --bin fib -- --n 1000 &&
+      RUST_BACKTRACE=full SP1_PROVER=cuda RUSTFLAGS='-C target-cpu=native' cargo run --release -p host --bin fib -- --n 10000 &&
+      RUST_BACKTRACE=full SP1_PROVER=cuda RUSTFLAGS='-C target-cpu=native' cargo run --release -p host --bin fib -- --n 100000 &&
+      RUST_BACKTRACE=full SP1_PROVER=cuda RUSTFLAGS='-C target-cpu=native' cargo run --release -p host --bin sha2 -- --n 32 &&
+      RUST_BACKTRACE=full SP1_PROVER=cuda RUSTFLAGS='-C target-cpu=native' cargo run --release -p host --bin sha2 -- --n 256 &&
+      RUST_BACKTRACE=full SP1_PROVER=cuda RUSTFLAGS='-C target-cpu=native' cargo run --release -p host --bin sha2 -- --n 512 &&
+      RUST_BACKTRACE=full SP1_PROVER=cuda RUSTFLAGS='-C target-cpu=native' cargo run --release -p host --bin sha2 -- --n 1024 &&
+      RUST_BACKTRACE=full SP1_PROVER=cuda RUSTFLAGS='-C target-cpu=native' cargo run --release -p host --bin sha2 -- --n 2048 &&
+      RUST_BACKTRACE=full SP1_PROVER=cuda RUSTFLAGS='-C target-cpu=native' cargo run --release -p host --bin ecdsa &&
+      RUST_BACKTRACE=full SP1_PROVER=cuda RUSTFLAGS='-C target-cpu=native' cargo run --release -p host --bin transfer-eth -- --n 1 &&
+      RUST_BACKTRACE=full SP1_PROVER=cuda RUSTFLAGS='-C target-cpu=native' cargo run --release -p host --bin transfer-eth -- --n 10 &&
+      RUST_BACKTRACE=full SP1_PROVER=cuda RUSTFLAGS='-C target-cpu=native' cargo run --release -p host --bin transfer-eth -- --n 100
+      "
+
   zkm:
     build:
       context: ..
