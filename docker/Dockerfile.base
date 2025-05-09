@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.5.0-runtime-ubuntu22.04
+FROM nvidia/cuda:12.5.0-devel-ubuntu22.04
 
 # Install basic dependencies
 RUN apt-get update && apt-get install -y \
@@ -10,6 +10,10 @@ RUN apt-get update && apt-get install -y \
     pkg-config \
     cmake \
     && rm -rf /var/lib/apt/lists/*
+
+# Set CUDA environment variables
+ENV PATH="/usr/local/cuda/bin:${PATH}"
+ENV LD_LIBRARY_PATH="/usr/local/cuda/lib64:${LD_LIBRARY_PATH}"
 
 # Install Rust nightly
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain nightly

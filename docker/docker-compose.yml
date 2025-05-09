@@ -31,6 +31,30 @@ services:
               count: all
               capabilities: [gpu]
 
+  jolt-gpu:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.jolt
+    volumes:
+      - ../.outputs:/root/workspace/.outputs
+    depends_on:
+      base:
+        condition: service_completed_successfully
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    command: >
+      bash -c "
+      ICICLE_BACKEND_INSTALL_DIR=\$$(pwd)/target/release/deps/icicle/lib/backend RUSTFLAGS='-C target-cpu=native' cargo run --release --bin fibonacci -F icicle &&
+      ICICLE_BACKEND_INSTALL_DIR=\$$(pwd)/target/release/deps/icicle/lib/backend RUSTFLAGS='-C target-cpu=native' cargo run --release --bin sha2 -F icicle &&
+      ICICLE_BACKEND_INSTALL_DIR=\$$(pwd)/target/release/deps/icicle/lib/backend RUSTFLAGS='-C target-cpu=native' cargo run --release --bin ecdsa -F icicle &&
+      ICICLE_BACKEND_INSTALL_DIR=\$$(pwd)/target/release/deps/icicle/lib/backend RUSTFLAGS='-C target-cpu=native' cargo run --release --bin transfer-eth -F icicle
+      "
+
   nexus:
     build:
       context: ..
@@ -77,6 +101,31 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
+
+  risczero-gpu:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.risczero
+    volumes:
+      - ../.outputs:/root/workspace/.outputs
+      - /usr/local/cuda:/usr/local/cuda
+    depends_on:
+      base:
+        condition: service_completed_successfully
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    command: >
+      bash -c "
+      RUSTFLAGS='-C target-cpu=native' cargo run --release -F cuda --bin fibonacci &&
+      RUSTFLAGS='-C target-cpu=native' cargo run --release -F cuda --bin sha2 &&
+      RUSTFLAGS='-C target-cpu=native' cargo run --release -F cuda --bin ecdsa &&
+      RUSTFLAGS='-C target-cpu=native' cargo run --release -F cuda --bin transfer-eth
+      "
 
   sp1:
     build:
