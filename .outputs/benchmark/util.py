@@ -268,3 +268,204 @@ def create_scaling_grid(df):
         plt.subplots_adjust(top=0.9)
 
     plt.show()
+
+def load_parallel_scaling_data(data_dir='.'):
+    """
+    複数のプロジェクトに対応したCPUスケーリングベンチマークデータをロードする
+    """
+    all_data = []
+
+    # スレッド数のリスト
+    thread_counts = [1, 2, 4, 8, 16]
+
+    # 各プログラムとプロジェクトの組み合わせでCSVファイルをロード
+    for program in PROGRAMS:
+        size = PROGRAM_SIZES[program]  # このプログラムの固定サイズを取得
+
+        # すべてのプロジェクトを対象にする
+        for project in PROJECT_ORDER:
+            # プロジェクトに対応するスレッド数データがあるか確認
+            for thread_count in thread_counts:
+                # ファイル名のパターンを作成（例：fib_sp1-cpu1.csv, fib_risczero-cpu2.csv）
+                filename = f"{program}_{project}-cpu{thread_count}.csv"
+                filepath = os.path.join(data_dir, filename)
+
+                try:
+                    df = pd.read_csv(filepath)
+
+                    # ターゲットサイズに最も近い行を検索
+                    closest_row = None
+                    min_distance = float('inf')
+
+                    for _, row in df.iterrows():
+                        distance = abs(row['size'] - size)
+                        if distance < min_distance:
+                            min_distance = distance
+                            closest_row = row
+
+                    if closest_row is not None:
+                        # この行だけを含む新しいDataFrameを作成
+                        row_df = pd.DataFrame([closest_row])
+                        # プログラム、プロジェクト、スレッド数の列を追加
+                        row_df['program'] = program
+                        row_df['project'] = project
+                        row_df['thread_count'] = thread_count
+                        all_data.append(row_df)
+                    else:
+                        print(f"Warning: No data found in {filepath}, skipping.")
+                except FileNotFoundError:
+                    # 存在しないファイルの場合はスキップ（すべてのプロジェクトで全スレッド数のファイルが存在するとは限らない）
+                    continue
+
+    # すべてのデータを結合
+    if all_data:
+        return pd.concat(all_data, ignore_index=True)
+    else:
+        raise ValueError("No CPU scaling data files found.")
+
+def create_parallel_scaling_grid(df):
+    """
+    複数のプロジェクトを比較するスレッドスケーリングのグリッド表示を作成
+    警告メッセージが出ないように修正
+    """
+    # constrained_layoutを使用せず、後でsubplots_adjustで調整
+    fig, axes = plt.subplots(len(PROGRAMS), len(METRICS),
+                           figsize=(22, 18))  # サイズを少し大きくして、collapsed axesの問題を解消
+
+    # グリッド全体のタイトル
+    fig.suptitle('Thread Scaling Comparison Across Projects', fontsize=20, y=0.98)
+
+    # 使用可能なプロジェクトのリストを取得（データに存在するプロジェクトのみ）
+    available_projects = df['project'].unique()
+
+    # 凡例用のハンドルとラベルを保存
+    legend_handles = []
+    legend_labels = []
+
+    # グリッドの各セルを処理
+    for i, program in enumerate(PROGRAMS):
+        # このプログラムの固定サイズを取得
+        size = PROGRAM_SIZES[program]
+
+        for j, (metric_name, metric_info) in enumerate(METRICS.items()):
+            ax = axes[i, j]
+
+            # このプログラムのデータをフィルタリング
+            program_df = df[df['program'] == program].copy()
+
+            if program_df.empty:
+                ax.text(0.5, 0.5, f"No data for {program} (size={size})",
+                        ha='center', va='center', transform=ax.transAxes)
+                continue
+
+            # 単位に合わせた値の変換
+            program_df.loc[:, 'converted_value'] = program_df[metric_name] / metric_info['divisor']
+
+            # 最小値と最大値を追跡して、後でY軸の範囲を設定
+            min_values = []
+            max_values = []
+
+            # 各プロジェクトの線をプロット
+            for project in available_projects:
+                # このプロジェクトのデータをフィルタリング
+                project_df = program_df[program_df['project'] == project].copy()
+
+                if project_df.empty:
+                    continue
+
+                # スレッド数で並べ替え
+                project_df = project_df.sort_values(by='thread_count')
+
+                # ゼロや負の値をフィルタリング（対数スケールの問題を解消）
+                project_df = project_df[project_df['converted_value'] > 0]
+
+                if project_df.empty:
+                    continue
+
+                # このプロジェクトの色を取得
+                color = PROJECT_COLORS.get(project, 'gray')
+
+                # 線のプロット
+                line, = ax.plot(project_df['thread_count'], project_df['converted_value'],
+                               marker='o', color=color, linewidth=2, markersize=8,
+                               label=project)
+
+                # i=0, j=0の場合のみ凡例に追加（最初のグラフだけ）
+                if i == 0 and j == 0:
+                    legend_handles.append(line)
+                    legend_labels.append(project)
+
+                # 各データポイントに値を表示
+                for _, row in project_df.iterrows():
+                    thread_count = row['thread_count']
+                    value = row['converted_value']
+
+                    # 値の大きさに基づいてフォーマット
+                    if value < 1:
+                        value_text = f'{value:.2f}'
+                    elif value < 10:
+                        value_text = f'{value:.1f}'
+                    else:
+                        value_text = f'{int(value)}'
+
+                    # 値のテキスト表示位置を調整（プロット内で重ならないように）
+                    ax.text(thread_count, value*1.05, value_text,
+                           ha='center', va='bottom', fontsize=8)
+
+                # プロジェクト名を線の終端に表示
+                last_x = project_df['thread_count'].iloc[-1]
+                last_y = project_df['converted_value'].iloc[-1]
+                ax.annotate(project, xy=(last_x, last_y), xytext=(5, 0),
+                          textcoords='offset points', va='center', fontsize=8)
+
+                # 最小値と最大値を追跡（ゼロより大きい値のみ）
+                min_values.append(project_df['converted_value'].min())
+                max_values.append(project_df['converted_value'].max())
+
+            # X軸を実際のスレッド数値に設定
+            ax.set_xticks([1, 2, 4, 8, 16])
+            ax.set_xticklabels([1, 2, 4, 8, 16])
+
+            # 特定のメトリクスには対数スケールを使用
+            if metric_name in ['proof_duration', 'verify_duration']:
+                ax.set_yscale('log')
+                if min_values and max_values:
+                    # 対数スケールでは正の値のみ使用できるため、最小値が0以下にならないように保証
+                    min_val = max(min(min_values) * 0.8, 1e-10)  # 十分に小さい正の値を使用
+                    max_val = max(max_values) * 1.2
+                    ax.set_ylim(min_val, max_val)
+            else:
+                # その他のメトリクスには線形スケールを使用
+                if min_values and max_values:
+                    # 線形スケールでも安全のためにメトリクスの最小値と0の大きい方を使用
+                    min_val = max(0, min(min_values) * 0.9)
+                    max_val = max(max_values) * 1.1
+                    ax.set_ylim(min_val, max_val)
+
+            # タイトルとラベルを設定
+            if i == 0:
+                ax.set_title(f'{metric_info["title"]}\n({metric_info["unit"]})', fontsize=12)
+
+            if j == 0:
+                ax.set_ylabel(f'{program.upper()}\n(size={size})', fontsize=12, rotation=0, ha='right')
+
+            if i == len(PROGRAMS) - 1:
+                ax.set_xlabel('Thread Count', fontsize=10)
+
+            # 可読性向上のためのグリッド線
+            ax.grid(True, which='major', alpha=0.3, linestyle='-')
+
+            # 対数スケールの場合、副グリッド線も追加
+            if metric_name in ['proof_duration', 'verify_duration']:
+                ax.grid(True, which='minor', alpha=0.1, linestyle='--')
+
+    # サブプロット間の余白を調整して、重なりを防止
+    plt.tight_layout(rect=[0, 0, 1, 0.95])  # タイトルと凡例のスペースを確保
+
+    # # 共通の凡例を図の上部に配置
+    # if legend_handles:
+    #     fig.legend(legend_handles, legend_labels,
+    #               loc='upper center', ncol=min(len(legend_handles), 5),  # 凡例を複数行に分けて表示
+    #               bbox_to_anchor=(0.5, 0.99), fontsize=10)
+
+    plt.show()

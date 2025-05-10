@@ -32,5 +32,4 @@ WORKDIR /root/workspace/zkm
 CMD ["bash", "-c", ". ~/.zkm-toolchain/env && \
     RUSTFLAGS='-C target-cpu=native' cargo run --bin fibonacci --release && \
     RUSTFLAGS='-C target-cpu=native' cargo run --bin sha2 --release && \
-    RUSTFLAGS='-C target-cpu=native' cargo run --bin ecdsa --release && \
-    RUSTFLAGS='-C target-cpu=native' cargo run --bin transfer-eth --release"]
+    RUSTFLAGS='-C target-cpu=native' cargo run --bin ecdsa --release"]

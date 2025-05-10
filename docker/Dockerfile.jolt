@@ -13,5 +13,4 @@ WORKDIR /root/workspace/jolt
 CMD ["sh", "-c", "rustup override set nightly && \
     RUSTFLAGS='-C target-cpu=native' cargo run --release --bin fibonacci && \
     RUSTFLAGS='-C target-cpu=native' cargo run --release --bin sha2 && \
-    RUSTFLAGS='-C target-cpu=native' cargo run --release --bin ecdsa && \
-    RUSTFLAGS='-C target-cpu=native' cargo run --release --bin transfer-eth"]
+    RUSTFLAGS='-C target-cpu=native' cargo run --release --bin ecdsa"]
