@@ -125,8 +125,8 @@ perf-jolt:
 		--compact_labels=true \
 		--hide='__libc_.*' \
 		./jolt/target/release/profiling \
-		./profile_outputs/profile_jolt.pb \
-		> ./profile_outputs/profile_jolt.svg
+		./.outputs/profiling/profile_jolt.pb \
+		> ./.outputs/profiling/profile_jolt.svg
 
 perf-sp1:
 	cd sp1 && \
@@ -139,8 +139,8 @@ perf-sp1:
 		--compact_labels=true \
 		--hide='__libc_.*' \
 		./sp1/target/release/profiling \
-		./profile_outputs/profile_sp1.pb \
-		> ./profile_outputs/profile_sp1.svg
+		./.outputs/profiling/profile_sp1.pb \
+		> ./.outputs/profiling/profile_sp1.svg
 
 perf-openvm:
 	cd openvm && \
@@ -153,8 +153,8 @@ perf-openvm:
 		--compact_labels=true \
 		--hide='__libc_.*' \
 		./openvm/target/release/profiling \
-		./profile_outputs/profile_openvm.pb \
-		> ./profile_outputs/profile_openvm.svg
+		./.outputs/profiling/profile_openvm.pb \
+		> ./.outputs/profiling/profile_openvm.svg
 
 
 perf-nexus:
@@ -168,8 +168,8 @@ perf-nexus:
 		--compact_labels=true \
 		--hide='__libc_.*' \
 		./nexus/target/release/profiling \
-		./profile_outputs/profile_nexus.pb \
-		> ./profile_outputs/profile_nexus.svg
+		./.outputs/profiling/profile_nexus.pb \
+		> ./.outputs/profiling/profile_nexus.svg
 
 perf-pico:
 	cd pico && \
@@ -182,8 +182,8 @@ perf-pico:
 		--compact_labels=true \
 		--hide='__libc_.*' \
 		./pico/target/release/profiling \
-		./profile_outputs/profile_pico.pb \
-		> ./profile_outputs/profile_pico.svg
+		./.outputs/profiling/profile_pico.pb \
+		> ./.outputs/profiling/profile_pico.svg
 
 perf-zkm:
 	. ~/.zkm-toolchain/env && \
@@ -197,8 +197,8 @@ perf-zkm:
 		--compact_labels=true \
 		--hide='__libc_.*' \
 		./zkm/target/release/profiling \
-		./profile_outputs/profile_zkm.pb \
-		> ./profile_outputs/profile_zkm.svg
+		./.outputs/profiling/profile_zkm.pb \
+		> ./.outputs/profiling/profile_zkm.svg
 
 perf-risczero:
 	cd risczero && \
@@ -211,5 +211,5 @@ perf-risczero:
 		--compact_labels=true \
 		--hide='__libc_.*' \
 		./risczero/target/release/profiling \
-		./profile_outputs/profile_risczero.pb \
-		> ./profile_outputs/profile_risczero.svg
+		./.outputs/profiling/profile_risczero.pb \
+		> ./.outputs/profiling/profile_risczero.svg
