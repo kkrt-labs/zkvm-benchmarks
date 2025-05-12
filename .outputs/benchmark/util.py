@@ -524,6 +524,4 @@ def create_e2e_performance_table(df, thread_count=1):
         else:
             result_df = pd.concat([result_df, project_df])
 
-    # NaNをそのまま保持（表示時にNaNになる）
-
     return result_df
