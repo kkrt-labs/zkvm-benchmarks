@@ -11,11 +11,13 @@ PROGRAMS = ['fib', 'sha2', 'ecdsa', 'ethtransfer']
 PROJECT_ORDER = ['sp1', 'sp1-gpu', 'risczero', 'risczero-gpu', 'openvm', 'pico', 'zkm', 'nexus', 'jolt']
 # Reversed order for plotting (to display from top to bottom)
 PLOT_ORDER = PROJECT_ORDER[::-1]
+# Thread Counts
+THREAD_COUNT = [1, 2, 4, 8, 16]
 
 # Adjusted max values to prevent value overflow
 METRICS = {
-    'proof_duration': {'title': 'Prover Time', 'unit': 's', 'divisor': 1e9, 'max_value': 400, 'min_value': 0.1},
-    'verify_duration': {'title': 'Verifier Time', 'unit': 'ms', 'divisor': 1e6, 'max_value': 2200, 'min_value': 1},  # 最小値を1msに変更
+    'proof_duration': {'title': 'Prover Time', 'unit': 's', 'divisor': 1e9, 'max_value': 2000, 'min_value': 0.1},
+    'verify_duration': {'title': 'Verifier Time', 'unit': 'ms', 'divisor': 1e6, 'max_value': 3200, 'min_value': 1},  # 最小値を1msに変更
     'proof_bytes': {'title': 'Proof Size', 'unit': 'KB', 'divisor': 1024, 'max_value': 11000, 'min_value': 10},
     'peak_memory': {'title': 'Peak Memory', 'unit': 'GB', 'divisor': 1024**3, 'max_value': 140, 'min_value': 0.1}
 }
@@ -43,41 +45,71 @@ PROJECT_COLORS = {
     "novanet": "purple",
 }
 
-def load_data(data_dir='.'):
-    """Load all benchmark CSV files and combine them into a structured dataframe"""
+def load_data(data_dir='.', is_thread=False):
+    """
+    Load benchmark data for parallel scaling
+    """
     all_data = []
 
-    # Find all CSV files matching the pattern
     for program in PROGRAMS:
         for project in PROJECT_ORDER:
-            filename = f"{program}_{project}.csv"
-            filepath = os.path.join(data_dir, filename)
+            if is_thread and (project.endswith('-gpu') != True):
+                for thread_count in THREAD_COUNT:
+                    filename = f"{program}_{project}-cpu{thread_count}.csv"
+                    filepath = os.path.join(data_dir, filename)
 
-            try:
-                df = pd.read_csv(filepath)
-                # Add columns for program and project
-                df['program'] = program
-                df['project'] = project
-                all_data.append(df)
-            except FileNotFoundError:
-                print(f"Warning: {filepath} not found, skipping.")
+                    try:
+                        df = pd.read_csv(filepath)
+                        df['program'] = program
+                        df['project'] = project
+                        df['thread_count'] = thread_count
+                        all_data.append(df)
 
-    # Combine all data
+
+                    except FileNotFoundError:
+                        print(f"Warning: {filepath} not found, skipping.")
+
+            else:
+                filename = f"{program}_{project}.csv"
+                filepath = os.path.join(data_dir, filename)
+
+                try:
+                    df = pd.read_csv(filepath)
+                    # Add columns for program and project
+                    df['program'] = program
+                    df['project'] = project
+                    df['thread_count'] = THREAD_COUNT[-1]  # Default to the last thread count (16)
+                    all_data.append(df)
+                except FileNotFoundError:
+                    print(f"Warning: {filepath} not found, skipping.")
+
+    # すべてのデータを結合
     if all_data:
         return pd.concat(all_data, ignore_index=True)
     else:
         raise ValueError("No data files found.")
 
-def create_fixed_size_grid(df):
-    """Create a grid of horizontal bar charts for all programs with their fixed sizes and all metrics"""
+def create_fixed_size_grid(df, thread_count=None):
+    """
+    Create a grid of horizontal bar charts for all programs with their fixed sizes and all metrics
 
+    Parameters:
+    df (DataFrame): The dataframe containing benchmark data
+    thread_count (int, optional): The thread count to filter by. If None, no filtering is applied.
+    """
     # Create a figure with subplots - programs as rows, metrics as columns
+    thread_count = 16 if thread_count is None else thread_count
     fig, axes = plt.subplots(len(PROGRAMS), len(METRICS),
                             figsize=(20, 16),
                             constrained_layout=True)
 
     # Title for the entire grid
-    fig.suptitle('E2E Comparison', fontsize=20)
+    title = 'E2E Performance Comparison'
+    if thread_count == 16:
+        title += f' (Multi Threads)'
+    elif thread_count == 1:
+        title += f' (Single Thread)'
+    fig.suptitle(title, fontsize=20)
 
     # Process each cell in the grid
     for i, program in enumerate(PROGRAMS):
@@ -88,6 +120,7 @@ def create_fixed_size_grid(df):
             ax = axes[i, j]
 
             # Filter data for this program and size
+            df = df[df['thread_count'] == thread_count] if thread_count else df
             program_df = df[(df['program'] == program) & (df['size'] == size)].copy()  # Create copy to avoid warning
 
             if program_df.empty:
@@ -172,18 +205,28 @@ def create_fixed_size_grid(df):
 
     plt.show()
 
-def create_scaling_grid(df):
-    """Create a grid of scaling line charts for all programs and metrics"""
+def create_scaling_grid(df, thread_count=None):
+    """Create a grid of scaling line charts for all programs and metrics
 
+    Parameters:
+    df (DataFrame): The dataframe containing benchmark data
+    thread_count (int, optional): スレッド数でフィルタリングする場合に指定。Noneの場合はフィルタリングしない
+    """
     PROGRAMS_NEW = ['fib', 'sha2', 'ethtransfer']
 
     # Create a figure with subplots - programs as rows, metrics as columns
+    thread_count = 16 if thread_count is None else thread_count
     fig, axes = plt.subplots(len(PROGRAMS_NEW), len(METRICS),
                             figsize=(20, 16),
                             constrained_layout=True)
 
     # Title for the entire grid
-    fig.suptitle('Scaling Comparison', fontsize=20)
+    title = 'Scalability Curve Comparison'
+    if thread_count == 16:
+        title += f' (Multi Threads)'
+    elif thread_count == 1:
+        title += f' (Single Thread)'
+    fig.suptitle(title, fontsize=20)
 
     # Process each cell in the grid
     for i, program in enumerate(PROGRAMS_NEW):
@@ -191,6 +234,7 @@ def create_scaling_grid(df):
             ax = axes[i, j]
 
             # Filter data for this program
+            df = df[df['thread_count'] == thread_count] if thread_count else df
             program_df = df[df['program'] == program].copy()  # Create copy to avoid warning
 
             if program_df.empty:
@@ -269,138 +313,68 @@ def create_scaling_grid(df):
 
     plt.show()
 
-def load_parallel_scaling_data(data_dir='.'):
-    """
-    複数のプロジェクトに対応したCPUスケーリングベンチマークデータをロードする
-    """
-    all_data = []
-
-    # スレッド数のリスト
-    thread_counts = [1, 2, 4, 8, 16]
-
-    # 各プログラムとプロジェクトの組み合わせでCSVファイルをロード
-    for program in PROGRAMS:
-        size = PROGRAM_SIZES[program]  # このプログラムの固定サイズを取得
-
-        # すべてのプロジェクトを対象にする
-        for project in PROJECT_ORDER:
-            # プロジェクトに対応するスレッド数データがあるか確認
-            for thread_count in thread_counts:
-                # ファイル名のパターンを作成（例：fib_sp1-cpu1.csv, fib_risczero-cpu2.csv）
-                filename = f"{program}_{project}-cpu{thread_count}.csv"
-                filepath = os.path.join(data_dir, filename)
-
-                try:
-                    df = pd.read_csv(filepath)
-
-                    # ターゲットサイズに最も近い行を検索
-                    closest_row = None
-                    min_distance = float('inf')
-
-                    for _, row in df.iterrows():
-                        distance = abs(row['size'] - size)
-                        if distance < min_distance:
-                            min_distance = distance
-                            closest_row = row
-
-                    if closest_row is not None:
-                        # この行だけを含む新しいDataFrameを作成
-                        row_df = pd.DataFrame([closest_row])
-                        # プログラム、プロジェクト、スレッド数の列を追加
-                        row_df['program'] = program
-                        row_df['project'] = project
-                        row_df['thread_count'] = thread_count
-                        all_data.append(row_df)
-                    else:
-                        print(f"Warning: No data found in {filepath}, skipping.")
-                except FileNotFoundError:
-                    # 存在しないファイルの場合はスキップ（すべてのプロジェクトで全スレッド数のファイルが存在するとは限らない）
-                    continue
-
-    # すべてのデータを結合
-    if all_data:
-        return pd.concat(all_data, ignore_index=True)
-    else:
-        raise ValueError("No CPU scaling data files found.")
-
 def create_parallel_scaling_grid(df):
     """
-    複数のプロジェクトを比較するスレッドスケーリングのグリッド表示を作成
-    警告メッセージが出ないように修正
+    Create a grid of line charts for all programs and metrics with parallel scaling
+
+    Parameters:
+    - df (DataFrame): The dataframe containing benchmark data
     """
-    # constrained_layoutを使用せず、後でsubplots_adjustで調整
     fig, axes = plt.subplots(len(PROGRAMS), len(METRICS),
-                           figsize=(22, 18))  # サイズを少し大きくして、collapsed axesの問題を解消
+                           figsize=(22, 18))
 
-    # グリッド全体のタイトル
-    fig.suptitle('Thread Scaling Comparison Across Projects', fontsize=20, y=0.98)
+    fig.suptitle('Parallel Performance', fontsize=20, y=0.98)
 
-    # 使用可能なプロジェクトのリストを取得（データに存在するプロジェクトのみ）
     available_projects = df['project'].unique()
 
-    # 凡例用のハンドルとラベルを保存
     legend_handles = []
     legend_labels = []
 
-    # グリッドの各セルを処理
     for i, program in enumerate(PROGRAMS):
-        # このプログラムの固定サイズを取得
         size = PROGRAM_SIZES[program]
 
         for j, (metric_name, metric_info) in enumerate(METRICS.items()):
             ax = axes[i, j]
 
-            # このプログラムのデータをフィルタリング
-            program_df = df[df['program'] == program].copy()
+            program_df = df[(df['program'] == program) & (df['size'] == size)].copy()
 
             if program_df.empty:
                 ax.text(0.5, 0.5, f"No data for {program} (size={size})",
                         ha='center', va='center', transform=ax.transAxes)
                 continue
 
-            # 単位に合わせた値の変換
             program_df.loc[:, 'converted_value'] = program_df[metric_name] / metric_info['divisor']
 
-            # 最小値と最大値を追跡して、後でY軸の範囲を設定
             min_values = []
             max_values = []
 
-            # 各プロジェクトの線をプロット
             for project in available_projects:
-                # このプロジェクトのデータをフィルタリング
                 project_df = program_df[program_df['project'] == project].copy()
 
                 if project_df.empty:
                     continue
 
-                # スレッド数で並べ替え
                 project_df = project_df.sort_values(by='thread_count')
 
-                # ゼロや負の値をフィルタリング（対数スケールの問題を解消）
                 project_df = project_df[project_df['converted_value'] > 0]
 
                 if project_df.empty:
                     continue
 
-                # このプロジェクトの色を取得
                 color = PROJECT_COLORS.get(project, 'gray')
 
-                # 線のプロット
                 line, = ax.plot(project_df['thread_count'], project_df['converted_value'],
                                marker='o', color=color, linewidth=2, markersize=8,
                                label=project)
 
-                # i=0, j=0の場合のみ凡例に追加（最初のグラフだけ）
                 if i == 0 and j == 0:
                     legend_handles.append(line)
                     legend_labels.append(project)
 
-                # 各データポイントに値を表示
                 for _, row in project_df.iterrows():
                     thread_count = row['thread_count']
                     value = row['converted_value']
 
-                    # 値の大きさに基づいてフォーマット
                     if value < 1:
                         value_text = f'{value:.2f}'
                     elif value < 10:
@@ -408,41 +382,32 @@ def create_parallel_scaling_grid(df):
                     else:
                         value_text = f'{int(value)}'
 
-                    # 値のテキスト表示位置を調整（プロット内で重ならないように）
                     ax.text(thread_count, value*1.05, value_text,
                            ha='center', va='bottom', fontsize=8)
 
-                # プロジェクト名を線の終端に表示
                 last_x = project_df['thread_count'].iloc[-1]
                 last_y = project_df['converted_value'].iloc[-1]
                 ax.annotate(project, xy=(last_x, last_y), xytext=(5, 0),
                           textcoords='offset points', va='center', fontsize=8)
 
-                # 最小値と最大値を追跡（ゼロより大きい値のみ）
                 min_values.append(project_df['converted_value'].min())
                 max_values.append(project_df['converted_value'].max())
 
-            # X軸を実際のスレッド数値に設定
             ax.set_xticks([1, 2, 4, 8, 16])
             ax.set_xticklabels([1, 2, 4, 8, 16])
 
-            # 特定のメトリクスには対数スケールを使用
             if metric_name in ['proof_duration', 'verify_duration']:
                 ax.set_yscale('log')
                 if min_values and max_values:
-                    # 対数スケールでは正の値のみ使用できるため、最小値が0以下にならないように保証
-                    min_val = max(min(min_values) * 0.8, 1e-10)  # 十分に小さい正の値を使用
+                    min_val = max(min(min_values) * 0.8, 1e-10)
                     max_val = max(max_values) * 1.2
                     ax.set_ylim(min_val, max_val)
             else:
-                # その他のメトリクスには線形スケールを使用
                 if min_values and max_values:
-                    # 線形スケールでも安全のためにメトリクスの最小値と0の大きい方を使用
                     min_val = max(0, min(min_values) * 0.9)
                     max_val = max(max_values) * 1.1
                     ax.set_ylim(min_val, max_val)
 
-            # タイトルとラベルを設定
             if i == 0:
                 ax.set_title(f'{metric_info["title"]}\n({metric_info["unit"]})', fontsize=12)
 
@@ -452,20 +417,113 @@ def create_parallel_scaling_grid(df):
             if i == len(PROGRAMS) - 1:
                 ax.set_xlabel('Thread Count', fontsize=10)
 
-            # 可読性向上のためのグリッド線
             ax.grid(True, which='major', alpha=0.3, linestyle='-')
 
-            # 対数スケールの場合、副グリッド線も追加
             if metric_name in ['proof_duration', 'verify_duration']:
                 ax.grid(True, which='minor', alpha=0.1, linestyle='--')
 
-    # サブプロット間の余白を調整して、重なりを防止
-    plt.tight_layout(rect=[0, 0, 1, 0.95])  # タイトルと凡例のスペースを確保
-
-    # # 共通の凡例を図の上部に配置
-    # if legend_handles:
-    #     fig.legend(legend_handles, legend_labels,
-    #               loc='upper center', ncol=min(len(legend_handles), 5),  # 凡例を複数行に分けて表示
-    #               bbox_to_anchor=(0.5, 0.99), fontsize=10)
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
 
     plt.show()
+
+def create_e2e_performance_table(df, thread_count=1):
+    """
+    Create a table for E2E performance metrics
+    This function filters the data based on the specified thread count and formats the metrics for display.
+    The table is structured with projects as rows and metrics as columns, with each program's data displayed.
+
+    Parameters:
+    - df (DataFrame): The dataframe containing benchmark data
+    - thread_count (int): The thread count to filter by. Default is 1.
+
+    Returns:
+    - result_df (DataFrame): A DataFrame containing the formatted metrics for each project and program.
+    """
+    if thread_count not in THREAD_COUNT:
+        print(f"Warning: Thread count {thread_count} is not in {THREAD_COUNT}. Using default value 1.")
+        thread_count = 1
+
+    # Filter the dataframe based on the thread count
+    if 'thread_count' in df.columns:
+        df = df[df['thread_count'] == thread_count].copy()
+
+    metrics_list = [
+        (name, info['title'], info['unit'], info['divisor'])
+        for name, info in METRICS.items()
+    ]
+
+    result_df = pd.DataFrame()
+
+    for project in PROJECT_ORDER:
+        project_data = {}
+
+        for metric_name, metric_title, metric_unit, divisor in metrics_list:
+            metric_display = f"{metric_title} ({metric_unit})"
+
+            # このメトリクスの各プログラムの値
+            metric_values = {}
+
+            # 各プログラムについて処理
+            for program in PROGRAMS:
+                # サイズを取得
+                size = PROGRAM_SIZES[program]
+
+                # このプロジェクト、プログラムの組み合わせでデータをフィルタリング
+                filtered_df = df[(df['project'] == project) & (df['program'] == program) & (df['size'] == size)].copy()
+
+                if filtered_df.empty:
+                    # データがない場合はNaNを設定
+                    metric_values[program] = np.nan
+                else:
+                    # サイズが最も近い行を検索
+                    filtered_df = filtered_df.copy()
+                    if 'size' in filtered_df.columns:
+                        filtered_df['size_diff'] = abs(filtered_df['size'] - size)
+                        closest_row = filtered_df.loc[filtered_df['size_diff'].idxmin()]
+
+                        # メトリクス値を変換して設定（0の場合はNaN）
+                        if metric_name in closest_row:
+                            value = closest_row[metric_name]
+                            # 0の場合はNaNに設定
+                            if value == 0:
+                                metric_values[program] = np.nan
+                            else:
+                                value = value / divisor
+                                metric_values[program] = round(value, 2)
+                        else:
+                            metric_values[program] = np.nan
+                    else:
+                        # sizeカラムがない場合
+                        metric_values[program] = np.nan
+
+            # このメトリクスのデータをプロジェクトデータに追加
+            project_data[metric_display] = metric_values
+
+        # このプロジェクトのデータをデータフレームに変換
+        project_df = pd.DataFrame()
+
+        # メトリクスごとに処理
+        for metric_name, metric_title, metric_unit, _ in metrics_list:
+            metric_display = f"{metric_title} ({metric_unit})"
+
+            if metric_display in project_data:
+                # このメトリクスのデータを取得
+                metric_data = project_data[metric_display]
+
+                # 各プログラムについて列を作成
+                for program in PROGRAMS:
+                    col_name = (metric_display, program)
+                    project_df[col_name] = [metric_data.get(program, np.nan)]
+
+        # プロジェクト名をインデックスに設定
+        project_df.index = [project]
+
+        # 結果のデータフレームに追加
+        if result_df.empty:
+            result_df = project_df
+        else:
+            result_df = pd.concat([result_df, project_df])
+
+    # NaNをそのまま保持（表示時にNaNになる）
+
+    return result_df
