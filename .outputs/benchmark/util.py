@@ -525,3 +525,133 @@ def create_e2e_performance_table(df, thread_count=1):
             result_df = pd.concat([result_df, project_df])
 
     return result_df
+
+def create_cycles_vs_prover_time_plot(df, thread_count=1, projects=None):
+    """
+    Create a plot showing the relationship between cycles and proof_duration for selected projects
+
+    Parameters:
+    - df (DataFrame): The dataframe containing benchmark data
+    - thread_count (int): The thread count to filter by. Default is 1.
+    - projects (list, optional): List of project names to include in the plot.
+                                 If None, all projects in PROJECT_ORDER will be used.
+
+    This function creates a multi-panel plot with one subplot per project,
+    showing cycles vs proof_duration (prover time) regardless of size or program.
+    """
+    if thread_count not in THREAD_COUNT:
+        print(f"Warning: Thread count {thread_count} is not in {THREAD_COUNT}. Using default value 1.")
+        thread_count = 1
+
+    # Filter the dataframe based on the thread count
+    if 'thread_count' in df.columns:
+        df = df[df['thread_count'] == thread_count].copy()
+
+    # Keep only rows with both cycles and proof_duration
+    plot_df = df[df['cycles'].notna() & df['proof_duration'].notna()].copy()
+
+    if plot_df.empty:
+        print("No data available with both cycles and proof_duration. Cannot create plot.")
+        return
+
+    # Convert proof_duration to seconds for display
+    plot_df['proof_duration_sec'] = plot_df['proof_duration'] / 1e9
+
+    # Use specified projects or default to PROJECT_ORDER
+    if projects is None:
+        all_projects = PROJECT_ORDER
+    else:
+        all_projects = projects if isinstance(projects, list) else [projects]
+
+    # Determine the projects that exist in the data
+    projects_to_plot = [p for p in all_projects if p in plot_df['project'].unique()]
+
+    if not projects_to_plot:
+        print("No specified projects found in the data. Cannot create plot.")
+        return
+
+    # Calculate the grid dimensions based on the number of projects
+    n_projects = len(projects_to_plot)
+    n_cols = min(3, n_projects)  # Max 3 columns
+    n_rows = (n_projects + n_cols - 1) // n_cols  # Ceiling division
+
+    # Create the figure and subplots
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(15, 4 * n_rows), squeeze=False)
+
+    # Find global min and max for consistent axes across subplots
+    min_cycles = plot_df['cycles'].min()
+    max_cycles = plot_df['cycles'].max()
+    min_duration = plot_df['proof_duration_sec'].min()
+    max_duration = plot_df['proof_duration_sec'].max()
+
+    # Add some padding to the limits
+    min_cycles = max(1, min_cycles * 0.9)  # Avoid log scale issues with zero or negative values
+    max_cycles = max_cycles * 1.1
+    min_duration = max(0.1, min_duration * 0.9)  # Avoid log scale issues
+    max_duration = max_duration * 1.1
+
+    # Flatten axes array for easier indexing
+    axes_flat = axes.flatten()
+
+    # Plot each project in its own subplot
+    for i, project in enumerate(projects_to_plot):
+        ax = axes_flat[i]
+
+        # Filter data for this project
+        project_df = plot_df[plot_df['project'] == project]
+
+        if project_df.empty:
+            ax.text(0.5, 0.5, f"No data for {project}", ha='center', va='center', transform=ax.transAxes)
+            continue
+
+        # Group by program to use different colors and markers
+        for program, group in project_df.groupby('program'):
+            color = {'fib': 'blue', 'sha2': 'red', 'ecdsa': 'green', 'ethtransfer': 'purple'}.get(program, 'gray')
+
+            # Sort by cycles for better line plotting
+            group = group.sort_values('cycles')
+
+            # Plot the line
+            ax.plot(group['proof_duration_sec'], group['cycles'],
+                   marker='o', linestyle='-', label=program, color=color)
+
+        # Set the title and labels
+        ax.set_title(f"{project}", fontsize=12)
+        ax.set_xlabel("Prover Time (s)", fontsize=10)
+        ax.set_ylabel("Cycles", fontsize=10)
+
+        # Set log scales for both axes
+        ax.set_xscale('log')
+        ax.set_yscale('log')
+
+        # Set consistent limits across subplots
+        ax.set_xlim(min_duration, max_duration)
+        ax.set_ylim(min_cycles, max_cycles)
+
+        # Add grid for better readability
+        ax.grid(True, which='both', alpha=0.3, linestyle='-')
+
+        # Add legend
+        ax.legend(fontsize=8, loc='best')
+
+    # Hide any unused subplots
+    for i in range(n_projects, len(axes_flat)):
+        axes_flat[i].set_visible(False)
+
+    # Create title with project information
+    if len(projects_to_plot) == 1:
+        plot_title = f'Cycles vs Prover Time for {projects_to_plot[0]} (Thread Count: {thread_count})'
+    else:
+        if len(projects_to_plot) <= 3:
+            project_list = ', '.join(projects_to_plot)
+            plot_title = f'Cycles vs Prover Time for {project_list} (Thread Count: {thread_count})'
+        else:
+            plot_title = f'Cycles vs Prover Time for {len(projects_to_plot)} Projects (Thread Count: {thread_count})'
+
+    # Add a title for the entire figure
+    fig.suptitle(plot_title, fontsize=16, y=0.99)
+
+    # Adjust layout
+    plt.tight_layout(rect=[0, 0, 1, 0.97])
+
+    plt.show()
