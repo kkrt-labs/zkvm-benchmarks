@@ -213,3 +213,35 @@ perf-risczero:
 		./risczero/target/release/profiling \
 		./.outputs/profiling/profile_risczero.pb \
 		> ./.outputs/profiling/profile_risczero.svg
+
+heap-sp1:
+	cd sp1 && \
+	heaptrack --output ../heaptrack.sp1.gz ./target/release/profiling
+
+heap-openvm:
+	cd openvm && \
+	heaptrack --output ../heaptrack.openvm.gz ./target/release/profiling
+
+heap-nexus:
+	cd nexus && \
+	heaptrack --output ../heaptrack.nexus.gz ./target/release/profiling
+
+heap-pico:
+	cd pico && \
+	heaptrack --output ../heaptrack.pico.gz ./target/release/profiling
+
+heap-zkm:
+	cd zkm && \
+	heaptrack --output ../heaptrack.zkm.gz ./target/release/profiling
+
+heap-risczero:
+	cd risczero && \
+	heaptrack --output ../heaptrack.risczero.gz ./target/release/profiling
+
+heap-powdr:
+	cd powdr && \
+	heaptrack --output ../heaptrack.powdr.gz ./target/release/profiling
+
+heap-jolt:
+	cd jolt && \
+	heaptrack --output ../heaptrack.jolt.gz ./target/release/profiling

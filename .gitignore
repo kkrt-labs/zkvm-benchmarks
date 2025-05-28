@@ -20,3 +20,4 @@ novanet/wats/*
 __pycache__/
 *.pb
 .outputs/traces/*.json
+*.zst
