@@ -9,6 +9,11 @@ bench-all:
 	# make bench-pico
 	make bench-zkm
 	make bench-nexus
+	make bench-cairo-m
+
+bench-cairo-m:
+	cd cairo-m && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release
 
 bench-jolt:
 	cd jolt && \
@@ -28,10 +33,7 @@ bench-jolt-gpu:
 
 bench-sp1:
 	cd sp1 && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin fib && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin sha2 && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin ecdsa && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin transfer-eth
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin fib
 
 bench-sp1-gpu:
 	cd sp1 && \
@@ -62,10 +64,7 @@ bench-zkm:
 
 bench-risczero:
 	cd risczero && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2 && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin ecdsa && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin transfer-eth
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci
 
 bench-risczero-gpu:
 	cd risczero && \
