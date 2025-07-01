@@ -1,7 +1,9 @@
 use std::time::Instant;
 
 use cairo_m_common::Program;
-use cairo_m_prover::{adapter::import_from_runner_output, prover::prove_cairo_m};
+use cairo_m_prover::{
+    adapter::import_from_runner_output, prover::prove_cairo_m, verifier::verify_cairo_m,
+};
 use cairo_m_runner::run_cairo_program;
 use stwo_prover::core::{fields::m31::M31, vcs::blake2_merkle::Blake2sMerkleChannel};
 use utils::{
@@ -113,8 +115,12 @@ fn bench_cairo_fib(n: u32) -> Metrics {
     let proof =
         prove_cairo_m::<Blake2sMerkleChannel>(&mut prover_input).expect("failed to generate proof");
     metrics.proof_duration = start.elapsed();
-
     metrics.proof_bytes = proof.stark_proof.size_estimate();
+
+    // verify proof
+    let start = Instant::now();
+    verify_cairo_m::<Blake2sMerkleChannel>(proof).expect("failed to verify proof");
+    metrics.verify_duration = start.elapsed();
 
     metrics
 }
