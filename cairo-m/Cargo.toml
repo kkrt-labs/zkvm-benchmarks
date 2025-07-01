@@ -1,0 +1,16 @@
+[package]
+name = "cairo-m"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+cairo-m-common = { git = "https://github.com/kkrt-labs/cairo-m" }
+cairo-m-runner = { git = "https://github.com/kkrt-labs/cairo-m" }
+cairo-m-prover = { git = "https://github.com/kkrt-labs/cairo-m" }
+thiserror = "2.0.12"
+sonic-rs = "0.5.1"
+stwo-prover = { git = "https://github.com/starkware-libs/stwo", features = [
+  "parallel",
+], rev = "ab57a1c" }
+utils = { path = "../utils" }
+dotenv = "0.15.0"

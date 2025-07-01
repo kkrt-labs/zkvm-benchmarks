@@ -9,6 +9,11 @@ bench-all:
 	# make bench-pico
 	make bench-zkm
 	make bench-nexus
+	make bench-cairo-m
+
+bench-cairo-m:
+	cd cairo-m && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release
 
 bench-jolt:
 	cd jolt && \
