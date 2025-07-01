@@ -1,0 +1,17 @@
+[package]
+name = "noir-provekit"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+acvm.workspace = true
+bn254_blackbox_solver.workspace = true
+nargo.workspace = true
+noirc_abi.workspace = true
+noirc_artifacts.workspace = true
+noir-r1cs.workspace = true
+serde.workspace = true
+sonic-rs.workspace = true
+thiserror.workspace = true
+utils.workspace = true
+dotenv.workspace = true

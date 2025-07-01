@@ -1,0 +1,7 @@
+[package]
+name = "noir_fib_10"
+type = "bin"
+authors = [""]
+
+[dependencies]
+noir_fib = { path = "../noir_fib_lib" }

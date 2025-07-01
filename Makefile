@@ -15,6 +15,12 @@ bench-cairo-m:
 	cd cairo-m && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release
 
+bench-noir-provekit:
+	cd noir_provekit/runner/test_data && \
+	nargo build && \
+	cd ../../ && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release
+
 bench-jolt:
 	cd jolt && \
 	rustup override set nightly && \
