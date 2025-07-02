@@ -17,7 +17,7 @@ bench-cairo-m:
 
 bench-noir-provekit:
 	cd noir_provekit/runner/test_data && \
-	nargo build && \
+	nargo compile && \
 	cd ../../ && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release
 

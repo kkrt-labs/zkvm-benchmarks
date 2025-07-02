@@ -36,13 +36,11 @@ pub enum NoirProverError {
 ///
 /// # Fields
 ///
-/// * `constraints_count` - The number of constraints in the circuit.
 /// * `execution_duration` - The duration of the execution of the program.
 /// * `proof_duration` - The duration of the proof generation.
 /// * `proof` - The proof generated.
 #[derive(Debug)]
 pub struct NoirProofResult {
-    pub constraints_count: u64,
     pub execution_duration: Duration,
     pub proof_duration: Duration,
     pub proof: NoirProof,
@@ -100,7 +98,6 @@ impl NoirProver {
             })?
             .witness;
 
-        let constraints_count = witness_map.clone().into_iter().count() as u64;
         let (input_map, _) = self.program.abi.decode(&witness_map).map_err(|e| {
             NoirProverError::CreationError(format!("Failed to decode witness: {}", e))
         })?;
@@ -114,7 +111,6 @@ impl NoirProver {
             .map_err(|e| NoirProverError::ProofGenerationError(e.to_string()))?;
         let proof_duration = proof_start.elapsed();
         Ok(NoirProofResult {
-            constraints_count: constraints_count,
             execution_duration: execution_duration,
             proof_duration: proof_duration,
             proof: proof,
@@ -171,7 +167,6 @@ fn bench_noir_fib(n: u32) -> Result<Metrics, NoirProverError> {
         .map_err(|e| NoirProverError::VerificationError(e.to_string()))?;
     metrics.proof_bytes = proof_data.len();
     metrics.exec_duration = result.execution_duration;
-    metrics.cycles = result.constraints_count;
     metrics.proof_duration = result.proof_duration;
 
     // Verification
