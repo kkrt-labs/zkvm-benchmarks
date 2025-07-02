@@ -196,6 +196,6 @@ fn main() {
     benchmark(
         bench_fn,
         &FIBONACCI_INPUTS,
-        "../.outputs/benchmark/fib_noir.csv",
+        "../.outputs/benchmark/fib_noir-provekit.csv",
     );
 }
