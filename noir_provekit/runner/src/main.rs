@@ -71,12 +71,12 @@ impl NoirProver {
     }
 
     /// Generates a proof of the loaded Noir circuit with detailed metrics.
-    fn prove(&self) -> Result<NoirProofResult, NoirProverError> {
+    fn prove(&self, n: u32) -> Result<NoirProofResult, NoirProverError> {
         let exec_start = Instant::now();
 
         // Witness generation
-        let input_json_str: &'static str = "";
-        let (input_map, _) = self.generate_witness_map(input_json_str)?;
+        let input_json_str = format!(r#"{{"n": "0x{:X}"}}"#, n);
+        let (input_map, _) = self.generate_witness_map(&input_json_str)?;
         let initial_witness = self.program.abi.encode(&input_map, None).map_err(|e| {
             NoirProverError::CreationError(format!("Failed to encode witness: {}", e))
         })?;
@@ -152,7 +152,7 @@ impl NoirProver {
 fn bench_noir_fib(n: u32) -> Result<Metrics, NoirProverError> {
     let mut metrics = Metrics::new(n as usize);
 
-    let circuit_path_str = format!("runner/test_data/target/noir_fib_{}.json", n);
+    let circuit_path_str = "runner/test_data/target/noir_fib.json";
     let circuit_path = Path::new(&circuit_path_str);
     let circuit_json_str = std::fs::read_to_string(circuit_path).map_err(|e| {
         NoirProverError::CreationError(format!("Failed to read circuit file: {}", e))
@@ -162,7 +162,7 @@ fn bench_noir_fib(n: u32) -> Result<Metrics, NoirProverError> {
     let prover = NoirProver::from_circuit(&circuit_json_str)?;
 
     // Generate proof
-    let result = prover.prove()?;
+    let result = prover.prove(n)?;
     let proof_data = sonic_rs::to_string(&result.proof)
         .map_err(|e| NoirProverError::VerificationError(e.to_string()))?;
     metrics.proof_bytes = proof_data.len();

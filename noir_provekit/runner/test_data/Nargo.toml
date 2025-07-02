@@ -1,9 +1,2 @@
 [workspace]
-members = [
-  "noir_fib_lib",
-  "noir_fib_10",
-  "noir_fib_100",
-  "noir_fib_1000",
-  "noir_fib_10000",
-  "noir_fib_100000",
-]
+members = ["noir_fib"]
