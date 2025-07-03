@@ -1,0 +1,77 @@
+# Iterative fibonacci
+# pseudo code reference
+# fn fibonacci(n: Felt) -> Felt {
+#     let a = 0;
+#     let b = 1;
+#     let counter = 0
+#     while counter < n {
+#         let tmp = a;
+#         a = b;
+#         b += tmp;
+#         counter += 1
+#     }
+#     b
+# }
+# Only while loop are available for conditioned loop
+# https://0xmiden.github.io/miden-vm/user_docs/assembly/flow_control.html#condition-controlled-loops
+#
+# a is stored at address 0 in memory
+# b is stored at address 1 in memory
+# counter is stored at address 2 in memory
+# Note that memory is initialized to 0
+
+begin
+    # intial stack [n, 0, 0 ...]
+
+    # store 0 at address 0 (a = 0), nothing to do as memory is initialized to 0
+
+    # store 1 at address 1 (b = 1)
+    push.1.1 mem_store
+
+    # store 0 at address 2 (counter = 0), nothing to do as memory is initialized to 0
+
+    # push 1 to enter while
+    push.1
+
+    while.true
+        # load tmp
+        push.0 mem_load
+
+        # load b and duplicate
+        push.1 mem_load
+        dup.0
+
+        # store a = b
+        push.0 mem_store
+
+        # calculate b + tmp
+        add
+
+        # store b = b + tmp
+        push.1 mem_store
+
+        # load counter
+        push.2 mem_load
+
+        # calculate counter + 1
+        push.1
+        add
+
+        # duplicate and store counter = counter + 1
+        dup.0
+        push.2 mem_store
+
+        # duplicate input
+        dup.1
+
+        # counter < input
+        lt
+    end
+
+    # load result on stack for output
+    push.0 mem_load
+
+    # drop an item to ensure the stack is of length 16
+    swap
+    drop
+end
