@@ -28,21 +28,20 @@ fn fibonacci(n: u32) -> Felt {
 
 fn bench_miden_fib(n: u32) -> Metrics {
     let mut metrics = Metrics::new(n as usize);
-    if n > 10000 {
-        // Skip large inputs to avoid OOM
-        // On a M2 Max, fib(100k) takes more than 80GB of memory
-        return metrics;
-    }
+
     // Compile the program
     let assembler = Assembler::default();
-    let program_string = fs::read_to_string("src/fibonacci.masm").unwrap();
+    let program_string = fs::read_to_string("src/fibonacci_repeat.masm")
+        .expect("Failed to read fibonacci_repeat.masm")
+        .replace("Z", &(n - 1).to_string());
+
     let program = assembler
         .assemble_program(program_string)
-        .expect("Failed to assemble fibonacci.masm program");
+        .expect("Failed to assemble fibonacci_repeat.masm program");
 
     // Prepare inputs
     let stack_inputs =
-        StackInputs::new(vec![Felt::from(n)]).expect("Failed to create stack inputs");
+        StackInputs::new(vec![Felt::from(1_u32)]).expect("Failed to create stack inputs");
     let source_manager = Arc::new(DefaultSourceManager::default());
 
     // Execute
@@ -74,14 +73,15 @@ fn bench_miden_fib(n: u32) -> Metrics {
     metrics.proof_duration = execution_proving_end - metrics.exec_duration;
     metrics.proof_bytes = proof.to_bytes().len();
 
-    assert_eq!(outputs.get_stack_item(0).unwrap(), fibonacci(n));
+    let expected_output = fibonacci(n);
+    assert_eq!(outputs.get_stack_item(0).unwrap(), expected_output);
 
     // Verify
     let verification_start = Instant::now();
     verify(
         ProgramInfo::new(program.hash(), program.kernel().clone()),
         stack_inputs.clone(),
-        StackOutputs::new(vec![fibonacci(n)]).unwrap(),
+        StackOutputs::new(vec![expected_output, fibonacci(n - 1)]).unwrap(),
         proof,
     )
     .expect("Failed to verify Miden proof");
