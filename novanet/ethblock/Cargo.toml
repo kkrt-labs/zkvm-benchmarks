@@ -19,6 +19,8 @@ alloy-eip2930 = { version = "0.1.0", features = [
 ] } ## revmが依存しているAccessListのSerdeを有効にする
 
 # cusom
+# Not available in the forked repo, so not available in our fork.
+# Currently we're not benchmarking ethblock on NovaNet, so this deps is commented out.
 # ethblock-utils = {path = "../../ethblock-utils"}
 
 # serialize
