@@ -152,7 +152,7 @@ impl NoirProver {
 fn bench_noir_fib(n: u32) -> Result<Metrics, NoirProverError> {
     let mut metrics = Metrics::new(n as usize);
 
-    let circuit_path_str = "runner/test_data/target/noir_fib.json";
+    let circuit_path_str = format!("runner/test_data/target/noir_fib_{}.json", n);
     let circuit_path = Path::new(&circuit_path_str);
     let circuit_json_str = std::fs::read_to_string(circuit_path).map_err(|e| {
         NoirProverError::CreationError(format!("Failed to read circuit file: {}", e))
