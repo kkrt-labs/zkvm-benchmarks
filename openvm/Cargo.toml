@@ -1,15 +1,10 @@
 [package]
 name = "openvm-benchmarks"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 
 [workspace]
-members = [
-    "fibonacci-guest",
-    "sha2-guest",
-    "ecdsa-guest",
-    "transfer-eth-guest"
-]
+members = ["fibonacci-guest", "sha2-guest", "ecdsa-guest", "transfer-eth-guest"]
 
 [profile.release]
 debug = 1
