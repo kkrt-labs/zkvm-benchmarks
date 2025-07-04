@@ -1,0 +1,5 @@
+[package]
+name = "noir_fib_lib"
+type = "lib"
+
+[dependencies]

@@ -1,4 +1,0 @@
-[package]
-name = "noir_fib"
-type = "bin"
-authors = [""]
