@@ -1,10 +1,9 @@
-use std::time::Instant;
-
 use cairo_m_common::Program;
 use cairo_m_prover::{
     adapter::import_from_runner_output, prover::prove_cairo_m, verifier::verify_cairo_m,
 };
 use cairo_m_runner::run_cairo_program;
+use std::time::Instant;
 use stwo_prover::core::{fields::m31::M31, vcs::blake2_merkle::Blake2sMerkleChannel};
 use utils::{
     bench::{benchmark, Metrics},

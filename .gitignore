@@ -21,3 +21,4 @@ __pycache__/
 *.pb
 .outputs/traces/*.json
 *.zst
+.env
