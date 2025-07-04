@@ -1,0 +1,9 @@
+# Iterative fibonacci with interpolation of the desired number of loop iteration at compile time
+# Allows to avoid memory accesses and avoid OOM for fib(100k)
+begin
+    repeat.Z
+        swap
+        dup.1
+        add
+    end
+end
