@@ -1,4 +1,4 @@
-# Iterative fibonacci (OOM with n = 100K, more than 80GB used on Apple MZ Max)
+# Iterative fibonacci (OOM with n = 100K, more than 80GB used on Apple M2 Max)
 # pseudo code reference
 # fn fibonacci(n: Felt) -> Felt {
 #     let a = 0;
