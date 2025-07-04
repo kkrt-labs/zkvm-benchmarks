@@ -1,6 +1,6 @@
 use std::cell::RefCell;
 
-use ethblock_utils::trace_ethblock;
+// use ethblock_utils::trace_ethblock;
 use getrandom::register_custom_getrandom;
 use rand::{rngs::SmallRng, RngCore, SeedableRng};
 
@@ -15,6 +15,7 @@ fn custom_getrandom(buf: &mut [u8]) -> Result<(), getrandom::Error> {
 register_custom_getrandom!(custom_getrandom);
 
 #[no_mangle]
-pub fn ethblock(num_txs: usize) -> bool {
-    trace_ethblock(num_txs)
+pub fn ethblock(_num_txs: usize) -> bool {
+    // trace_ethblock(num_txs)
+    true
 }
