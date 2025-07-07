@@ -13,18 +13,22 @@ use std::{
 use tabled::{settings::Style, Table, Tabled};
 
 fn get_current_memory_usage() -> Result<usize, std::io::Error> {
-    let content = std::fs::read_to_string("/proc/self/status")?;
-    for line in content.lines() {
-        if line.starts_with("VmRSS:") {
-            let parts: Vec<&str> = line.split_whitespace().collect();
-            if parts.len() >= 2 {
-                if let Ok(kb) = parts[1].parse::<usize>() {
-                    return Ok(kb * 1024); // kb to bytes
-                }
-            }
+    unsafe {
+        let mut out: libc::rusage = std::mem::zeroed();
+        libc::getrusage(libc::RUSAGE_SELF, &mut out);
+        #[cfg(target_os = "linux")]
+        {
+            Ok(out.ru_maxrss as usize * 1024)
+        }
+        #[cfg(target_os = "macos")]
+        {
+            Ok(out.ru_maxrss as usize)
+        }
+        #[cfg(not(any(target_os = "linux", target_os = "macos")))]
+        {
+            compile_error!("This crate only supports Linux and macOS for memory measurement");
         }
     }
-    Ok(0)
 }
 
 pub fn measure_peak_memory<R, F: FnOnce() -> R>(func: F) -> (R, usize) {

@@ -7066,6 +7066,7 @@ dependencies = [
  "hex",
  "human-repr",
  "k256",
+ "libc",
  "pprof",
  "rand 0.8.5",
  "serde",
