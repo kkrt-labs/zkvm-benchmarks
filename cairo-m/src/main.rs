@@ -5,7 +5,7 @@ use cairo_m_prover::{
 
 use cairo_m_runner::run_cairo_program;
 use std::time::Instant;
-use stwo_prover::core::{fields::m31::M31, vcs::blake2_merkle::Blake2sMerkleChannel};
+use stwo_prover::core::{fields::m31::M31, vcs::blake2_merkle::Blake2sMerkleChannel, pcs::PcsConfig};
 use utils::{
     bench::{benchmark, Metrics},
     metadata::FIBONACCI_INPUTS,
@@ -111,15 +111,17 @@ fn bench_cairo_fib(n: u32) -> Metrics {
     let mut prover_input =
         import_from_runner_output(runner_output).expect("failed to import from runner output");
 
+    let pcs_config = REGULAR_96_BITS;
+
     let start = Instant::now();
     let proof =
-        prove_cairo_m::<Blake2sMerkleChannel>(&mut prover_input, Some(REGULAR_96_BITS)).expect("failed to generate proof");
+        prove_cairo_m::<Blake2sMerkleChannel>(&mut prover_input, Some(pcs_config)).expect("failed to generate proof");
     metrics.proof_duration = start.elapsed();
     metrics.proof_bytes = proof.stark_proof.size_estimate();
 
     // verify proof
     let start = Instant::now();
-    verify_cairo_m::<Blake2sMerkleChannel>(proof, Some(REGULAR_96_BITS)).expect("failed to verify proof");
+    verify_cairo_m::<Blake2sMerkleChannel>(proof, Some(pcs_config)).expect("failed to verify proof");
     metrics.verify_duration = start.elapsed();
 
     metrics
