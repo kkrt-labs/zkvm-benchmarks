@@ -5,7 +5,7 @@ use cairo_m_prover::{
 
 use cairo_m_runner::run_cairo_program;
 use std::time::Instant;
-use stwo_prover::core::{fields::m31::M31, vcs::blake2_merkle::Blake2sMerkleChannel, pcs::PcsConfig};
+use stwo_prover::core::{fields::m31::M31, vcs::blake2_merkle::Blake2sMerkleChannel};
 use utils::{
     bench::{benchmark, Metrics},
     metadata::FIBONACCI_INPUTS,

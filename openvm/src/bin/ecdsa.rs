@@ -64,7 +64,6 @@ fn benchmark_ecdsa(n: usize) -> Metrics {
         .execute(exe.clone(), vm_config.clone(), stdin.clone())
         .unwrap();
     metrics.exec_duration = start.elapsed();
-    metrics.elf_line_counts = elf.instructions.len() as u64;
     // ANCHOR_END: execution
 
     // ANCHOR: proof_generation

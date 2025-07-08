@@ -30,7 +30,6 @@ fn benchmark_fib(n: u32) -> Metrics {
         .run_with_input::<u32, ()>(&n, &())
         .expect("failed to run program");
     metrics.exec_duration = start.elapsed();
-    metrics.elf_line_counts = elf.instructions.len() as u64;
 
     let start = Instant::now();
     let (view, proof) = prover

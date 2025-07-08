@@ -1,15 +1,18 @@
+results_file := .outputs/simple_benchmark.ipynb
+
 bench-all:
-	# make bench-jolt
-	# make bench-jolt-gpu
-	# make bench-sp1
-	# make bench-sp1-gpu
-	# make bench-risczero
-	# make bench-risczero-gpu
-	# make bench-openvm
-	# make bench-pico
 	make bench-zkm
-	make bench-nexus
 	make bench-cairo-m
+	make bench-miden
+	make bench-noir-provekit
+	make bench-sp1
+	make bench-risczero
+	@echo "Results are available through Jupyter Notebook: $(results_file)"
+
+bench-zkm:
+	. ~/.zkm-toolchain/env && \
+	cd zkm && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --bin fibonacci --release
 
 bench-cairo-m:
 	cd cairo-m && \
@@ -24,6 +27,14 @@ bench-noir-provekit:
 	nargo compile && \
 	cd ../../ && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release
+
+bench-sp1:
+	cd sp1 && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin fib
+
+bench-risczero:
+	cd risczero && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci
 
 bench-jolt:
 	cd jolt && \
@@ -40,10 +51,6 @@ bench-jolt-gpu:
 	ICICLE_BACKEND_INSTALL_DIR=$$(pwd)/target/release/deps/icicle/lib/backend RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2 -F icicle && \
 	ICICLE_BACKEND_INSTALL_DIR=$$(pwd)/target/release/deps/icicle/lib/backend RUSTFLAGS="-C target-cpu=native" cargo run --release --bin ecdsa -F icicle && \
 	ICICLE_BACKEND_INSTALL_DIR=$$(pwd)/target/release/deps/icicle/lib/backend RUSTFLAGS="-C target-cpu=native" cargo run --release --bin transfer-eth -F icicle
-
-bench-sp1:
-	cd sp1 && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin fib
 
 bench-sp1-gpu:
 	cd sp1 && \
@@ -63,18 +70,6 @@ bench-sp1-gpu:
 	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin transfer-eth -- --n 100 && \
 	chmod +x agg-sp1gpu-csv.sh && \
 	./agg-sp1gpu-csv.sh ./.outputs/benchmark
-
-bench-zkm:
-	. ~/.zkm-toolchain/env && \
-	cd zkm && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --bin fibonacci --release && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --bin sha2 --release && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --bin ecdsa --release && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --bin transfer-eth --release
-
-bench-risczero:
-	cd risczero && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci
 
 bench-risczero-gpu:
 	cd risczero && \
