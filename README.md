@@ -3,12 +3,12 @@
 This repo is inspired by grandchildrice ZK-VMs benchmarks, based on a16z ZK-VM benchmarks.
 grandchildrice benchmarks focuses on ZK-VMs capable of executing Rust programs (Jolt, Nexus, OpenVM, Pico, RiscZero, SP1, ZKM), aiming at fairness in conditions on powerful machines. The current repo extend these to ZK-VMs targeting zkDSLs, namely CairoM, Noir ProveKit and Miden.
 
-The goal of the current benchmarks is to compare ZK-VM in a context of client-side proving on accessible devices, read laptop and mobile devices. The on chain verification is discarded and proof size is less of importance.
+The goal of the current benchmarks is to compare ZK-VM in a context of client-side proving on consumer devices: laptop and mobile. The on-chain verification is discarded and proof size is less important.
 
 As the language used to define programs might not exactly have the same features, an *applicative* approach has been taken: the benchmarked program is the most optimized version for a given zkDSL/ZK-VM.
 For example, the fibonacci program will use the native field of the ZK-VM when doable.
 
-Benchmark state (prev. current status)
+## Benchmark state
 |ZK-VM|Fibonacci|
 |-|-|
 |Cairo M | ✅ |
@@ -17,7 +17,7 @@ Benchmark state (prev. current status)
 |RiscZero|✅|
 |SP1|✅|
 
-The following ZkVM are yet to be adapted: Cairo 252, jolt, nexus, Noir Barretenberg, OpenVM, Pico, ZkM, Valida, Ceno
+The following ZkVM are yet to be adapted: Cairo 252, Ceno, Jolt, Nexus, Noir Barretenberg, OpenVM, Pico, Valida, ZKM
 Benchmarks can be done on ARM64 (MacOS) and x86 architectures.
 
 ## Prerequisites
@@ -58,13 +58,13 @@ For fibonacci, the program requirements are loose so the native field of a ZK-VM
 To properly compare the various ZK-VM projects, all projects should have the same expected security level, expressed in bits.
 The following table summarizes the expected security level of the ZK-VMs in these benchmarks.
 
-|ZK-VM|security level (bits)|links|
+|ZK-VM|Security level (bits)|Security model docs|
 |-|-|-|
-|Cairo M | 96 |[link](https://github.com/kkrt-labs/cairo-m/pull/137/)|
-|Miden |96|[link1](https://github.com/0xMiden/miden-vm/blob/1878ce974a7aa8834e70072b5ef3ca4d299b9873/air/src/options.rs#L182-L186), [link2](https://github.com/0xMiden/miden-vm/blob/1878ce974a7aa8834e70072b5ef3ca4d299b9873/miden-vm/src/cli/prove.rs#L60-L62)|
+|Cairo M | 96 |[link](https://github.com/kkrt-labs/zkvm-benchmarks/blob/accbfa6a4ad949596936660503bd6ba53e576373/cairo-m/src/main.rs#L114)|
+|Miden |96|[link](https://github.com/0xMiden/miden-vm/blob/1878ce974a7aa8834e70072b5ef3ca4d299b9873/air/src/options.rs#L182-L186)|
 |Noir ProveKit|128|[link](https://github.com/worldfnd/ProveKit/blob/77304a3509554ef82025348ecbb660614ac50c0a/noir-r1cs/src/whir_r1cs.rs#L96)|
 |RiscZero|96|[link](https://github.com/risc0/risc0/blob/bef7bf580eb13d5467074b5f6075a986734d3fe5/website/api/security-model.md#cryptographic-security)|
-|SP1|108.5| [link1](https://docs.succinct.xyz/assets/files/SP1_Turbo_Memory_Argument-b042ba18b58c4add20a8370f4802f077.pdf), [link2](https://docs.succinct.xyz/docs/sp1/security/security-model#security-of-elliptic-curves-over-extension-fields), [link3](https://docs.succinct.xyz/docs/sp1/security/security-model#conjectures-for-fris-security)|
+|SP1|>100| [link1](https://docs.succinct.xyz/assets/files/SP1_Turbo_Memory_Argument-b042ba18b58c4add20a8370f4802f077.pdf), [link2](https://docs.succinct.xyz/docs/sp1/security/security-model#security-of-elliptic-curves-over-extension-fields), [link3](https://docs.succinct.xyz/docs/sp1/security/security-model#conjectures-for-fris-security)|
 ## Results
 ### Macbook M2 Max
 
