@@ -30,9 +30,9 @@ Benchmarks can be done on ARM64 (MacOS) and x86 architectures.
 #### Setup ZK-VM Toolchains
 
 Install all required toolchains:
+- [Noir](https://noir-lang.org/docs/getting_started/quick_start)
 - [R0](https://dev.risczero.com/api/zkvm/install)
 - [SP1](https://docs.succinct.xyz/docs/sp1/getting-started/install)
-- [Noir](https://noir-lang.org/docs/getting_started/quick_start)
 - [ZKM](https://docs.zkm.io/introduction/installation.html)
 
 #### Launch benchmark
