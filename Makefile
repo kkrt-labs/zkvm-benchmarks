@@ -1,9 +1,15 @@
 bench-all:
+	make bench-zkm
 	make bench-cairo-m
 	make bench-miden
 	make bench-noir-provekit
 	make bench-sp1
 	make bench-risczero
+
+bench-zkm:
+	. ~/.zkm-toolchain/env && \
+	cd zkm && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --bin fibonacci --release
 
 bench-cairo-m:
 	cd cairo-m && \
@@ -61,14 +67,6 @@ bench-sp1-gpu:
 	RUST_BACKTRACE=1 SP1_PROVER=cuda RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin transfer-eth -- --n 100 && \
 	chmod +x agg-sp1gpu-csv.sh && \
 	./agg-sp1gpu-csv.sh ./.outputs/benchmark
-
-bench-zkm:
-	. ~/.zkm-toolchain/env && \
-	cd zkm && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --bin fibonacci --release && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --bin sha2 --release && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --bin ecdsa --release && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --bin transfer-eth --release
 
 bench-risczero-gpu:
 	cd risczero && \
