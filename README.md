@@ -24,6 +24,7 @@ Benchmarks can be done on ARM64 (MacOS) and x86 architectures.
 
 ## Prerequisites
 - [Rust](https://www.rust-lang.org/tools/install)
+- [uv](https://docs.astral.sh/uv/getting-started/installation/)
 
 ## Run Benchmarks
 
@@ -76,7 +77,7 @@ For FRI-STARKs related ZK-VMs, the security level is conjectured based on proxim
 The security level is tunable: it can be increased by enlarging the proof size (e.g., increasing pow bits or number of queries) without increasing proving time, or by increasing proving time to allow for smaller proofs.
 
 ## Results
-### Macbook M2 Max
+### MacBook M2 Max
 
 Results can be found [here](.outputs/benchmark/simple_benchmarks.ipynb).
 Note that any process on your device can influence the results.
