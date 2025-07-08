@@ -70,7 +70,8 @@ The following table summarizes the expected security level of the ZK-VMs in thes
 |SP1|100| [link1](https://docs.succinct.xyz/assets/files/SP1_Turbo_Memory_Argument-b042ba18b58c4add20a8370f4802f077.pdf), [link2](https://docs.succinct.xyz/docs/sp1/security/security-model#security-of-elliptic-curves-over-extension-fields), [link3](https://docs.succinct.xyz/docs/sp1/security/security-model#conjectures-for-fris-security)|
 |ZKM|100| [link1](https://docs.zkm.io/design/memory-checking.html#elliptic-curve-selection-over-koalabear-prime-extension-field), [link2](https://github.com/ProjectZKM/Ziren/blob/52dd269d475b10b6b2ddc5df3155814633491f24/crates/stark/src/kb31_poseidon2.rs#L202-L203)|
 
-For FRI-STARKs related ZK-VMs, the security level is conjectured based on proximity gap proofs and "Toy Problem" related to FRI . This means the soundness is not proven in the traditional cryptographic sense [see paper] (https://eprint.iacr.org/2024/1161.pdf).
+For FRI-STARKs related ZK-VMs, the security level is conjectured based on proximity gap proofs and "Toy Problem" related to FRI . This means the soundness is not proven in the traditional cryptographic sense [see paper](https://eprint.iacr.org/2024/1161.pdf).
+
 
 The security level is tunable: it can be increased by enlarging the proof size (e.g., increasing pow bits or number of queries) without increasing proving time, or by increasing proving time to allow for smaller proofs.
 
