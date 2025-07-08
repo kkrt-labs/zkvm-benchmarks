@@ -1,4 +1,4 @@
-ZK-VM Benchmarks
+# ZK-VM Benchmarks
 
 This repo is inspired by grandchildrice ZK-VMs benchmarks, based on a16z ZK-VM benchmarks.
 grandchildrice benchmarks focuses on ZK-VMs capable of executing Rust programs (Jolt, Nexus, OpenVM, Pico, RiscZero, SP1, ZKM), aiming at fairness in conditions on powerful machines. The current repo extend these to ZK-VMs targeting zkDSLs, namely CairoM, Noir ProveKit and Miden.
