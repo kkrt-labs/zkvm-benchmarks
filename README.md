@@ -68,7 +68,7 @@ The following table summarizes the expected security level of the ZK-VMs in thes
 |Noir ProveKit|128|[link](https://github.com/worldfnd/ProveKit/blob/77304a3509554ef82025348ecbb660614ac50c0a/noir-r1cs/src/whir_r1cs.rs#L96)|
 |RiscZero|96|[link](https://github.com/risc0/risc0/blob/bef7bf580eb13d5467074b5f6075a986734d3fe5/website/api/security-model.md#cryptographic-security)|
 |SP1|100| [link1](https://docs.succinct.xyz/assets/files/SP1_Turbo_Memory_Argument-b042ba18b58c4add20a8370f4802f077.pdf), [link2](https://docs.succinct.xyz/docs/sp1/security/security-model#security-of-elliptic-curves-over-extension-fields), [link3](https://docs.succinct.xyz/docs/sp1/security/security-model#conjectures-for-fris-security)|
-|ZKM|100| [link](https://docs.zkm.io/design/memory-checking.html#elliptic-curve-selection-over-koalabear-prime-extension-field)|
+|ZKM|100| [link1](https://docs.zkm.io/design/memory-checking.html#elliptic-curve-selection-over-koalabear-prime-extension-field), [link2](https://github.com/ProjectZKM/Ziren/blob/52dd269d475b10b6b2ddc5df3155814633491f24/crates/stark/src/kb31_poseidon2.rs#L202-L203)|
 
 For FRI-STARKs related ZK-VMs, the security level is conjectured based on proximity gap proofs and "Toy Problem" related to FRI . This means the soundness is not proven in the traditional cryptographic sense [see paper] (https://eprint.iacr.org/2024/1161.pdf).
 
