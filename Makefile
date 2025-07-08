@@ -1,15 +1,9 @@
 bench-all:
-	# make bench-jolt
-	# make bench-jolt-gpu
-	# make bench-sp1
-	# make bench-sp1-gpu
-	# make bench-risczero
-	# make bench-risczero-gpu
-	# make bench-openvm
-	# make bench-pico
-	make bench-zkm
-	make bench-nexus
 	make bench-cairo-m
+	make bench-miden
+	make bench-noir-provekit
+	make bench-sp1
+	make bench-risczero
 
 bench-cairo-m:
 	cd cairo-m && \
@@ -24,6 +18,14 @@ bench-noir-provekit:
 	nargo compile && \
 	cd ../../ && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release
+
+bench-sp1:
+	cd sp1 && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin fib
+
+bench-risczero:
+	cd risczero && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci
 
 bench-jolt:
 	cd jolt && \
@@ -40,10 +42,6 @@ bench-jolt-gpu:
 	ICICLE_BACKEND_INSTALL_DIR=$$(pwd)/target/release/deps/icicle/lib/backend RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2 -F icicle && \
 	ICICLE_BACKEND_INSTALL_DIR=$$(pwd)/target/release/deps/icicle/lib/backend RUSTFLAGS="-C target-cpu=native" cargo run --release --bin ecdsa -F icicle && \
 	ICICLE_BACKEND_INSTALL_DIR=$$(pwd)/target/release/deps/icicle/lib/backend RUSTFLAGS="-C target-cpu=native" cargo run --release --bin transfer-eth -F icicle
-
-bench-sp1:
-	cd sp1 && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin fib
 
 bench-sp1-gpu:
 	cd sp1 && \
@@ -71,10 +69,6 @@ bench-zkm:
 	RUSTFLAGS="-C target-cpu=native" cargo run --bin sha2 --release && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --bin ecdsa --release && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --bin transfer-eth --release
-
-bench-risczero:
-	cd risczero && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci
 
 bench-risczero-gpu:
 	cd risczero && \
