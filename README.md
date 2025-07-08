@@ -1,9 +1,9 @@
 # ZK-VM Benchmarks
 
 This repo is inspired by grandchildrice ZK-VMs benchmarks, based on a16z ZK-VM benchmarks.
-grandchildrice benchmarks focuses on ZK-VMs capable of executing Rust programs (Jolt, Nexus, OpenVM, Pico, RiscZero, SP1, ZKM), aiming at fairness in conditions on powerful machines. The current repo extend these to ZK-VMs targeting zkDSLs, namely CairoM, Noir ProveKit and Miden.
+grandchildrice benchmarks focuses on ZK-VMs capable of executing Rust programs (Jolt, Nexus, OpenVM, Pico, RiscZero, SP1, ZKM), aiming at fairness in conditions on powerful machines. The current repo extends these to ZK-VMs targeting zkDSLs, namely CairoM, Noir ProveKit and Miden.
 
-The goal of the current benchmarks is to compare ZK-VM in a context of client-side proving on consumer devices: laptop and mobile. The on-chain verification is discarded and proof size is less important.
+The goal of the current benchmarks is to compare ZK-VMs in a context of client-side proving on consumer devices: laptop and mobile. The on-chain verification is discarded and proof size is less important.
 
 As the language used to define programs might not exactly have the same features, an *applicative* approach has been taken: the benchmarked program is the most optimized version for a given zkDSL/ZK-VM.
 For example, the fibonacci program will use the native field of the ZK-VM when doable.
@@ -17,11 +17,12 @@ For example, the fibonacci program will use the native field of the ZK-VM when d
 |RiscZero|✅|
 |SP1|✅|
 
-The following ZkVM are yet to be adapted: Cairo 252, Ceno, Jolt, Nexus, Noir Barretenberg, OpenVM, Pico, Valida, ZKM
+The following ZK-VMs are yet to be adapted: Cairo 252, Ceno, Jolt, Nexus, Noir Barretenberg, OpenVM, Pico, Valida, ZKM
+
 Benchmarks can be done on ARM64 (MacOS) and x86 architectures.
 
 ## Prerequisites
-- Rust
+- [Rust](https://www.rust-lang.org/tools/install)
 
 ## Run Benchmarks
 
@@ -35,7 +36,7 @@ Install all required toolchains:
 - [ZKM](https://docs.zkm.io/introduction/installation.html)
 
 #### Launch benchmark
-you can either launch all benchmarks in a single command:
+Either launch all benchmarks in a single command:
 ```bash
 make bench-all
 ```
@@ -68,6 +69,7 @@ The following table summarizes the expected security level of the ZK-VMs in thes
 |SP1|100| [link1](https://docs.succinct.xyz/assets/files/SP1_Turbo_Memory_Argument-b042ba18b58c4add20a8370f4802f077.pdf), [link2](https://docs.succinct.xyz/docs/sp1/security/security-model#security-of-elliptic-curves-over-extension-fields), [link3](https://docs.succinct.xyz/docs/sp1/security/security-model#conjectures-for-fris-security)|
 
 For FRI-STARKs related ZK-VMs, the security level is conjectured based on proximity gap proofs and "Toy Problem" related to FRI . This means the soundness is not proven in the traditional cryptographic sense [see paper] (https://eprint.iacr.org/2024/1161.pdf).
+
 The security level is tunable: it can be increased by enlarging the proof size (e.g., increasing pow bits or number of queries) without increasing proving time, or by increasing proving time to allow for smaller proofs.
 
 ## Results
