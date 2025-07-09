@@ -4,8 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-miden-processor = { version = "0.15.0", features = ["concurrent"] }
-miden-vm = { version = "0.15.0", features = ["concurrent"] }
+miden-processor = { version = "0.16.0", features = ["concurrent"] }
+miden-vm = { version = "0.16.0", features = ["concurrent"] }
 utils = { path = "../utils" }
 dotenv = "0.15.0"
 

@@ -5,7 +5,7 @@ use miden_vm::{
     assembly::DefaultSourceManager, prove, verify, Assembler, DefaultHost, ProgramInfo,
     ProvingOptions,
 };
-use miden_vm::{StackInputs, StackOutputs};
+use miden_vm::{AdviceInputs, StackInputs, StackOutputs};
 use std::fs;
 use std::sync::Arc;
 use std::time::Instant;
@@ -42,6 +42,7 @@ fn bench_miden_fib(n: u32) -> Metrics {
     // Prepare inputs
     let stack_inputs =
         StackInputs::new(vec![Felt::from(1_u32)]).expect("Failed to create stack inputs");
+    let advice_inputs = AdviceInputs::default();
     let source_manager = Arc::new(DefaultSourceManager::default());
 
     // Execute
@@ -49,6 +50,7 @@ fn bench_miden_fib(n: u32) -> Metrics {
     let trace = execute(
         &program,
         stack_inputs.clone(),
+        advice_inputs.clone(),
         &mut DefaultHost::default(),
         ExecutionOptions::default(),
         source_manager,
@@ -64,6 +66,7 @@ fn bench_miden_fib(n: u32) -> Metrics {
     let (outputs, proof) = prove(
         &program,
         stack_inputs.clone(),
+        advice_inputs.clone(),
         &mut DefaultHost::default(),
         ProvingOptions::default(),
         source_manager,
