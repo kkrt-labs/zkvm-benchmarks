@@ -7,10 +7,10 @@ edition = "2021"
 cairo-m-common = { git = "https://github.com/kkrt-labs/cairo-m" }
 cairo-m-runner = { git = "https://github.com/kkrt-labs/cairo-m" }
 cairo-m-prover = { git = "https://github.com/kkrt-labs/cairo-m" }
-thiserror = "2.0.12"
-sonic-rs = "0.5.1"
+dotenv = "0.15.0"
+sonic-rs = "0.5.2"
 stwo-prover = { git = "https://github.com/starkware-libs/stwo", features = [
   "parallel",
 ], rev = "ab57a1c" }
+thiserror = "2.0.12"
 utils = { path = "../utils" }
-dotenv = "0.15.0"
