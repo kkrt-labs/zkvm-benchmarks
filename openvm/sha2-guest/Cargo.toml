@@ -4,11 +4,11 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-openvm = { git = "https://github.com/openvm-org/openvm.git", rev = "333b367f3ba64da40191726b76ba24af24a97888" }
-openvm-platform = { git = "https://github.com/openvm-org/openvm.git", rev = "333b367f3ba64da40191726b76ba24af24a97888" }
-openvm-sha256-guest = { git = "https://github.com/openvm-org/openvm.git", rev = "333b367f3ba64da40191726b76ba24af24a97888" }
+openvm = { git = "https://github.com/openvm-org/openvm.git", tag = "v1.2.0" }
+openvm-platform = { git = "https://github.com/openvm-org/openvm.git", tag = "v1.2.0" }
+openvm-sha256-guest = { git = "https://github.com/openvm-org/openvm.git", tag = "v1.2.0" }
 hex = { version = "0.4.3", default-features = false, features = ["alloc"] }
 
 [features]
 default = []
-std = ["openvm/std", "openvm-sha256-guest/std"]
+std = ["openvm/std"]

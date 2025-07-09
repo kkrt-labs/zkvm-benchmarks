@@ -83,11 +83,7 @@ bench-powdr:
 
 bench-openvm:
 	cd openvm && \
-	rustup override set nightly-2024-10-30 && \
-	RUST_BACKTRACE=1 RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci && \
-	RUST_BACKTRACE=1 RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2 && \
-	RUST_BACKTRACE=1 RUSTFLAGS="-C target-cpu=native" cargo run --release --bin ecdsa -F std && \
-	RUST_BACKTRACE=1 RUSTFLAGS="-C target-cpu=native" cargo run --release --bin transfer-eth -F std
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci
 
 bench-nexus:
 	cd nexus && \
