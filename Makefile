@@ -1,12 +1,13 @@
 results_file := .outputs/simple_benchmark.ipynb
 
 bench-all:
-	make bench-zkm
 	make bench-cairo-m
 	make bench-miden
 	make bench-noir-provekit
-	make bench-sp1
+	make bench-openvm
 	make bench-risczero
+	make bench-sp1
+	make bench-zkm
 	@echo "Results are available through Jupyter Notebook: $(results_file)"
 
 bench-zkm:
