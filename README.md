@@ -15,11 +15,12 @@ For example, the fibonacci program will use the native field of the ZK-VM when d
 | Cairo M       | ✅        |
 | Miden         | ✅        |
 | Noir ProveKit | ✅        |
+| OpenVM        | ✅        |
 | RiscZero      | ✅        |
 | SP1           | ✅        |
 | ZKM           | ✅        |
 
-The following ZK-VMs are yet to be adapted: Cairo 252, Ceno, Jolt, Nexus, Noir Barretenberg, OpenVM, Pico, Valida
+The following ZK-VMs are yet to be adapted: Cairo 252, Ceno, Jolt, Nexus, Noir Barretenberg, Pico, Valida
 
 Benchmarks can be done on ARM64 (MacOS) and x86 architectures.
 
@@ -37,6 +38,7 @@ Benchmarks can be done on ARM64 (MacOS) and x86 architectures.
 Install all required toolchains:
 
 - [Noir](https://noir-lang.org/docs/getting_started/quick_start)
+- [OpenVM](https://book.openvm.dev/getting-started/install.html)
 - [R0](https://dev.risczero.com/api/zkvm/install)
 - [SP1](https://docs.succinct.xyz/docs/sp1/getting-started/install)
 - [ZKM](https://docs.zkm.io/introduction/installation.html)
@@ -52,7 +54,7 @@ make bench-all
 Or launch benchmark for a given ZK-VM:
 
 ```bash
-make bench-<cairo-m|miden|noir-provekit|risczero|sp1|zkm>
+make bench-<cairo-m|miden|noir-provekit|openvm|risczero|sp1|zkm>
 ```
 
 ## Benchmark Details
@@ -78,6 +80,7 @@ The following table summarizes the expected security level of the ZK-VMs in thes
 | Cairo M       | 96                    | [link](https://github.com/kkrt-labs/zkvm-benchmarks/blob/accbfa6a4ad949596936660503bd6ba53e576373/cairo-m/src/main.rs#L114)                                                                                                                                                                                                              |
 | Miden         | 96                    | [link](https://github.com/0xMiden/miden-vm/blob/1878ce974a7aa8834e70072b5ef3ca4d299b9873/air/src/options.rs#L182-L186)                                                                                                                                                                                                                   |
 | Noir ProveKit | 128                   | [link](https://github.com/worldfnd/ProveKit/blob/77304a3509554ef82025348ecbb660614ac50c0a/noir-r1cs/src/whir_r1cs.rs#L96)                                                                                                                                                                                                                |
+| OpenVM        | 100                   |  [link1](), [link2](https://github.com/openvm-org/stark-backend/blob/b0bec8739d249370f91862f99c2ecc2c03d33240/crates/stark-sdk/src/config/fri_params.rs#L29)                                                                                                                                                                             |
 | RiscZero      | 96                    | [link](https://github.com/risc0/risc0/blob/bef7bf580eb13d5467074b5f6075a986734d3fe5/website/api/security-model.md#cryptographic-security)                                                                                                                                                                                                |
 | SP1           | 100                   | [link1](https://docs.succinct.xyz/assets/files/SP1_Turbo_Memory_Argument-b042ba18b58c4add20a8370f4802f077.pdf), [link2](https://docs.succinct.xyz/docs/sp1/security/security-model#security-of-elliptic-curves-over-extension-fields), [link3](https://docs.succinct.xyz/docs/sp1/security/security-model#conjectures-for-fris-security) |
 | ZKM           | 100                   | [link1](https://docs.zkm.io/design/memory-checking.html#elliptic-curve-selection-over-koalabear-prime-extension-field), [link2](https://github.com/ProjectZKM/Ziren/blob/52dd269d475b10b6b2ddc5df3155814633491f24/crates/stark/src/kb31_poseidon2.rs#L202-L203)                                                                          |
