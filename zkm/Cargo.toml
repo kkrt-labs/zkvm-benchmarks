@@ -6,9 +6,9 @@ edition = "2021"
 
 [dependencies]
 utils = { path = "../utils" }
-zkm-build = { git = "https://github.com/zkMIPS/zkMIPS.git" }
-zkm-core-machine = { git = "https://github.com/zkMIPS/zkMIPS.git" }
-zkm-sdk = { git = "https://github.com/zkMIPS/zkMIPS.git" }
+zkm-build = { git = "https://github.com/ProjectZKM/Ziren.git", tag = "v1.1.1" }
+zkm-core-machine = { git = "https://github.com/ProjectZKM/Ziren.git", tag = "v1.1.1" }
+zkm-sdk = { git = "https://github.com/ProjectZKM/Ziren.git", tag = "v1.1.1" }
 
 [build-dependencies]
-zkm-build = { git = "https://github.com/zkMIPS/zkMIPS.git" }
+zkm-build = { git = "https://github.com/ProjectZKM/Ziren.git", tag = "v1.1.1" }
