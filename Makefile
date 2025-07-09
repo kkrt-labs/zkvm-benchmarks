@@ -1,6 +1,7 @@
 results_file := .outputs/simple_benchmark.ipynb
 
 bench-all:
+	make bench-cairo
 	make bench-cairo-m
 	make bench-miden
 	make bench-noir-provekit
@@ -14,6 +15,10 @@ bench-zkm:
 	. ~/.zkm-toolchain/env && \
 	cd zkm && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --bin fibonacci --release
+
+bench-cairo:
+	cd cairo && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release
 
 bench-cairo-m:
 	cd cairo-m && \

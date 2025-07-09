@@ -1,0 +1,17 @@
+[package]
+name = "fibonacci"
+version = "0.1.0"
+edition = "2024_07"
+
+[executable]
+
+[cairo]
+enable-gas = false
+
+# See more keys and their definitions at https://docs.swmansion.com/scarb/docs/reference/manifest.html
+
+[dependencies]
+cairo_execute = "2.11.4"
+
+
+# Run scarb --profile release build to generate fibonacci.executable.json
