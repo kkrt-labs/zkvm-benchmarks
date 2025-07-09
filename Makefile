@@ -1,12 +1,13 @@
 results_file := .outputs/simple_benchmark.ipynb
 
 bench-all:
-	make bench-zkm
 	make bench-cairo-m
 	make bench-miden
 	make bench-noir-provekit
-	make bench-sp1
+	make bench-openvm
 	make bench-risczero
+	make bench-sp1
+	make bench-zkm
 	@echo "Results are available through Jupyter Notebook: $(results_file)"
 
 bench-zkm:
@@ -83,11 +84,7 @@ bench-powdr:
 
 bench-openvm:
 	cd openvm && \
-	rustup override set nightly-2024-10-30 && \
-	RUST_BACKTRACE=1 RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci && \
-	RUST_BACKTRACE=1 RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2 && \
-	RUST_BACKTRACE=1 RUSTFLAGS="-C target-cpu=native" cargo run --release --bin ecdsa -F std && \
-	RUST_BACKTRACE=1 RUSTFLAGS="-C target-cpu=native" cargo run --release --bin transfer-eth -F std
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci
 
 bench-nexus:
 	cd nexus && \

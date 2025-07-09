@@ -12,12 +12,13 @@ codegen-units = 1
 lto = "fat"
 
 [dependencies]
-openvm = { git = "https://github.com/openvm-org/openvm.git", rev = "333b367f3ba64da40191726b76ba24af24a97888" }
-openvm-build = { git = "https://github.com/openvm-org/openvm.git", rev = "333b367f3ba64da40191726b76ba24af24a97888" }
-openvm-sdk = { git = "https://github.com/openvm-org/openvm.git", rev = "333b367f3ba64da40191726b76ba24af24a97888" }
-openvm-stark-sdk = { git = "https://github.com/openvm-org/stark-backend.git", rev = "c662bccdfafaa36fa19ab0a96ff3a0947f8331d0", default-features = false }
-openvm-native-recursion = { git = "https://github.com/openvm-org/openvm.git", rev = "333b367f3ba64da40191726b76ba24af24a97888" }
-openvm-transpiler = { git = "https://github.com/openvm-org/openvm.git", rev = "333b367f3ba64da40191726b76ba24af24a97888" }
+guests = { path = "../guests", features = ["fibonacci"] }
+openvm = { git = "https://github.com/openvm-org/openvm.git", tag = "v1.2.0" }
+openvm-build = { git = "https://github.com/openvm-org/openvm.git", tag = "v1.2.0" }
+openvm-sdk = { git = "https://github.com/openvm-org/openvm.git", tag = "v1.2.0" }
+openvm-stark-sdk = { git = "https://github.com/openvm-org/stark-backend.git", tag = "v1.1.0", default-features = false }
+openvm-native-recursion = { git = "https://github.com/openvm-org/openvm.git", tag = "v1.2.0" }
+openvm-transpiler = { git = "https://github.com/openvm-org/openvm.git", tag = "v1.2.0" }
 
 utils = { path = "../utils" }
 eyre = "0.6.12"
