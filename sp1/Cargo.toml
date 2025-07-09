@@ -9,9 +9,9 @@ members = [
 resolver = "2"
 
 [workspace.dependencies]
-sp1-sdk = "4.2.1"
-sp1-zkvm = "4.2.1"
-sp1-build = "4.2.1"
+sp1-sdk = "5.0.7"
+sp1-zkvm = "5.0.5"
+sp1-build = "5.0.5"
 utils = { path = "../utils" }
 guests = { path = "../guests" }
 dotenv = "0.15.0"
