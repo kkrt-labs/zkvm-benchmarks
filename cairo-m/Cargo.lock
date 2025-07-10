@@ -378,6 +378,7 @@ name = "cairo-m"
 version = "0.1.0"
 dependencies = [
  "cairo-m-common",
+ "cairo-m-compiler",
  "cairo-m-prover",
  "cairo-m-runner",
  "dotenv",

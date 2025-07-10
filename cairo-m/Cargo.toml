@@ -7,6 +7,7 @@ edition = "2021"
 cairo-m-common = { git = "https://github.com/kkrt-labs/cairo-m" }
 cairo-m-runner = { git = "https://github.com/kkrt-labs/cairo-m" }
 cairo-m-prover = { git = "https://github.com/kkrt-labs/cairo-m" }
+cairo-m-compiler = { git = "https://github.com/kkrt-labs/cairo-m" }
 dotenv = "0.15.0"
 sonic-rs = "0.5.2"
 stwo-prover = { git = "https://github.com/starkware-libs/stwo", features = [

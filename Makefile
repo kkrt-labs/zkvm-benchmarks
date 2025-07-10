@@ -1,4 +1,5 @@
 results_file := .outputs/simple_benchmark.ipynb
+platform := $(shell uname -s)
 
 bench-all:
 	make bench-cairo
@@ -22,9 +23,15 @@ bench-cairo:
 	cd ../ && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release
 
+ifeq ($(platform),Darwin)
+bench-cairo-m:
+	cd cairo-m && \
+	RUSTFLAGS="-C link-arg=-fuse-ld=/opt/homebrew/opt/lld/bin/ld64.lld -C target-cpu=native" cargo run --release
+else
 bench-cairo-m:
 	cd cairo-m && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release
+endif
 
 bench-miden:
 	cd miden && \
