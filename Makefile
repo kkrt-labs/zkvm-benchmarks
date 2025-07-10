@@ -17,7 +17,9 @@ bench-zkm:
 	RUSTFLAGS="-C target-cpu=native" cargo run --bin fibonacci --release
 
 bench-cairo:
-	cd cairo && \
+	cd cairo/test_data && \
+	scarb --profile release build && \
+	cd ../ && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release
 
 bench-cairo-m:

@@ -1,24 +1,17 @@
-use core::felt252;
-
 #[executable]
-fn main(n: u128) -> felt252 {
+fn main(n: felt252) -> felt252 {
     let result = fib(n);
     result
 }
 
-fn fib(n: u128) -> felt252 {
-    let mut i: u128 = 0;
+pub fn fib(n: felt252) -> felt252 {
     let mut a = 0;
     let mut b = 1;
-    let threshold = n - 2;
-    loop {
-        if i > threshold {
-            break;
-        }
-        let tmp = a + b;
+	let i: u32 = n.try_into().unwrap();
+    for _ in 1..i {
+        let temp = a;
         a = b;
-        b = tmp;
-        i = i + 1;
+        b += temp;
     }
-    return b;
+    b.into()
 }

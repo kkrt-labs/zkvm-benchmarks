@@ -32,18 +32,6 @@ pub const REGULAR_96_BITS: PcsConfig = PcsConfig {
     },
 };
 
-/// Reference implementation of the Fibonacci function.
-pub fn fib(n: u32) -> u32 {
-    let mut a: M31 = M31(0);
-    let mut b: M31 = M31(1);
-    for _ in 1..n {
-        let temp = a;
-        a = b;
-        b += temp;
-    }
-    b.0
-}
-
 fn bench_cairo_fib(n: u32) -> Metrics {
     let mut metrics = Metrics::new(n as usize);
     let target_path = "test_data/target/release/fibonacci.executable.json";
@@ -77,15 +65,11 @@ fn bench_cairo_fib(n: u32) -> Metrics {
 }
 
 /// Runs a compiled Cairo program and generate a proof of execution.
-///
-/// ## Errors
-///
-/// Returns a `Error` if JSON parsing, VM execution, or proof generation fails.
 fn main() {
     dotenv::dotenv().ok();
     benchmark(
         bench_cairo_fib,
         &FIBONACCI_INPUTS,
-        "../.outputs/benchmark/fib_cairo-m.csv",
+        "../.outputs/benchmark/fib_cairo.csv",
     );
 }
