@@ -12,6 +12,7 @@ For example, the fibonacci program will use the native field of the ZK-VM when d
 
 | ZK-VM         | Fibonacci |
 | ------------- | --------- |
+| Cairo         | ✅        |
 | Cairo M       | ✅        |
 | Miden         | ✅        |
 | Noir ProveKit | ✅        |
@@ -20,13 +21,14 @@ For example, the fibonacci program will use the native field of the ZK-VM when d
 | SP1           | ✅        |
 | ZKM           | ✅        |
 
-The following ZK-VMs are yet to be adapted: Cairo 252, Ceno, Jolt, Nexus, Noir Barretenberg, Pico, Valida
+The following ZK-VMs are yet to be adapted: Ceno, Jolt, Nexus, Noir Barretenberg, Pico, Valida
 
 Benchmarks can be done on ARM64 (MacOS) and x86 architectures.
 
 ## Prerequisites
 
 - [Rust](https://www.rust-lang.org/tools/install)
+- [Scarb](https://docs.swmansion.com/scarb/)
 - [uv](https://docs.astral.sh/uv/getting-started/installation/)
 
 ## Run Benchmarks
@@ -54,7 +56,7 @@ make bench-all
 Or launch benchmark for a given ZK-VM:
 
 ```bash
-make bench-<cairo-m|miden|noir-provekit|openvm|risczero|sp1|zkm>
+make bench-<cairo|cairo-m|miden|noir-provekit|openvm|risczero|sp1|zkm>
 ```
 
 ## Benchmark Details
@@ -77,6 +79,7 @@ The following table summarizes the expected security level of the ZK-VMs in thes
 
 | ZK-VM         | Security level (bits) | Security model docs                                                                                                                                                                                                                                                                                                                      |
 | ------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Cairo         | 96                    | [link](./cairo/src/main.rs#L26)                                                                                                                                                                                                                                                                                                          |
 | Cairo M       | 96                    | [link](https://github.com/kkrt-labs/zkvm-benchmarks/blob/accbfa6a4ad949596936660503bd6ba53e576373/cairo-m/src/main.rs#L114)                                                                                                                                                                                                              |
 | Miden         | 96                    | [link](https://github.com/0xMiden/miden-vm/blob/1878ce974a7aa8834e70072b5ef3ca4d299b9873/air/src/options.rs#L182-L186)                                                                                                                                                                                                                   |
 | Noir ProveKit | 128                   | [link](https://github.com/worldfnd/ProveKit/blob/77304a3509554ef82025348ecbb660614ac50c0a/noir-r1cs/src/whir_r1cs.rs#L96)                                                                                                                                                                                                                |
