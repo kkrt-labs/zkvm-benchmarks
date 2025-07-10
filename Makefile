@@ -1,5 +1,6 @@
 results_file := .outputs/simple_benchmark.ipynb
 platform := $(shell uname -s)
+architecture := $(shell uname -m)
 
 bench-all:
 	make bench-cairo
@@ -37,11 +38,16 @@ bench-miden:
 	cd miden && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release
 
+ifeq ($(architecture),arm64)
 bench-noir-provekit:
 	cd noir_provekit/runner/test_data && \
 	nargo compile && \
 	cd ../../ && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release
+else
+bench-noir-provekit:
+	echo "Noir Provekit is only supported on ARM64 architecture."
+endif
 
 bench-sp1:
 	cd sp1 && \
