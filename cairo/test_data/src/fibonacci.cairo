@@ -4,11 +4,11 @@ fn main(n: felt252) -> felt252 {
     result
 }
 
-pub fn fib(n: felt252) -> felt252 {
+pub fn fib(n_felt: felt252) -> felt252 {
     let mut a = 0;
     let mut b = 1;
-	let i: u32 = n.try_into().unwrap();
-    for _ in 1..i {
+    let n: u32 = n_felt.try_into().unwrap();
+    for _ in 1..n {
         let temp = a;
         a = b;
         b += temp;

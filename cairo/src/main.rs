@@ -10,7 +10,6 @@ use cairo_prove::execute::execute;
 use cairo_prove::prove::{prove, prover_input_from_runner};
 use cairo_vm::Felt252;
 use sonic_rs;
-use stwo_cairo_prover::stwo_prover::core::fields::m31::M31;
 use stwo_cairo_prover::stwo_prover::core::fri::FriConfig;
 use stwo_cairo_prover::stwo_prover::core::pcs::PcsConfig;
 use stwo_cairo_prover::stwo_prover::core::vcs::blake2_merkle::Blake2sMerkleChannel;
