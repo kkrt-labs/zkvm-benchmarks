@@ -24,7 +24,7 @@ bench-cairo:
 
 bench-cairo-m:
 	cd cairo-m && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release
+	RUSTFLAGS="-C link-arg=-fuse-ld=/opt/homebrew/opt/lld/bin/ld64.lld -C target-cpu=native" cargo run --release
 
 bench-miden:
 	cd miden && \
