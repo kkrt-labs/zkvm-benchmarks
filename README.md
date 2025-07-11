@@ -103,6 +103,8 @@ $`\text{conjectured\_security} = \text{n\_queries} * \log_2(\text{blowup\_factor
 
 ## Results
 
+The end-to-end (E2E) duration corresponds to a production context, where one executes the compiled program, and generate a proof from the runner output: $`\text{e2e\_duration} = \text{exec\_duration} + \text{proof\_duration}`$
+
 ### MacBook M2 Max
 
 Results can be found [here](.outputs/benchmark/simple_benchmarks.ipynb).
