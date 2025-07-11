@@ -4,6 +4,7 @@ architecture := $(shell uname -m)
 
 bench-all:
 	make bench-cairo
+	make bench-cairo-zero
 	make bench-cairo-m
 	make bench-miden
 	make bench-noir-provekit
@@ -22,6 +23,10 @@ bench-cairo:
 	cd cairo/test_data && \
 	scarb --profile release build && \
 	cd ../ && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release
+
+bench-cairo-zero:
+	cd cairo-zero && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release
 
 ifeq ($(platform),Darwin)
