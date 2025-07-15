@@ -12,7 +12,11 @@ bench-all:
 	make bench-risczero
 	make bench-sp1
 	make bench-zkm
+	make bench-valida
 	@echo "Results are available through Jupyter Notebook: $(results_file)"
+
+bench-valida:
+	docker compose -f docker/valida/docker-compose.yml run --rm valida
 
 bench-zkm:
 	. ~/.zkm-toolchain/env && \
