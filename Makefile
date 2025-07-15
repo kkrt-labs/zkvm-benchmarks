@@ -15,8 +15,16 @@ bench-all:
 	make bench-zkm
 	@echo "Results are available through Jupyter Notebook: $(results_file)"
 
+ifeq ($(platform),Darwin)
 bench-valida:
 	docker compose -f docker/valida/docker-compose.yml run --rm valida
+else
+bench-valida:
+	cd valida/fibonacci && \
+	cargo +valida build --release && \
+	cd ../host && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release
+endif
 
 bench-zkm:
 	. ~/.zkm-toolchain/env && \

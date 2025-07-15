@@ -28,13 +28,13 @@ Benchmarks can be done on ARM64 (MacOS) and x86 architectures.
 
 ## Prerequisites
 
-- [Docker](https://docs.docker.com/get-started/get-docker/)
 - [Rust](https://www.rust-lang.org/tools/install)
 - [Scarb](https://docs.swmansion.com/scarb/)
 - [uv](https://docs.astral.sh/uv/getting-started/installation/)
 
 ### MacOS
 
+- [Docker](https://docs.docker.com/get-started/get-docker/)
 - [lld](https://formulae.brew.sh/formula/lld)
 
 ## Run Benchmarks
@@ -50,6 +50,10 @@ Install all required toolchains:
 - [R0](https://dev.risczero.com/api/zkvm/install)
 - [SP1](https://docs.succinct.xyz/docs/sp1/getting-started/install)
 - [ZKM](https://docs.zkm.io/introduction/installation.html)
+
+##### Linux
+
+- [Valida](https://lita.gitbook.io/lita-documentation/quick-start/installation-and-system-requirements#installation-instructions-non-docker)
 
 #### Launch benchmark
 
