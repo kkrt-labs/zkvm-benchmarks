@@ -37,6 +37,10 @@ Benchmarks can be done on ARM64 (MacOS) and x86 architectures.
 - [Docker](https://docs.docker.com/get-started/get-docker/)
 - [lld](https://formulae.brew.sh/formula/lld)
 
+### Linux arm64
+
+- [Docker](https://docs.docker.com/get-started/get-docker/)
+
 ## Run Benchmarks
 
 ### Local
@@ -51,7 +55,7 @@ Install all required toolchains:
 - [SP1](https://docs.succinct.xyz/docs/sp1/getting-started/install)
 - [ZKM](https://docs.zkm.io/introduction/installation.html)
 
-##### Linux
+##### Linux x86-64
 
 - [Valida](https://lita.gitbook.io/lita-documentation/quick-start/installation-and-system-requirements#installation-instructions-non-docker)
 
