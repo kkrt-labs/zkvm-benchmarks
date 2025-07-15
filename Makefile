@@ -11,8 +11,8 @@ bench-all:
 	make bench-openvm
 	make bench-risczero
 	make bench-sp1
-	make bench-zkm
 	make bench-valida
+	make bench-zkm
 	@echo "Results are available through Jupyter Notebook: $(results_file)"
 
 bench-valida:
