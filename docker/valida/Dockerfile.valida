@@ -1,0 +1,15 @@
+FROM ghcr.io/lita-xyz/llvm-valida-releases/valida-build-container:v0.10.0
+
+WORKDIR /app
+
+COPY ./valida/ ./valida/
+COPY ./utils/ ./utils/
+COPY ./guests/ ./guests/
+
+WORKDIR /app/valida/fibonacci
+
+RUN cargo +valida build --release
+
+WORKDIR /app/valida/host
+
+CMD ["sh", "-c", "RUSTFLAGS='-C target-cpu=native' cargo run --release"]

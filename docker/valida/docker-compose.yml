@@ -1,0 +1,7 @@
+services:
+  valida:
+    build:
+      context: ../..
+      dockerfile: docker/valida/Dockerfile.valida
+    volumes:
+      - ../../.outputs:/app/.outputs

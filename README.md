@@ -19,9 +19,10 @@ For example, the fibonacci program will use the native field of the ZK-VM when d
 | OpenVM        | ✅        |
 | RiscZero      | ✅        |
 | SP1           | ✅        |
+| Valida        | ✅        |
 | ZKM           | ✅        |
 
-The following ZK-VMs are yet to be adapted: Ceno, Jolt, Nexus, Noir Barretenberg, Pico, Valida
+The following ZK-VMs are yet to be adapted: Ceno, Jolt, Nexus, Noir Barretenberg, Pico
 
 Benchmarks can be done on ARM64 (MacOS) and x86 architectures.
 
@@ -33,7 +34,12 @@ Benchmarks can be done on ARM64 (MacOS) and x86 architectures.
 
 ### MacOS
 
+- [Docker](https://docs.docker.com/get-started/get-docker/)
 - [lld](https://formulae.brew.sh/formula/lld)
+
+### Linux arm64
+
+- [Docker](https://docs.docker.com/get-started/get-docker/)
 
 ## Run Benchmarks
 
@@ -49,6 +55,10 @@ Install all required toolchains:
 - [SP1](https://docs.succinct.xyz/docs/sp1/getting-started/install)
 - [ZKM](https://docs.zkm.io/introduction/installation.html)
 
+##### Linux x86-64
+
+- [Valida](https://lita.gitbook.io/lita-documentation/quick-start/installation-and-system-requirements#installation-instructions-non-docker)
+
 #### Launch benchmark
 
 Either launch all benchmarks in a single command:
@@ -60,7 +70,7 @@ make bench-all
 Or launch benchmark for a given ZK-VM:
 
 ```bash
-make bench-<cairo|cairo-m|miden|noir-provekit|openvm|risczero|sp1|zkm>
+make bench-<cairo|cairo-m|miden|noir-provekit|openvm|risczero|sp1|valida|zkm>
 ```
 
 ## Benchmark Details
@@ -90,6 +100,7 @@ The following table summarizes the expected security level of the ZK-VMs in thes
 | OpenVM        | 100                   | [link1](./openvm/src/bin/fibonacci.rs#L79), [link2](https://github.com/openvm-org/stark-backend/blob/b0bec8739d249370f91862f99c2ecc2c03d33240/crates/stark-sdk/src/config/fri_params.rs#L29)                                                                                                                                             |
 | RiscZero      | 96                    | [link](https://github.com/risc0/risc0/blob/bef7bf580eb13d5467074b5f6075a986734d3fe5/website/api/security-model.md#cryptographic-security)                                                                                                                                                                                                |
 | SP1           | 100                   | [link1](https://docs.succinct.xyz/assets/files/SP1_Turbo_Memory_Argument-b042ba18b58c4add20a8370f4802f077.pdf), [link2](https://docs.succinct.xyz/docs/sp1/security/security-model#security-of-elliptic-curves-over-extension-fields), [link3](https://docs.succinct.xyz/docs/sp1/security/security-model#conjectures-for-fris-security) |
+| Valida        | 48                    | [link](https://github.com/lita-xyz/valida-vm/blob/3d8ebc4714ef068beb9e1edc2d3ebac48169f8aa/basic-api/src/commands/common.rs#L176)                                                                                                                                                                                                        |
 | ZKM           | 100                   | [link1](https://docs.zkm.io/design/memory-checking.html#elliptic-curve-selection-over-koalabear-prime-extension-field), [link2](https://github.com/ProjectZKM/Ziren/blob/52dd269d475b10b6b2ddc5df3155814633491f24/crates/stark/src/kb31_poseidon2.rs#L202-L203)                                                                          |
 
 For FRI-STARKs related ZK-VMs, the security level is conjectured based on proximity gap proofs and "Toy Problem" related to FRI . This means the soundness is not proven in the traditional cryptographic sense [see paper](https://eprint.iacr.org/2024/1161.pdf).
