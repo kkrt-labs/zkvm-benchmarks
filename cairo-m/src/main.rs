@@ -5,6 +5,7 @@ use cairo_m_prover::{
     verifier::verify_cairo_m,
 };
 use cairo_m_runner::run_cairo_program;
+use sha2::{Digest, Sha256};
 use std::convert::TryInto;
 use std::env;
 use std::fs;
@@ -34,7 +35,10 @@ fn bench_cairo_fib(n: u32) -> Metrics {
     // Compile the program
     let source_path = "test_data/fibonacci_loop.cm".to_string();
     let source_text = fs::read_to_string(&source_path).expect("Failed to read fibonacci.cm");
-    let options = CompilerOptions { verbose: false };
+    let options = CompilerOptions {
+        verbose: false,
+        optimization_level: Default::default(),
+    };
     let output =
         compile_cairo(source_text, source_path, options).expect("Failed to compile fibonacci.cm");
     let compiled_program = (*output.program).clone();
@@ -144,7 +148,10 @@ fn bench_cairo_sha256(num_bytes: u32) -> Metrics {
     // Compile the program
     let source_path = "test_data/sha256.cm".to_string();
     let source_text = fs::read_to_string(&source_path).expect("Failed to read sha256.cm");
-    let options = CompilerOptions { verbose: false };
+    let options = CompilerOptions {
+        verbose: false,
+        optimization_level: Default::default(),
+    };
     let output =
         compile_cairo(source_text, source_path, options).expect("Failed to compile sha256.cm");
     let compiled_program = (*output.program).clone();
@@ -203,8 +210,38 @@ fn bench_cairo_sha256(num_bytes: u32) -> Metrics {
         "SHA-256 returned {} values",
         runner_output.return_values.len()
     );
-    if !runner_output.return_values.is_empty() {
-        eprintln!("Return value: {:?}", runner_output.return_values[0]);
+
+    // SHA256 returns an array as a single return value
+    let cairo_sha256: Vec<u32> = if runner_output.return_values.len() == 1 {
+        match &runner_output.return_values[0] {
+            cairo_m_common::CairoMValue::Array(arr) => arr
+                .iter()
+                .map(|v| match v {
+                    cairo_m_common::CairoMValue::U32(u) => *u,
+                    _ => panic!("Expected U32 value in SHA256 array output"),
+                })
+                .collect(),
+            _ => panic!("Expected SHA256 to return an array of 8 u32 values"),
+        }
+    } else {
+        panic!("Expected SHA256 to return exactly one value (an array)");
+    };
+
+    // Compute expected SHA256 using Rust's sha2 crate
+    let mut hasher = Sha256::new();
+    hasher.update(&input_bytes);
+    let rust_result = hasher.finalize();
+
+    // Convert Rust result to u32 array for comparison
+    let rust_sha256: Vec<u32> = rust_result
+        .chunks_exact(4)
+        .map(|chunk| u32::from_be_bytes([chunk[0], chunk[1], chunk[2], chunk[3]]))
+        .collect();
+
+    // Compare the results
+    let matches = cairo_sha256 == rust_sha256;
+    if !matches {
+        eprintln!("WARNING: Cairo-M SHA256 output does not match Rust sha2 implementation!");
     }
 
     // Metrics Computation
@@ -212,21 +249,25 @@ fn bench_cairo_sha256(num_bytes: u32) -> Metrics {
 
     // Proof Generation
     let segment = runner_output.vm.segments.into_iter().next().unwrap();
-    eprintln!("Using segment with trace length: {}", segment.trace.len());
 
-    let mut prover_input = match import_from_runner_output(segment, runner_output.public_address_ranges) {
-        Ok(input) => input,
-        Err(e) => {
-            eprintln!("\n=================================================================");
-            eprintln!("ERROR: Failed to import runner output for proof generation");
-            eprintln!("Error: {:?}", e);
-            eprintln!("This is likely due to u32 opcodes not yet being supported in the prover.");
-            eprintln!("The SHA-256 implementation uses u32 bitwise operations that are");
-            eprintln!("pending implementation in the cairo-m prover.");
-            eprintln!("=================================================================\n");
-            panic!("Cannot generate proof for SHA-256 until u32 opcodes are supported in the prover");
-        }
-    };
+    let mut prover_input =
+        match import_from_runner_output(segment, runner_output.public_address_ranges) {
+            Ok(input) => input,
+            Err(e) => {
+                eprintln!("\n=================================================================");
+                eprintln!("ERROR: Failed to import runner output for proof generation");
+                eprintln!("Error: {:?}", e);
+                eprintln!(
+                    "This is likely due to u32 opcodes not yet being supported in the prover."
+                );
+                eprintln!("The SHA-256 implementation uses u32 bitwise operations that are");
+                eprintln!("pending implementation in the cairo-m prover.");
+                eprintln!("=================================================================\n");
+                panic!(
+                "Cannot generate proof for SHA-256 until u32 opcodes are supported in the prover"
+            );
+            }
+        };
 
     let pcs_config = REGULAR_96_BITS;
 

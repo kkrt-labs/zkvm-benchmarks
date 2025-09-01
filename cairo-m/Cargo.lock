@@ -449,6 +449,7 @@ dependencies = [
  "cairo-m-prover",
  "cairo-m-runner",
  "dotenv",
+ "sha2",
  "sonic-rs 0.5.4",
  "stwo-prover",
  "thiserror 2.0.16",
@@ -458,7 +459,7 @@ dependencies = [
 [[package]]
 name = "cairo-m-common"
 version = "0.1.0"
-source = "git+https://github.com/kkrt-labs/cairo-m#3aeb1fdee59a464b6edec4b0cca4d517b211cae6"
+source = "git+https://github.com/kkrt-labs/cairo-m#da9cf5f3459d1d3a774a288b8e2cead423d656d3"
 dependencies = [
  "anyhow",
  "num-traits",
@@ -473,7 +474,7 @@ dependencies = [
 [[package]]
 name = "cairo-m-compiler"
 version = "0.1.0"
-source = "git+https://github.com/kkrt-labs/cairo-m#3aeb1fdee59a464b6edec4b0cca4d517b211cae6"
+source = "git+https://github.com/kkrt-labs/cairo-m#da9cf5f3459d1d3a774a288b8e2cead423d656d3"
 dependencies = [
  "anyhow",
  "ariadne",
@@ -500,7 +501,7 @@ dependencies = [
 [[package]]
 name = "cairo-m-compiler-codegen"
 version = "0.1.0"
-source = "git+https://github.com/kkrt-labs/cairo-m#3aeb1fdee59a464b6edec4b0cca4d517b211cae6"
+source = "git+https://github.com/kkrt-labs/cairo-m#da9cf5f3459d1d3a774a288b8e2cead423d656d3"
 dependencies = [
  "cairo-m-common",
  "cairo-m-compiler-diagnostics",
@@ -519,12 +520,13 @@ dependencies = [
  "smallvec",
  "sonic-rs 0.3.17",
  "stwo-prover",
+ "thiserror 2.0.16",
 ]
 
 [[package]]
 name = "cairo-m-compiler-diagnostics"
 version = "0.1.0"
-source = "git+https://github.com/kkrt-labs/cairo-m#3aeb1fdee59a464b6edec4b0cca4d517b211cae6"
+source = "git+https://github.com/kkrt-labs/cairo-m#da9cf5f3459d1d3a774a288b8e2cead423d656d3"
 dependencies = [
  "ariadne",
  "chumsky",
@@ -533,7 +535,7 @@ dependencies = [
 [[package]]
 name = "cairo-m-compiler-mir"
 version = "0.1.0"
-source = "git+https://github.com/kkrt-labs/cairo-m#3aeb1fdee59a464b6edec4b0cca4d517b211cae6"
+source = "git+https://github.com/kkrt-labs/cairo-m#da9cf5f3459d1d3a774a288b8e2cead423d656d3"
 dependencies = [
  "cairo-m-compiler-diagnostics",
  "cairo-m-compiler-parser",
@@ -550,7 +552,7 @@ dependencies = [
 [[package]]
 name = "cairo-m-compiler-parser"
 version = "0.1.0"
-source = "git+https://github.com/kkrt-labs/cairo-m#3aeb1fdee59a464b6edec4b0cca4d517b211cae6"
+source = "git+https://github.com/kkrt-labs/cairo-m#da9cf5f3459d1d3a774a288b8e2cead423d656d3"
 dependencies = [
  "ariadne",
  "cairo-m-compiler-diagnostics",
@@ -569,7 +571,7 @@ dependencies = [
 [[package]]
 name = "cairo-m-compiler-semantic"
 version = "0.1.0"
-source = "git+https://github.com/kkrt-labs/cairo-m#3aeb1fdee59a464b6edec4b0cca4d517b211cae6"
+source = "git+https://github.com/kkrt-labs/cairo-m#da9cf5f3459d1d3a774a288b8e2cead423d656d3"
 dependencies = [
  "anyhow",
  "ariadne",
@@ -596,7 +598,7 @@ dependencies = [
 [[package]]
 name = "cairo-m-project"
 version = "0.1.0"
-source = "git+https://github.com/kkrt-labs/cairo-m#3aeb1fdee59a464b6edec4b0cca4d517b211cae6"
+source = "git+https://github.com/kkrt-labs/cairo-m#da9cf5f3459d1d3a774a288b8e2cead423d656d3"
 dependencies = [
  "anyhow",
  "ignore",
@@ -610,7 +612,7 @@ dependencies = [
 [[package]]
 name = "cairo-m-prover"
 version = "0.1.1"
-source = "git+https://github.com/kkrt-labs/cairo-m#3aeb1fdee59a464b6edec4b0cca4d517b211cae6"
+source = "git+https://github.com/kkrt-labs/cairo-m#da9cf5f3459d1d3a774a288b8e2cead423d656d3"
 dependencies = [
  "anyhow",
  "bytemuck",
@@ -638,7 +640,7 @@ dependencies = [
 [[package]]
 name = "cairo-m-runner"
 version = "0.1.1"
-source = "git+https://github.com/kkrt-labs/cairo-m#3aeb1fdee59a464b6edec4b0cca4d517b211cae6"
+source = "git+https://github.com/kkrt-labs/cairo-m#da9cf5f3459d1d3a774a288b8e2cead423d656d3"
 dependencies = [
  "anyhow",
  "cairo-m-common",
@@ -660,7 +662,7 @@ dependencies = [
 [[package]]
 name = "cairo-m-test-utils"
 version = "0.1.0"
-source = "git+https://github.com/kkrt-labs/cairo-m#3aeb1fdee59a464b6edec4b0cca4d517b211cae6"
+source = "git+https://github.com/kkrt-labs/cairo-m#da9cf5f3459d1d3a774a288b8e2cead423d656d3"
 dependencies = [
  "once_cell",
  "pulldown-cmark",
@@ -673,10 +675,11 @@ dependencies = [
 
 [[package]]
 name = "cc"
-version = "1.2.34"
+version = "1.2.35"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "42bc4aea80032b7bf409b0bc7ccad88853858911b7713a8062fdc0623867bedc"
+checksum = "590f9024a68a8c40351881787f1934dc11afd69090f5edb6831464694d836ea3"
 dependencies = [
+ "find-msvc-tools",
  "shlex",
 ]
 
@@ -1165,6 +1168,12 @@ dependencies = [
  "rand_core 0.6.4",
  "subtle",
 ]
+
+[[package]]
+name = "find-msvc-tools"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e178e4fba8a2726903f6ba98a6d221e76f9c12c650d5dc0e6afdc50677b49650"
 
 [[package]]
 name = "findshlibs"
