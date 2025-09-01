@@ -1,31 +1,37 @@
 use std::fs;
+use std::io::Write;
 use std::path::Path;
 use std::time::Instant;
 use tempfile::NamedTempFile;
-use tmpfile_helper::*;
 use utils::bench::{benchmark, Metrics};
-use utils::metadata::FIBONACCI_INPUTS;
+use utils::metadata::SHA2_INPUTS;
 #[cfg(target_arch = "aarch64")]
 use valida_vm_api_linux_arm::*;
 #[cfg(target_arch = "x86_64")]
 use valida_vm_api_linux_x86::*;
 
+fn bytes_to_temp_file(bytes: &[u8]) -> std::io::Result<NamedTempFile> {
+    let mut file = NamedTempFile::new()?;
+    file.write_all(bytes)?;
+    file.flush()?;
+    Ok(file)
+}
+
 fn main() {
     benchmark(
-        bench_fib,
-        &FIBONACCI_INPUTS,
-        "../../.outputs/benchmark/fib_valida.csv",
+        bench_sha2,
+        &SHA2_INPUTS,
+        "../../.outputs/benchmark/sha2_valida.csv",
     );
 }
 
-fn bench_fib(n: u32) -> Metrics {
-    let mut metrics = Metrics::new(n as usize);
-    let program =
-        Path::new("../fibonacci/target/valida-unknown-baremetal-gnu/release/").join("fibonacci");
+fn bench_sha2(num_bytes: usize) -> Metrics {
+    let mut metrics = Metrics::new(num_bytes);
+    let program = Path::new("../sha2/target/valida-unknown-baremetal-gnu/release/").join("sha2-valida");
 
     let valida = create_valida().unwrap();
 
-    let stdin = bytes_to_temp_file(n.to_string().as_bytes()).unwrap();
+    let stdin = bytes_to_temp_file(num_bytes.to_string().as_bytes()).unwrap();
     let stdout = NamedTempFile::new().unwrap();
 
     let start = Instant::now();
@@ -65,7 +71,7 @@ fn bench_fib(n: u32) -> Metrics {
     metrics.verify_duration = start.elapsed();
 
     assert_eq!(verify_status_correct_statement, VerifyStatus::Success);
-    println!("All checks completed successfully for n = {}.", n);
+    println!("All checks completed successfully for {} bytes.", num_bytes);
 
     metrics
 }

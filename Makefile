@@ -16,15 +16,28 @@ bench-all:
 	@echo "Results are available through Jupyter Notebook: $(results_file)"
 
 ifeq ($(platform)-$(architecture), Linux-x86_64)
-bench-valida:
+bench-valida-fib:
 	cd valida/fibonacci && \
 	cargo +valida build --release && \
 	cd ../host && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci
+
+bench-valida-sha:
+	cd valida/sha2 && \
+	cargo +valida build --release && \
+	cd ../host && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2
 else
-bench-valida:
-	docker compose -f docker/valida/docker-compose.yml run --rm valida
+bench-valida-fib:
+	docker compose -f docker/valida/docker-compose.yml run --rm -e BENCHMARK=fibonacci valida-fib
+
+bench-valida-sha:
+	docker compose -f docker/valida/docker-compose.yml run --rm -e BENCHMARK=sha2 valida-sha
 endif
+
+bench-valida:
+	make bench-valida-fib
+	make bench-valida-sha
 
 bench-zkm-fib:
 	. ~/.zkm-toolchain/env && \

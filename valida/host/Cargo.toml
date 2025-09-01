@@ -3,6 +3,14 @@ name = "valida-vm-api-test"
 version = "0.1.0"
 edition = "2021"
 
+[[bin]]
+name = "fibonacci"
+path = "src/bin/fibonacci.rs"
+
+[[bin]]
+name = "sha2"
+path = "src/bin/sha2.rs"
+
 [dependencies]
 tempfile = "3.10.1"
 utils = { path = "../../utils" }

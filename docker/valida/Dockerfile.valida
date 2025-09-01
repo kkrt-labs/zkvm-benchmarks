@@ -6,10 +6,15 @@ COPY ./valida/ ./valida/
 COPY ./utils/ ./utils/
 COPY ./guests/ ./guests/
 
+# Build fibonacci
 WORKDIR /app/valida/fibonacci
+RUN cargo +valida build --release
 
+# Build sha2
+WORKDIR /app/valida/sha2
 RUN cargo +valida build --release
 
 WORKDIR /app/valida/host
 
-CMD ["sh", "-c", "RUSTFLAGS='-C target-cpu=native' cargo run --release"]
+# Default to fibonacci, but allow override via BENCHMARK env var
+CMD ["sh", "-c", "RUSTFLAGS='-C target-cpu=native' cargo run --release --bin ${BENCHMARK:-fibonacci}"]

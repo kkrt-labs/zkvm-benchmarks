@@ -1,8 +1,9 @@
 [package]
-name = "fibonacci"
+name = "sha2-valida"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 valida-rs = { git = "https://github.com/lita-xyz/valida-rs.git", branch = "no-deps" }
-guests = { path = "../../guests" }
+sha2 = { version = "0.10", default-features = false }
+guests = { path = "../../guests", features = ["with-sha2"] }
