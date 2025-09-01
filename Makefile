@@ -26,10 +26,15 @@ bench-valida:
 	docker compose -f docker/valida/docker-compose.yml run --rm valida
 endif
 
-bench-zkm:
+bench-zkm-fib:
 	. ~/.zkm-toolchain/env && \
 	cd zkm && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --bin fibonacci --release
+
+bench-zkm-sha2:
+	. ~/.zkm-toolchain/env && \
+	cd zkm && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --bin sha2 --release
 
 bench-cairo:
 	cd cairo/test_data && \
@@ -72,13 +77,21 @@ bench-noir-provekit:
 	echo "Noir Provekit is only supported on ARM64 architecture."
 endif
 
-bench-sp1:
+bench-sp1-fib:
 	cd sp1 && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin fib
 
-bench-risczero:
+bench-sp1-sha2:
+	cd sp1 && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin sha2
+
+bench-risczero-fib:
 	cd risczero && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci
+
+bench-risczero-sha2:
+	cd risczero && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2
 
 bench-jolt:
 	cd jolt && \
@@ -125,9 +138,13 @@ bench-risczero-gpu:
 bench-powdr:
 	cd powdr && RUSTFLAGS='-C target-cpu=native' cargo run --release
 
-bench-openvm:
+bench-openvm-fib:
 	cd openvm && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci
+
+bench-openvm-sha2:
+	cd openvm && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2
 
 bench-nexus:
 	cd nexus && \

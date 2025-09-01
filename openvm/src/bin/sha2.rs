@@ -9,7 +9,7 @@ use openvm_sdk::{
     prover::AppProver,
     Sdk, StdIn,
 };
-use openvm_stark_sdk::config::FriParameters;
+use openvm_stark_sdk::config::{baby_bear_poseidon2::BabyBearPoseidon2Engine, FriParameters};
 use utils::{bench::benchmark, bench::Metrics, metadata::SHA2_INPUTS, sha2_input, size};
 
 // ANCHOR_END: dependencies
@@ -40,7 +40,7 @@ fn benchmark_sha2(num_bytes: usize) -> Metrics {
 
     // ANCHOR: build
     // 1. Build the VmConfig with the extensions needed.
-    let sdk = Sdk;
+    let sdk = Sdk::new();
 
     // 2a. Build the ELF with guest options and a target filter.
     let guest_opts = GuestOptions::default();
@@ -71,8 +71,8 @@ fn benchmark_sha2(num_bytes: usize) -> Metrics {
 
     // ANCHOR: proof_generation
     // 6. Set app configuration
-    let app_log_blowup = 2;
-    let app_fri_params = FriParameters::standard_with_100_bits_conjectured_security(app_log_blowup);
+    let log_blowup_factor = 2;
+    let app_fri_params = FriParameters::standard_with_100_bits_conjectured_security(log_blowup_factor);
     let app_config = AppConfig::new(app_fri_params, vm_config);
 
     // 7. Commit the exe
@@ -84,8 +84,8 @@ fn benchmark_sha2(num_bytes: usize) -> Metrics {
     // 9a. Generate a proof
     // let proof = sdk.generate_app_proof(app_pk.clone(), app_committed_exe.clone(), stdin.clone()).unwrap();
     // 9b. Generate a proof with an AppProver with custom fields
-    let app_prover = AppProver::new(app_pk.app_vm_pk.clone(), app_committed_exe.clone())
-        .with_program_name("test_program");
+    let app_prover = AppProver::<_, BabyBearPoseidon2Engine>::new(app_pk.app_vm_pk.clone(), app_committed_exe.clone())
+        .with_program_name("sha2");
     let start = Instant::now();
     let proof = app_prover.generate_app_proof(stdin.clone());
     // ANCHOR_END: proof_generation
