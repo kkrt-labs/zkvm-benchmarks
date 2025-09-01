@@ -42,13 +42,19 @@ bench-cairo-zero:
 	RUSTFLAGS="-C target-cpu=native" cargo run --release
 
 ifeq ($(platform),Darwin)
-bench-cairo-m:
+bench-cairo-m-fib:
 	cd cairo-m && \
-	RUSTFLAGS="-C link-arg=-fuse-ld=/opt/homebrew/opt/lld/bin/ld64.lld -C target-cpu=native" cargo run --release
+	RUSTFLAGS="-C link-arg=-fuse-ld=/opt/homebrew/opt/lld/bin/ld64.lld -C target-cpu=native" cargo run --release fib
+bench-cairo-m-sha256:
+	cd cairo-m && \
+	RUSTFLAGS="-C link-arg=-fuse-ld=/opt/homebrew/opt/lld/bin/ld64.lld -C target-cpu=native" cargo run --release sha256
 else
-bench-cairo-m:
+bench-cairo-m-fib:
 	cd cairo-m && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release
+	RUSTFLAGS="-C target-cpu=native" cargo run --release fib
+bench-cairo-m-sha256:
+	cd cairo-m && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release sha256
 endif
 
 bench-miden:
