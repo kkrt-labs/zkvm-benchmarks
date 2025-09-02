@@ -49,6 +49,10 @@ bench-zkm-sha2:
 	cd zkm && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --bin sha2 --release
 
+bench-zkm:
+	make bench-zkm-fib
+	make bench-zkm-sha2
+
 bench-cairo-fib:
 	cd cairo/test_data && \
 	scarb --profile release build && \
@@ -85,6 +89,10 @@ bench-cairo-m-sha256:
 	RUSTFLAGS="-C target-cpu=native" cargo run --release sha256
 endif
 
+bench-cairo-m:
+	make bench-cairo-m-fib
+	make bench-cairo-m-sha256
+
 bench-miden:
 	cd miden && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release
@@ -108,6 +116,11 @@ bench-sp1-sha2:
 	cd sp1 && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin sha2
 
+bench-sp1:
+	make bench-sp1-fib
+	make bench-sp1-sha2
+
+
 bench-risczero-fib:
 	cd risczero && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci
@@ -115,6 +128,10 @@ bench-risczero-fib:
 bench-risczero-sha2:
 	cd risczero && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2
+
+bench-risczero:
+	make bench-risczero-fib
+	make bench-risczero-sha2
 
 bench-jolt:
 	cd jolt && \
@@ -168,6 +185,10 @@ bench-openvm-fib:
 bench-openvm-sha2:
 	cd openvm && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2
+
+bench-openvm:
+	make bench-openvm-fib
+	make bench-openvm-sha2
 
 bench-nexus:
 	cd nexus && \
