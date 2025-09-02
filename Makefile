@@ -65,13 +65,26 @@ bench-cairo-sha256:
 	cd ../ && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release -- sha256
 
+
 bench-cairo:
 	make bench-cairo-fib
 	make bench-cairo-sha256
 
-bench-cairo-zero:
+bench-cairo-zero-fib:
 	cd cairo-zero && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -- fib
+
+bench-cairo-zero-fib-via-uv:
+	cd cairo-zero && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -- fib-via-uv
+
+bench-cairo-zero-sha256:
+	cd cairo-zero && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -- sha256
+
+bench-cairo-zero:
+	make bench-cairo-zero-fib
+	make bench-cairo-zero-sha256
 
 ifeq ($(platform),Darwin)
 bench-cairo-m-fib:

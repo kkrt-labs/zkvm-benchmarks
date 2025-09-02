@@ -108,7 +108,10 @@ where
     let mut results = Vec::new();
     for input in inputs {
         let (mut metrics, peak_memory) = measure_peak_memory(|| func(input.clone()));
-        metrics.peak_memory = peak_memory;
+        // if !=0, test has set peak memory, skip it
+        if metrics.peak_memory == 0 {
+            metrics.peak_memory = peak_memory;
+        }
         results.push(metrics);
     }
 

@@ -3,7 +3,11 @@
 func main{
     output_ptr: felt*,
 }() {
-    let result: felt = fib(0, 1, 10);
+    alloc_locals;
+
+    tempvar n;
+    %{ ids.n = program_input[0] %}
+    let result: felt = fib(0, 1, n);
 
     assert [output_ptr] = result;
     let output_ptr = output_ptr + 1;
