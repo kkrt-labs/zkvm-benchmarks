@@ -2,5 +2,14 @@
 version = 1
 
 [[package]]
-name = "fibonacci"
+name = "alexandria_math"
+version = "0.5.2"
+source = "registry+https://scarbs.xyz/"
+checksum = "sha256:b5910e4f17fbb9988f23f34d63a59fc82e560992fe4a72f31f3d3854741c5340"
+
+[[package]]
+name = "cairo_benchmarks"
 version = "0.1.0"
+dependencies = [
+ "alexandria_math",
+]

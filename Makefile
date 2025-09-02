@@ -49,11 +49,21 @@ bench-zkm-sha2:
 	cd zkm && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --bin sha2 --release
 
-bench-cairo:
+bench-cairo-fib:
 	cd cairo/test_data && \
 	scarb --profile release build && \
 	cd ../ && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -- fib
+
+bench-cairo-sha256:
+	cd cairo/test_data && \
+	scarb --profile release build && \
+	cd ../ && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -- sha256
+
+bench-cairo:
+	make bench-cairo-fib
+	make bench-cairo-sha256
 
 bench-cairo-zero:
 	cd cairo-zero && \

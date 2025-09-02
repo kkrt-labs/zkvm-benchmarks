@@ -1,9 +1,15 @@
 [package]
-name = "fibonacci"
+name = "cairo_benchmarks"
 version = "0.1.0"
 edition = "2024_07"
 
-[executable]
+[[target.executable]]
+name = "fib"
+function = "cairo_benchmarks::main"
+
+[[target.executable]]
+name = "sha256"
+function = "cairo_benchmarks::sha256_hash"
 
 [cairo]
 enable-gas = false
@@ -12,6 +18,6 @@ enable-gas = false
 
 [dependencies]
 cairo_execute = "2.11.4"
+alexandria_math = { version = "0.5.2" }
 
-
-# Run scarb --profile release build to generate fibonacci.executable.json
+# Run scarb --profile release build to generate *.executable.json
