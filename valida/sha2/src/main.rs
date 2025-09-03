@@ -1,9 +1,9 @@
-use valida_rs::io::read_line;
+use valida_rs::io::read;
 use guests::sha2::sha2;
 
 pub fn main() {
-    let num_bytes = read_line::<usize>().unwrap();
-    let input = vec![0u8; num_bytes];
+    // Read all input bytes from stdin until EOF
+    let input = read().expect("Failed to read input");
     let result = sha2(&input);
     println!("{:?}", result);
 }

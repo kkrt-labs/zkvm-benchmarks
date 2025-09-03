@@ -6,8 +6,13 @@ version = 4
 name = "fibonacci"
 version = "0.1.0"
 dependencies = [
+ "guests",
  "valida-rs",
 ]
+
+[[package]]
+name = "guests"
+version = "0.1.0"
 
 [[package]]
 name = "valida-rs"

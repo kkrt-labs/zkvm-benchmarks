@@ -5,6 +5,7 @@ use std::time::Instant;
 use tempfile::NamedTempFile;
 use utils::bench::{benchmark, Metrics};
 use utils::metadata::SHA2_INPUTS;
+use utils::sha2_input;
 #[cfg(target_arch = "aarch64")]
 use valida_vm_api_linux_arm::*;
 #[cfg(target_arch = "x86_64")]
@@ -31,7 +32,8 @@ fn bench_sha2(num_bytes: usize) -> Metrics {
 
     let valida = create_valida().unwrap();
 
-    let stdin = bytes_to_temp_file(num_bytes.to_string().as_bytes()).unwrap();
+    let input_bytes = sha2_input(num_bytes);
+    let stdin = bytes_to_temp_file(&input_bytes).unwrap();
     let stdout = NamedTempFile::new().unwrap();
 
     let start = Instant::now();

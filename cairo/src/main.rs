@@ -1,6 +1,7 @@
 use utils::{
     bench::{benchmark, Metrics},
     metadata::{FIBONACCI_INPUTS, SHA2_INPUTS},
+    sha2_input,
 };
 
 use cairo_air::verifier::verify_cairo;
@@ -68,8 +69,13 @@ fn bench_cairo_sha256(n: u32) -> Metrics {
     let mut metrics = Metrics::new(n as usize);
     let target_path = "test_data/target/release/sha256.executable.json";
 
-    // Pass the size as a single felt252 argument
-    let args = vec![Arg::Value(Felt252::from(n))];
+    // Generate the input bytes using sha2_input
+    let input_bytes = sha2_input(n as usize);
+
+    // Convert bytes to felt252 arguments - pass as a single array argument
+    // Cairo arrays need their length as the first element
+    let mut args = vec![Arg::Value(Felt252::from(input_bytes.len()))];
+    args.extend(input_bytes.into_iter().map(|b| Arg::Value(Felt252::from(b))));
 
     let pcs_config = REGULAR_96_BITS;
 
