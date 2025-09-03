@@ -17,7 +17,7 @@ use utils::{bench::benchmark, bench::Metrics, metadata::FIBONACCI_INPUTS, size};
 #[allow(unused_variables, unused_doc_comments)]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     benchmark(
-        benchmark_fib,
+        bench_openvm_fib,
         &FIBONACCI_INPUTS,
         "../.outputs/benchmark/fib_openvm.csv",
     );
@@ -25,7 +25,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-fn benchmark_fib(n: u32) -> Metrics {
+fn bench_openvm_fib(n: u32) -> Metrics {
     let mut metrics: Metrics = Metrics::new(n as usize);
 
     // ANCHOR: vm_config

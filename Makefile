@@ -22,7 +22,7 @@ bench-valida-fib:
 	cd ../host && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci
 
-bench-valida-sha:
+bench-valida-sha256:
 	cd valida/sha2 && \
 	cargo +valida build --release && \
 	cd ../host && \
@@ -31,27 +31,27 @@ else
 bench-valida-fib:
 	docker compose -f docker/valida/docker-compose.yml run --rm -e BENCHMARK=fibonacci valida-fib
 
-bench-valida-sha:
+bench-valida-sha256:
 	docker compose -f docker/valida/docker-compose.yml run --rm -e BENCHMARK=sha2 valida-sha
 endif
 
 bench-valida:
 	make bench-valida-fib
-	make bench-valida-sha
+	make bench-valida-sha256
 
 bench-zkm-fib:
 	. ~/.zkm-toolchain/env && \
 	cd zkm && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --bin fibonacci --release
 
-bench-zkm-sha2:
+bench-zkm-sha256:
 	. ~/.zkm-toolchain/env && \
 	cd zkm && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --bin sha2 --release
 
 bench-zkm:
 	make bench-zkm-fib
-	make bench-zkm-sha2
+	make bench-zkm-sha256
 
 bench-cairo-fib:
 	cd cairo/test_data && \
@@ -112,26 +112,26 @@ bench-sp1-fib:
 	cd sp1 && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin fib
 
-bench-sp1-sha2:
+bench-sp1-sha256:
 	cd sp1 && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin sha2
 
 bench-sp1:
 	make bench-sp1-fib
-	make bench-sp1-sha2
+	make bench-sp1-sha256
 
 
 bench-risczero-fib:
 	cd risczero && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci
 
-bench-risczero-sha2:
+bench-risczero-sha256:
 	cd risczero && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2
 
 bench-risczero:
 	make bench-risczero-fib
-	make bench-risczero-sha2
+	make bench-risczero-sha256
 
 bench-jolt:
 	cd jolt && \
@@ -182,13 +182,13 @@ bench-openvm-fib:
 	cd openvm && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci
 
-bench-openvm-sha2:
+bench-openvm-sha256:
 	cd openvm && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2
 
 bench-openvm:
 	make bench-openvm-fib
-	make bench-openvm-sha2
+	make bench-openvm-sha256
 
 bench-nexus:
 	cd nexus && \

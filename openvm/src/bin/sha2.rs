@@ -17,7 +17,7 @@ use utils::{bench::benchmark, bench::Metrics, metadata::SHA2_INPUTS, sha2_input,
 #[allow(unused_variables, unused_doc_comments)]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     benchmark(
-        benchmark_sha2,
+        bench_openvm_sha256,
         &SHA2_INPUTS,
         "../.outputs/benchmark/sha2_openvm.csv",
     );
@@ -25,7 +25,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-fn benchmark_sha2(num_bytes: usize) -> Metrics {
+fn bench_openvm_sha256(num_bytes: usize) -> Metrics {
     let mut metrics: Metrics = Metrics::new(num_bytes as usize);
 
     // ANCHOR: vm_config

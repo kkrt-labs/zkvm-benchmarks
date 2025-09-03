@@ -19,13 +19,13 @@ fn bytes_to_temp_file(bytes: &[u8]) -> std::io::Result<NamedTempFile> {
 
 fn main() {
     benchmark(
-        bench_fib,
+        bench_valida_fib,
         &FIBONACCI_INPUTS,
         "../../.outputs/benchmark/fib_valida.csv",
     );
 }
 
-fn bench_fib(n: u32) -> Metrics {
+fn bench_valida_fib(n: u32) -> Metrics {
     let mut metrics = Metrics::new(n as usize);
     let program =
         Path::new("../fibonacci/target/valida-unknown-baremetal-gnu/release/").join("fibonacci");

@@ -20,13 +20,13 @@ fn bytes_to_temp_file(bytes: &[u8]) -> std::io::Result<NamedTempFile> {
 
 fn main() {
     benchmark(
-        bench_sha2,
+        bench_valida_sha256,
         &SHA2_INPUTS,
         "../../.outputs/benchmark/sha2_valida.csv",
     );
 }
 
-fn bench_sha2(num_bytes: usize) -> Metrics {
+fn bench_valida_sha256(num_bytes: usize) -> Metrics {
     let mut metrics = Metrics::new(num_bytes);
     let program = Path::new("../sha2/target/valida-unknown-baremetal-gnu/release/").join("sha2-valida");
 

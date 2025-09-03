@@ -29,20 +29,20 @@ fn main() {
             .parse()
             .expect("Value for --n should be a valid u32");
         benchmark(
-            bench_sha2,
+            bench_sp1_sha256,
             &[n],
             format!("../.outputs/benchmark/sha2_sp1-gpu-{}.csv", n).as_str(),
         );
     } else {
         benchmark(
-            bench_sha2,
+            bench_sp1_sha256,
             &SHA2_INPUTS,
             "../.outputs/benchmark/sha2_sp1.csv",
         );
     }
 }
 
-fn bench_sha2(num_bytes: usize) -> Metrics {
+fn bench_sp1_sha256(num_bytes: usize) -> Metrics {
     let mut metrics: Metrics = Metrics::new(num_bytes as usize);
 
     // Setup the logger.

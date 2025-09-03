@@ -29,7 +29,7 @@ pub fn fib(n: u32) -> u32 {
     b.0
 }
 
-fn bench_cairo_fib(n: u32) -> Metrics {
+fn bench_cairo_m_fib(n: u32) -> Metrics {
     let mut metrics = Metrics::new(n as usize);
 
     // Compile the program
@@ -117,7 +117,7 @@ fn prepare_sha256_input(msg: &[u8]) -> Vec<u32> {
         .collect()
 }
 
-fn bench_cairo_sha256(num_bytes: u32) -> Metrics {
+fn bench_cairo_m_sha256(num_bytes: u32) -> Metrics {
     let mut metrics = Metrics::new(num_bytes as usize);
 
     // Compile the program
@@ -290,7 +290,7 @@ fn main() {
     match benchmark_type {
         "fib" => {
             benchmark(
-                bench_cairo_fib,
+                bench_cairo_m_fib,
                 &FIBONACCI_INPUTS,
                 "../.outputs/benchmark/fib_cairo-m.csv",
             );
@@ -299,7 +299,7 @@ fn main() {
             // Convert usize inputs to u32 for consistency with the function signature
             let sha256_inputs: Vec<u32> = SHA2_INPUTS.iter().map(|&x| x as u32).collect();
             benchmark(
-                bench_cairo_sha256,
+                bench_cairo_m_sha256,
                 &sha256_inputs,
                 "../.outputs/benchmark/sha2_cairo-m.csv",
             );

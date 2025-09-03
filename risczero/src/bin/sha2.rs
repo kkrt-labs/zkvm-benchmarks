@@ -11,10 +11,10 @@ pub fn main() {
         if cfg!(feature = "cuda") { "-gpu" } else { "" },
         ""
     );
-    benchmark(benchmark_sha2, &SHA2_INPUTS, &csv_file);
+    benchmark(bench_risczero_sha256, &SHA2_INPUTS, &csv_file);
 }
 
-fn benchmark_sha2(num_bytes: usize) -> Metrics {
+fn bench_risczero_sha256(num_bytes: usize) -> Metrics {
     let mut metrics = Metrics::new(num_bytes);
     const ELF: &[u8] = risc0_benchmark_methods::BIG_SHA2_ELF;
     let image_id: Digest = risc0_benchmark_methods::BIG_SHA2_ID.into();
