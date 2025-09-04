@@ -10,17 +10,18 @@ For example, the fibonacci program will use the native field of the ZK-VM when d
 
 ## Benchmark state
 
-| ZK-VM         | Fibonacci |
-| ------------- | --------- |
-| Cairo         | ✅        |
-| Cairo M       | ✅        |
-| Miden         | ✅        |
-| Noir ProveKit | ✅        |
-| OpenVM        | ✅        |
-| RiscZero      | ✅        |
-| SP1           | ✅        |
-| Valida        | ✅        |
-| ZKM           | ✅        |
+| ZK-VM         | Fibonacci | SHA256 |
+| ------------- | --------- | ------ |
+| Cairo         | ✅        | ✅     |
+| Cairo0        | ✅        | ✅     |
+| Cairo M       | ✅        | ✅     |
+| Miden         | ✅        | ❌     |
+| Noir ProveKit | ✅        | ❌     |
+| OpenVM        | ✅        | ✅     |
+| RiscZero      | ✅        | ✅     |
+| SP1           | ✅        | ✅     |
+| Valida        | ✅        | ✅     |
+| ZKM           | ✅        | ✅     |
 
 The following ZK-VMs are yet to be adapted: Ceno, Jolt, Nexus, Noir Barretenberg, Pico
 
