@@ -72,15 +72,11 @@ bench-cairo:
 
 bench-cairo-zero-fib:
 	cd cairo-zero && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release -- fib
-
-bench-cairo-zero-fib-via-uv:
-	cd cairo-zero && \
-	cargo run --release -- fib-via-uv
+	cargo run --release -- fib
 
 bench-cairo-zero-sha256:
 	cd cairo-zero && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release -- sha256
+	cargo run --release -- sha256
 
 bench-cairo-zero:
 	make bench-cairo-zero-fib

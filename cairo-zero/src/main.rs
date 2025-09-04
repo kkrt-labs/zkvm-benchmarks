@@ -8,7 +8,6 @@ use std::time::Duration;
 use std::{path::Path, time::Instant};
 
 use cairo_vm::types::builtin_name::BuiltinName;
-use cairo_vm::types::program::Program;
 use regex::Regex;
 use stwo_cairo_adapter::builtins::MemorySegmentAddresses;
 use stwo_cairo_adapter::memory::{MemoryBuilder, MemoryConfig, MemoryEntry};
@@ -19,19 +18,25 @@ use utils::{
     bench::{benchmark, Metrics},
     metadata::{FIBONACCI_INPUTS, SHA2_INPUTS},
 };
-
 use cairo_air::verifier::verify_cairo;
 use cairo_air::{CairoProof, PreProcessedTraceVariant};
 use cairo_vm::vm::runners::cairo_runner::CairoRunner;
-use cairo_vm::{
-    cairo_run::{cairo_run_program, CairoRunConfig},
-    hint_processor::builtin_hint_processor::builtin_hint_processor_definition::BuiltinHintProcessor,
-    types::layout_name::LayoutName,
-};
 use stwo_cairo_prover::stwo::core::fri::FriConfig;
 use stwo_cairo_prover::stwo::core::vcs::blake2_merkle::{
     Blake2sMerkleChannel, Blake2sMerkleHasher,
 };
+
+// File path constants
+const FIBONACCI_SOURCE: &str = "test_data/fibonacci.cairo";
+const FIBONACCI_PROGRAM: &str = "test_data/fibonacci.json";
+const FIBONACCI_PROOF: &str = "proof_fibonacci.json";
+const SHA256_SOURCE: &str = "test_data/sha256.cairo";
+const SHA256_PROGRAM: &str = "test_data/sha256.json";
+const SHA256_INPUT: &str = "test_data/sha256_input.json";
+const SHA256_PROOF: &str = "proof_sha256.json";
+const PROOF_DIR: &str = "test_data/proofs";
+const KETH_DIR: &str = "keth";
+
 /// Runs a compiled Cairo Zero program and generate a proof of execution.
 fn main() {
     dotenv::dotenv().ok();
@@ -43,23 +48,16 @@ fn main() {
     match bench_type.as_str() {
         "fib" | "fibonacci" => {
             benchmark(
-                bench_cairo_fib,
+                bench_cairo_zero_fib,
                 &FIBONACCI_INPUTS,
                 "../.outputs/benchmark/fib_cairo-zero.csv",
             );
         }
         "sha256" | "sha" => {
             benchmark(
-                bench_cairo_sha256,
+                bench_cairo_zero_sha256,
                 &SHA2_INPUTS,
                 "../.outputs/benchmark/sha256_cairo-zero.csv",
-            );
-        }
-        "fib-via-uv" => {
-            benchmark(
-                bench_cairo_fib_via_uv,
-                &FIBONACCI_INPUTS,
-                "../.outputs/benchmark/fib_cairo-zero_via_uv.csv",
             );
         }
         _ => {
@@ -69,69 +67,24 @@ fn main() {
     }
 }
 
-///
-/// Benchmarks
-///
-
-fn bench_cairo_fib(n: u32) -> Metrics {
-    let mut metrics = Metrics::new(n as usize);
-
-    let path = format!("test_data/fibonacci_{n}.json");
-    let entrypoint = "main";
-    let program = Program::from_file(Path::new(&path), Some(entrypoint))
-        .expect("Failed to read Cairo Zero program");
-
-    let cairo_run_config = CairoRunConfig {
-        trace_enabled: true,
-        relocate_mem: true,
-        layout: LayoutName::all_cairo_stwo,
-        secure_run: None,
-        allow_missing_builtins: None,
-        dynamic_layout_params: None,
-        disable_trace_padding: true,
-        proof_mode: true,
-        ..Default::default()
-    };
-
-    let mut hint_processor = BuiltinHintProcessor::new_empty();
-
-    // Execute.
-    let start_time = Instant::now();
-    let runner = cairo_run_program(&program, &cairo_run_config, &mut hint_processor)
-        .expect("Failed to run Cairo Zero program");
-
-    metrics.exec_duration = start_time.elapsed();
-
-    // Prove.
-    let start_time = Instant::now();
-    let prover_input = prover_input_from_runner(&runner);
-    let proof = prove(prover_input, REGULAR_96_BITS);
-    metrics.proof_duration = start_time.elapsed();
-    metrics.proof_bytes = proof.stark_proof.size_estimate();
-
-    // Verify.
-    let start_time = Instant::now();
-    let preprocessed_trace = PreProcessedTraceVariant::CanonicalWithoutPedersen;
-    let result = verify_cairo::<Blake2sMerkleChannel>(proof, preprocessed_trace);
-    assert!(result.is_ok());
-    metrics.verify_duration = start_time.elapsed();
-
-    metrics
+enum ProgramInput {
+    File(PathBuf),
+    Arguments(String),
 }
 
 ///
 /// Benchmarks using our stwo wrappers via `uv`
 ///
 
-fn bench_cairo_sha256(input_size: usize) -> Metrics {
+fn bench_cairo_zero_sha256(input_size: usize) -> Metrics {
     let mut metrics = Metrics::new(input_size);
 
     let workspace_root = std::env::current_dir().expect("Failed to get current directory");
-    let keth_path = workspace_root.join("keth");
-    let source_path = workspace_root.join("test_data/sha256.cairo");
-    let program_path = workspace_root.join("test_data/sha256.json");
-    let input_path = workspace_root.join("test_data/sha256_input.json");
-    let proof_dir = workspace_root.join("test_data/proofs");
+    let keth_path = workspace_root.join(KETH_DIR);
+    let source_path = workspace_root.join(SHA256_SOURCE);
+    let program_path = workspace_root.join(SHA256_PROGRAM);
+    let input_path = workspace_root.join(SHA256_INPUT);
+    let proof_dir = workspace_root.join(PROOF_DIR);
 
     if !keth_path.exists() {
         setup_keth();
@@ -154,7 +107,7 @@ fn bench_cairo_sha256(input_size: usize) -> Metrics {
     metrics.peak_memory = peak_mem;
 
     // Load proof from proof_path to get proof_size and verify it.
-    let proof_str = std::fs::read_to_string(proof_dir.join("proof_sha256.json"))
+    let proof_str = std::fs::read_to_string(proof_dir.join(SHA256_PROOF))
         .expect("Failed to read proof file");
     let proof: CairoProof<Blake2sMerkleHasher> =
         sonic_rs::from_str(&proof_str).expect("Failed to parse proof");
@@ -170,19 +123,14 @@ fn bench_cairo_sha256(input_size: usize) -> Metrics {
     metrics
 }
 
-enum ProgramInput {
-    File(PathBuf),
-    Arguments(String),
-}
-
-fn bench_cairo_fib_via_uv(n: u32) -> Metrics {
+fn bench_cairo_zero_fib(n: u32) -> Metrics {
     let mut metrics = Metrics::new(n as usize);
 
     let workspace_root = std::env::current_dir().expect("Failed to get current directory");
-    let keth_path = workspace_root.join("keth");
-    let source_path = workspace_root.join("test_data/fibonacci.cairo");
-    let program_path = workspace_root.join("test_data/fibonacci.json");
-    let proof_dir = workspace_root.join("test_data/proofs");
+    let keth_path = workspace_root.join(KETH_DIR);
+    let source_path = workspace_root.join(FIBONACCI_SOURCE);
+    let program_path = workspace_root.join(FIBONACCI_PROGRAM);
+    let proof_dir = workspace_root.join(PROOF_DIR);
 
     if !keth_path.exists() {
         setup_keth();
@@ -205,7 +153,7 @@ fn bench_cairo_fib_via_uv(n: u32) -> Metrics {
     metrics.peak_memory = peak_mem;
 
     // Load proof from proof_path to get proof_size and verify it.
-    let proof_str = std::fs::read_to_string(proof_dir.join("proof_sha256.json"))
+    let proof_str = std::fs::read_to_string(proof_dir.join(FIBONACCI_PROOF))
         .expect("Failed to read proof file");
     let proof: CairoProof<Blake2sMerkleHasher> =
         sonic_rs::from_str(&proof_str).expect("Failed to parse proof");
