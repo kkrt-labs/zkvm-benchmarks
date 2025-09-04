@@ -180,7 +180,10 @@ fn bench_cairo_m_sha256(num_bytes: u32) -> Metrics {
             ("sha256_2048", vec![InputValue::List(input_values)])
         }
         _ => {
-            eprintln!("Error: Unsupported input size {}. Supported sizes are: 32, 256, 512, 1024, 2048", num_bytes);
+            eprintln!(
+                "Error: Unsupported input size {}. Supported sizes are: 32, 256, 512, 1024, 2048",
+                num_bytes
+            );
             panic!("Unsupported SHA-256 input size");
         }
     };

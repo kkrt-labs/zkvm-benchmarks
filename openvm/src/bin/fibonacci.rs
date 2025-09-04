@@ -66,8 +66,14 @@ fn bench_openvm_fib(n: u32) -> Metrics {
         .unwrap();
     metrics.exec_duration = start.elapsed();
     // Compare the first u32 output with the expected result.
-    let bytes: Vec<u8> = output.into_iter()
-        .map(|field| field.to_string().parse::<u8>().expect("Failed to parse field to byte"))
+    let bytes: Vec<u8> = output
+        .into_iter()
+        .map(|field| {
+            field
+                .to_string()
+                .parse::<u8>()
+                .expect("Failed to parse field to byte")
+        })
         .collect();
 
     assert_eq!(bytes[0..4], guests::fib::fib(n).to_le_bytes().to_vec());
@@ -77,7 +83,8 @@ fn bench_openvm_fib(n: u32) -> Metrics {
     // ANCHOR: proof_generation
     // 6. Set app configuration
     let log_blowup_factor = 1;
-    let app_fri_params = FriParameters::standard_with_100_bits_conjectured_security(log_blowup_factor);
+    let app_fri_params =
+        FriParameters::standard_with_100_bits_conjectured_security(log_blowup_factor);
     let app_config = AppConfig::new(app_fri_params, vm_config);
 
     // 7. Commit the exe
@@ -89,8 +96,11 @@ fn bench_openvm_fib(n: u32) -> Metrics {
     // 9a. Generate a proof
     // let proof = sdk.generate_app_proof(app_pk.clone(), app_committed_exe.clone(), stdin.clone()).unwrap();
     // 9b. Generate a proof with an AppProver with custom fields
-    let app_prover = AppProver::<_, BabyBearPoseidon2Engine>::new(app_pk.app_vm_pk.clone(), app_committed_exe.clone())
-        .with_program_name("fibonacci");
+    let app_prover = AppProver::<_, BabyBearPoseidon2Engine>::new(
+        app_pk.app_vm_pk.clone(),
+        app_committed_exe.clone(),
+    )
+    .with_program_name("fibonacci");
     let start = Instant::now();
     let proof = app_prover.generate_app_proof(stdin.clone());
     // ANCHOR_END: proof_generation

@@ -75,7 +75,11 @@ fn bench_cairo_sha256(n: u32) -> Metrics {
     // Convert bytes to felt252 arguments - pass as a single array argument
     // Cairo arrays need their length as the first element
     let mut args = vec![Arg::Value(Felt252::from(input_bytes.len()))];
-    args.extend(input_bytes.into_iter().map(|b| Arg::Value(Felt252::from(b))));
+    args.extend(
+        input_bytes
+            .into_iter()
+            .map(|b| Arg::Value(Felt252::from(b))),
+    );
 
     let pcs_config = REGULAR_96_BITS;
 

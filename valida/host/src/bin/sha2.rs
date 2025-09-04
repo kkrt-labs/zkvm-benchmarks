@@ -28,7 +28,8 @@ fn main() {
 
 fn bench_valida_sha256(num_bytes: usize) -> Metrics {
     let mut metrics = Metrics::new(num_bytes);
-    let program = Path::new("../sha2/target/valida-unknown-baremetal-gnu/release/").join("sha2-valida");
+    let program =
+        Path::new("../sha2/target/valida-unknown-baremetal-gnu/release/").join("sha2-valida");
 
     let valida = create_valida().unwrap();
 

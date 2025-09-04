@@ -58,7 +58,7 @@ fn main() {
             benchmark(
                 bench_cairo_zero_sha256,
                 &SHA2_INPUTS,
-                "../.outputs/benchmark/sha256_cairo-zero.csv",
+                "../.outputs/benchmark/sha2_cairo-zero.csv",
             );
         }
         _ => {

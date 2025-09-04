@@ -7,7 +7,7 @@ services:
       - BENCHMARK=fibonacci
     volumes:
       - ../../.outputs:/app/.outputs
-  
+
   valida-sha:
     build:
       context: ../..
