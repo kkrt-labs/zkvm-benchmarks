@@ -7,23 +7,23 @@ use std::thread;
 use std::time::Duration;
 use std::{path::Path, time::Instant};
 
+use cairo_air::verifier::verify_cairo;
+use cairo_air::{CairoProof, PreProcessedTraceVariant};
 use cairo_vm::types::builtin_name::BuiltinName;
+use cairo_vm::vm::runners::cairo_runner::CairoRunner;
 use regex::Regex;
 use stwo_cairo_adapter::builtins::MemorySegmentAddresses;
 use stwo_cairo_adapter::memory::{MemoryBuilder, MemoryConfig, MemoryEntry};
 use stwo_cairo_adapter::vm_import::{adapt_to_stwo_input, RelocatedTraceEntry};
 use stwo_cairo_adapter::{ProverInput, PublicSegmentContext};
+use stwo_cairo_prover::stwo::core::fri::FriConfig;
 use stwo_cairo_prover::stwo::core::pcs::PcsConfig;
+use stwo_cairo_prover::stwo::core::vcs::blake2_merkle::{
+    Blake2sMerkleChannel, Blake2sMerkleHasher,
+};
 use utils::{
     bench::{benchmark, Metrics},
     metadata::{FIBONACCI_INPUTS, SHA2_INPUTS},
-};
-use cairo_air::verifier::verify_cairo;
-use cairo_air::{CairoProof, PreProcessedTraceVariant};
-use cairo_vm::vm::runners::cairo_runner::CairoRunner;
-use stwo_cairo_prover::stwo::core::fri::FriConfig;
-use stwo_cairo_prover::stwo::core::vcs::blake2_merkle::{
-    Blake2sMerkleChannel, Blake2sMerkleHasher,
 };
 
 // File path constants
@@ -32,7 +32,8 @@ const FIBONACCI_PROGRAM: &str = "test_data/fibonacci.json";
 const FIBONACCI_PROOF: &str = "proof_fibonacci.json";
 const SHA256_SOURCE: &str = "test_data/sha256.cairo";
 const SHA256_PROGRAM: &str = "test_data/sha256.json";
-const SHA256_INPUT: &str = "test_data/sha256_input.json";
+const SHA256_INPUT_TEMPLATE: &str = "test_data/sha256_input_template.json";
+const SHA256_INPUT_FILE: &str = "test_data/sha256_input_{}.json";
 const SHA256_PROOF: &str = "proof_sha256.json";
 const PROOF_DIR: &str = "test_data/proofs";
 const KETH_DIR: &str = "keth";
@@ -76,6 +77,31 @@ enum ProgramInput {
 /// Benchmarks using our stwo wrappers via `uv`
 ///
 
+fn generate_sha256_input(
+    size: usize,
+    template_path: &Path,
+    output_path: &Path,
+) -> std::io::Result<()> {
+    use std::fs;
+
+    // Read the template file
+    let template_content = fs::read_to_string(template_path)?;
+
+    // Generate random bytes
+    let bytes = utils::sha2_input(size);
+
+    // Convert bytes to hex string (2 hex chars per byte)
+    let hex_text: String = bytes.iter().map(|b| format!("{:02x}", b)).collect();
+
+    // Replace the placeholder with the hex string
+    let json_content = template_content.replace("PLACEHOLDER_TEXT", &hex_text);
+
+    // Write to the output file
+    fs::write(output_path, json_content)?;
+
+    Ok(())
+}
+
 fn bench_cairo_zero_sha256(input_size: usize) -> Metrics {
     let mut metrics = Metrics::new(input_size);
 
@@ -83,11 +109,19 @@ fn bench_cairo_zero_sha256(input_size: usize) -> Metrics {
     let keth_path = workspace_root.join(KETH_DIR);
     let source_path = workspace_root.join(SHA256_SOURCE);
     let program_path = workspace_root.join(SHA256_PROGRAM);
-    let input_path = workspace_root.join(SHA256_INPUT);
+    let input_filename = SHA256_INPUT_FILE.replace("{}", &input_size.to_string());
+    let input_path = workspace_root.join(&input_filename);
+    let template_path = workspace_root.join(SHA256_INPUT_TEMPLATE);
     let proof_dir = workspace_root.join(PROOF_DIR);
 
     if !keth_path.exists() {
         setup_keth();
+    }
+
+    // Generate input file for the specific size
+    if let Err(e) = generate_sha256_input(input_size, &template_path, &input_path) {
+        eprintln!("Failed to generate SHA256 input file: {}", e);
+        std::process::exit(1);
     }
 
     // See README.md for more details on why we run through a `uv` script.
@@ -97,7 +131,7 @@ fn bench_cairo_zero_sha256(input_size: usize) -> Metrics {
 
     let (stdout, peak_mem) = prove_cairo_program(
         &program_path,
-        ProgramInput::File(input_path),
+        ProgramInput::File(input_path.clone()),
         &proof_dir,
         &keth_path,
     );
@@ -107,8 +141,8 @@ fn bench_cairo_zero_sha256(input_size: usize) -> Metrics {
     metrics.peak_memory = peak_mem;
 
     // Load proof from proof_path to get proof_size and verify it.
-    let proof_str = std::fs::read_to_string(proof_dir.join(SHA256_PROOF))
-        .expect("Failed to read proof file");
+    let proof_str =
+        std::fs::read_to_string(proof_dir.join(SHA256_PROOF)).expect("Failed to read proof file");
     let proof: CairoProof<Blake2sMerkleHasher> =
         sonic_rs::from_str(&proof_str).expect("Failed to parse proof");
     metrics.proof_bytes = proof.stark_proof.size_estimate();

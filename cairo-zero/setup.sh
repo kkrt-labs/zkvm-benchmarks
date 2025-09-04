@@ -9,33 +9,33 @@ echo "Setting up keth (uv project) for Stwo proving..."
 
 # Basic tool checks
 if ! command -v git >/dev/null 2>&1; then
-  echo "git is required but not found. Please install git." >&2
-  exit 1
+	echo "git is required but not found. Please install git." >&2
+	exit 1
 fi
 
 if ! command -v uv >/dev/null 2>&1; then
-  echo "uv is required but not found. Install with:"
-  echo "  curl -LsSf https://astral.sh/uv/install.sh | sh" >&2
-  exit 1
+	echo "uv is required but not found. Install with:"
+	echo "  curl -LsSf https://astral.sh/uv/install.sh | sh" >&2
+	exit 1
 fi
 
 # Clone or update keth
 if [ ! -d "$KETH_DIR/.git" ]; then
-  echo "Cloning keth into '$KETH_DIR'..."
-  git clone "$KETH_REPO" "$KETH_DIR"
+	echo "Cloning keth into '$KETH_DIR'..."
+	git clone "$KETH_REPO" "$KETH_DIR"
 else
-  echo "keth already present in '$KETH_DIR'. Pulling latest..."
-  git -C "$KETH_DIR" pull --ff-only || {
-    echo "Warning: Could not pull latest keth. Continuing with existing checkout." >&2
-  }
+	echo "keth already present in '$KETH_DIR'. Pulling latest..."
+	git -C "$KETH_DIR" pull --ff-only || {
+		echo "Warning: Could not pull latest keth. Continuing with existing checkout." >&2
+	}
 fi
 
 # Sync uv environment inside keth
 echo "Installing keth dependencies with uv..."
 (
-  cd "$KETH_DIR"
-  # This creates/updates .venv based on pyproject and lockfile
-  uv sync
+	cd "$KETH_DIR"
+	# This creates/updates .venv based on pyproject and lockfile
+	uv sync
 )
 
 echo "keth setup complete. You can now run:"
