@@ -1,16 +1,17 @@
 // ANCHOR: dependencies
-use std::sync::Arc;
 use std::time::Instant;
 
 use eyre::Result;
 use openvm_build::GuestOptions;
+use openvm_sdk::codec::Encode;
 use openvm_sdk::{
     config::{AppConfig, SdkVmConfig},
-    prover::AppProver,
+    prover::verify_app_proof,
     Sdk, StdIn,
 };
-use openvm_stark_sdk::config::{baby_bear_poseidon2::BabyBearPoseidon2Engine, FriParameters};
-use utils::{bench::benchmark, bench::Metrics, metadata::FIBONACCI_INPUTS, size};
+
+use openvm_stark_sdk::config::FriParameters;
+use utils::{bench::benchmark, bench::Metrics, metadata::FIBONACCI_INPUTS};
 
 // ANCHOR_END: dependencies
 
@@ -38,20 +39,26 @@ fn bench_openvm_fib(n: u32) -> Metrics {
     // ANCHOR_END: vm_config
 
     // ANCHOR: build
-    // 1. Build the VmConfig with the extensions needed.
-    let sdk = Sdk::new();
+    // 1. Set app configuration
+    let log_blowup_factor = 1;
+    let app_fri_params =
+        FriParameters::standard_with_100_bits_conjectured_security(log_blowup_factor);
+    let app_config = AppConfig::new(app_fri_params, vm_config.clone());
 
-    // 2a. Build the ELF with guest options and a target filter.
+    // 2. Build the SDK with the app config
+    let sdk = Sdk::new(app_config.clone()).unwrap();
+
+    // 3. Build the ELF with guest options and a target filter.
     let guest_opts = GuestOptions::default();
     let target_path = "fibonacci-guest";
     let elf = sdk
-        .build(guest_opts, target_path, &Default::default())
+        .build(guest_opts, target_path, &Default::default(), None)
         .unwrap();
     // ANCHOR_END: build
 
     // ANCHOR: transpilation
-    // 3. Transpile the ELF into a VmExe
-    let exe = sdk.transpile(elf.clone(), vm_config.transpiler()).unwrap();
+    // 4. Convert the ELF into a VmExe
+    let exe = sdk.convert_to_exe(elf.clone()).unwrap();
     // ANCHOR_END: transpilation
 
     // ANCHOR: execution
@@ -61,9 +68,7 @@ fn bench_openvm_fib(n: u32) -> Metrics {
 
     // 5. Run the program
     let start = Instant::now();
-    let output = sdk
-        .execute(exe.clone(), vm_config.clone(), stdin.clone())
-        .unwrap();
+    let output = sdk.execute(exe.clone(), stdin.clone()).unwrap();
     metrics.exec_duration = start.elapsed();
     // Compare the first u32 output with the expected result.
     let bytes: Vec<u8> = output
@@ -81,37 +86,26 @@ fn bench_openvm_fib(n: u32) -> Metrics {
     // ANCHOR_END: execution
 
     // ANCHOR: proof_generation
-    // 6. Set app configuration
-    let log_blowup_factor = 1;
-    let app_fri_params =
-        FriParameters::standard_with_100_bits_conjectured_security(log_blowup_factor);
-    let app_config = AppConfig::new(app_fri_params, vm_config);
-
-    // 7. Commit the exe
-    let app_committed_exe = sdk.commit_app_exe(app_fri_params, exe).unwrap();
-
-    // 8. Generate an AppProvingKey
-    let app_pk = Arc::new(sdk.app_keygen(app_config).unwrap());
-
-    // 9a. Generate a proof
-    // let proof = sdk.generate_app_proof(app_pk.clone(), app_committed_exe.clone(), stdin.clone()).unwrap();
-    // 9b. Generate a proof with an AppProver with custom fields
-    let app_prover = AppProver::<_, BabyBearPoseidon2Engine>::new(
-        app_pk.app_vm_pk.clone(),
-        app_committed_exe.clone(),
-    )
-    .with_program_name("fibonacci");
+    // 6. Generate a proof using app_prover
+    let mut app_prover = sdk
+        .app_prover(elf.clone())
+        .unwrap()
+        .with_program_name("fibonacci");
     let start = Instant::now();
-    let proof = app_prover.generate_app_proof(stdin.clone());
+    let proof = app_prover.prove(stdin.clone()).unwrap();
     // ANCHOR_END: proof_generation
     metrics.proof_duration = start.elapsed();
-    metrics.proof_bytes = size(&proof);
+    let proof_bytes = proof.encode_to_vec().unwrap();
+    let proof_size = proof_bytes.len();
+    metrics.proof_bytes = proof_size;
 
     // ANCHOR: verification
-    // 10. Verify your program
-    let app_vk = app_pk.get_app_vk();
+    // 7. Get the app verifying key for verification
+    let (_, app_vk) = sdk.app_keygen();
+
+    // 8. Verify your program
     let start = Instant::now();
-    sdk.verify_app_proof(&app_vk, &proof).unwrap();
+    verify_app_proof(&app_vk, &proof).unwrap();
     metrics.verify_duration = start.elapsed();
     // ANCHOR_END: verification
 
