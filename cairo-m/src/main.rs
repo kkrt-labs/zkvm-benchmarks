@@ -69,9 +69,6 @@ fn bench_cairo_m_fib(n: u32) -> Metrics {
         .collect();
     assert_eq!(fib(n), return_values[0]);
 
-    // Metrics Computation
-    metrics.cycles = runner_output.vm.trace.len() as u64;
-
     // Proof Generation
     let segment = runner_output.vm.segments.into_iter().next().unwrap();
     let mut prover_input = import_from_runner_output(segment, runner_output.public_address_ranges)
@@ -237,30 +234,11 @@ fn bench_cairo_m_sha256(num_bytes: u32) -> Metrics {
         eprintln!("WARNING: Cairo-M SHA256 output does not match Rust sha2 implementation!");
     }
 
-    // Metrics Computation
-    metrics.cycles = runner_output.vm.trace.len() as u64;
-
     // Proof Generation
     let segment = runner_output.vm.segments.into_iter().next().unwrap();
 
-    let mut prover_input =
-        match import_from_runner_output(segment, runner_output.public_address_ranges) {
-            Ok(input) => input,
-            Err(e) => {
-                eprintln!("\n=================================================================");
-                eprintln!("ERROR: Failed to import runner output for proof generation");
-                eprintln!("Error: {:?}", e);
-                eprintln!(
-                    "This is likely due to u32 opcodes not yet being supported in the prover."
-                );
-                eprintln!("The SHA-256 implementation uses u32 bitwise operations that are");
-                eprintln!("pending implementation in the cairo-m prover.");
-                eprintln!("=================================================================\n");
-                panic!(
-                "Cannot generate proof for SHA-256 until u32 opcodes are supported in the prover"
-            );
-            }
-        };
+    let mut prover_input = import_from_runner_output(segment, runner_output.public_address_ranges)
+        .expect("Failed to import runner output for proof generation");
 
     let pcs_config = REGULAR_96_BITS;
 
