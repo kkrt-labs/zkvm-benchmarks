@@ -67,8 +67,6 @@ pub struct Metrics {
     #[serde_as(as = "DurationNanoSeconds")]
     #[tabled(display_with = "display_duration")]
     pub verify_duration: Duration,
-    #[tabled(display_with = "display_cycles")]
-    pub cycles: u64,
     #[tabled(display_with = "display_bytes")]
     pub proof_bytes: usize,
     #[tabled(display_with = "display_bytes")]
@@ -77,10 +75,6 @@ pub struct Metrics {
 
 fn display_bytes(bytes: &usize) -> String {
     bytes.human_count_bytes().to_string()
-}
-
-fn display_cycles(cycles: &u64) -> String {
-    cycles.human_count_bare().to_string()
 }
 
 fn display_duration(duration: &Duration) -> String {
@@ -94,7 +88,6 @@ impl Metrics {
             exec_duration: Duration::default(),
             proof_duration: Duration::default(),
             verify_duration: Duration::default(),
-            cycles: 0,
             proof_bytes: 0,
             peak_memory: 0,
         }
@@ -108,7 +101,10 @@ where
     let mut results = Vec::new();
     for input in inputs {
         let (mut metrics, peak_memory) = measure_peak_memory(|| func(input.clone()));
-        metrics.peak_memory = peak_memory;
+        // if !=0, test has set peak memory, skip it
+        if metrics.peak_memory == 0 {
+            metrics.peak_memory = peak_memory;
+        }
         results.push(metrics);
     }
 

@@ -27,7 +27,6 @@ fn benchmark_fib(n: u32) -> Metrics {
     let start = Instant::now();
     let program_summary = fibonacci_guest::analyze_fib(n);
     metrics.exec_duration = start.elapsed();
-    metrics.cycles = program_summary.processed_trace.len() as u64;
 
     write_json(
         &program_summary,

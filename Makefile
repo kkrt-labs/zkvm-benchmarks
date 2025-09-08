@@ -16,40 +16,91 @@ bench-all:
 	@echo "Results are available through Jupyter Notebook: $(results_file)"
 
 ifeq ($(platform)-$(architecture), Linux-x86_64)
-bench-valida:
+bench-valida-fib:
 	cd valida/fibonacci && \
 	cargo +valida build --release && \
 	cd ../host && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci
+
+bench-valida-sha256:
+	cd valida/sha2 && \
+	cargo +valida build --release && \
+	cd ../host && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2
 else
-bench-valida:
-	docker compose -f docker/valida/docker-compose.yml run --rm valida
+bench-valida-fib:
+	docker compose -f docker/valida/docker-compose.yml run --rm -e BENCHMARK=fibonacci valida-fib
+
+bench-valida-sha256:
+	docker compose -f docker/valida/docker-compose.yml run --rm -e BENCHMARK=sha2 valida-sha
 endif
 
-bench-zkm:
+bench-valida:
+	make bench-valida-fib
+	make bench-valida-sha256
+
+bench-zkm-fib:
 	. ~/.zkm-toolchain/env && \
 	cd zkm && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --bin fibonacci --release
 
-bench-cairo:
+bench-zkm-sha256:
+	. ~/.zkm-toolchain/env && \
+	cd zkm && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --bin sha2 --release
+
+bench-zkm:
+	make bench-zkm-fib
+	make bench-zkm-sha256
+
+bench-cairo-fib:
 	cd cairo/test_data && \
 	scarb --profile release build && \
 	cd ../ && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -- fib
+
+bench-cairo-sha256:
+	cd cairo/test_data && \
+	scarb --profile release build && \
+	cd ../ && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -- sha256
+
+
+bench-cairo:
+	make bench-cairo-fib
+	make bench-cairo-sha256
+
+bench-cairo-zero-fib:
+	cd cairo-zero && \
+	cargo run --release -- fib
+
+bench-cairo-zero-sha256:
+	cd cairo-zero && \
+	cargo run --release -- sha256
 
 bench-cairo-zero:
-	cd cairo-zero && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release
+	make bench-cairo-zero-fib
+	make bench-cairo-zero-sha256
 
 ifeq ($(platform),Darwin)
-bench-cairo-m:
+bench-cairo-m-fib:
 	cd cairo-m && \
-	RUSTFLAGS="-C link-arg=-fuse-ld=/opt/homebrew/opt/lld/bin/ld64.lld -C target-cpu=native" cargo run --release
+	RUSTFLAGS="-C link-arg=-fuse-ld=/opt/homebrew/opt/lld/bin/ld64.lld -C target-cpu=native" cargo run --release fib
+bench-cairo-m-sha256:
+	cd cairo-m && \
+	RUSTFLAGS="-C link-arg=-fuse-ld=/opt/homebrew/opt/lld/bin/ld64.lld -C target-cpu=native" cargo run --release sha256
 else
-bench-cairo-m:
+bench-cairo-m-fib:
 	cd cairo-m && \
-	RUSTFLAGS="-C target-cpu=native" cargo run --release
+	RUSTFLAGS="-C target-cpu=native" cargo run --release fib
+bench-cairo-m-sha256:
+	cd cairo-m && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release sha256
 endif
+
+bench-cairo-m:
+	make bench-cairo-m-fib
+	make bench-cairo-m-sha256
 
 bench-miden:
 	cd miden && \
@@ -66,13 +117,30 @@ bench-noir-provekit:
 	echo "Noir Provekit is only supported on ARM64 architecture."
 endif
 
-bench-sp1:
+bench-sp1-fib:
 	cd sp1 && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin fib
 
-bench-risczero:
+bench-sp1-sha256:
+	cd sp1 && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release -p host --bin sha2
+
+bench-sp1:
+	make bench-sp1-fib
+	make bench-sp1-sha256
+
+
+bench-risczero-fib:
 	cd risczero && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci
+
+bench-risczero-sha256:
+	cd risczero && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2
+
+bench-risczero:
+	make bench-risczero-fib
+	make bench-risczero-sha256
 
 bench-jolt:
 	cd jolt && \
@@ -119,9 +187,17 @@ bench-risczero-gpu:
 bench-powdr:
 	cd powdr && RUSTFLAGS='-C target-cpu=native' cargo run --release
 
-bench-openvm:
+bench-openvm-fib:
 	cd openvm && \
 	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fibonacci
+
+bench-openvm-sha256:
+	cd openvm && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin sha2
+
+bench-openvm:
+	make bench-openvm-fib
+	make bench-openvm-sha256
 
 bench-nexus:
 	cd nexus && \

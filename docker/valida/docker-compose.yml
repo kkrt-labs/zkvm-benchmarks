@@ -1,7 +1,18 @@
 services:
-  valida:
+  valida-fib:
     build:
       context: ../..
       dockerfile: docker/valida/Dockerfile.valida
+    environment:
+      - BENCHMARK=fibonacci
+    volumes:
+      - ../../.outputs:/app/.outputs
+
+  valida-sha:
+    build:
+      context: ../..
+      dockerfile: docker/valida/Dockerfile.valida
+    environment:
+      - BENCHMARK=sha2
     volumes:
       - ../../.outputs:/app/.outputs

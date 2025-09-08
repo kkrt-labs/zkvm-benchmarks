@@ -26,10 +26,10 @@ pub fn main() {
         if cfg!(feature = "cuda") { "-gpu" } else { "" },
         ""
     );
-    benchmark(benchmark_fib, &FIBONACCI_INPUTS, &csv_file);
+    benchmark(bench_risczero_fib, &FIBONACCI_INPUTS, &csv_file);
 }
 
-fn benchmark_fib(input: u32) -> Metrics {
+fn bench_risczero_fib(input: u32) -> Metrics {
     let mut metrics = Metrics::new(input as usize);
     const ELF: &[u8] = risc0_benchmark_methods::FIBONACCI_ELF;
     let image_id: Digest = risc0_benchmark_methods::FIBONACCI_ID.into();
@@ -40,7 +40,6 @@ fn benchmark_fib(input: u32) -> Metrics {
     let start = Instant::now();
     let session = exec.run().unwrap();
     metrics.exec_duration = start.elapsed();
-    metrics.cycles = session.user_cycles;
 
     let prover = get_prover_server(&ProverOpts::succinct()).unwrap();
     let ctx = VerifierContext::default();

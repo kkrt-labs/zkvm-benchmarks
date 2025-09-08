@@ -2,9 +2,9 @@ use std::fs;
 use std::path::Path;
 use std::time::Instant;
 use tempfile::NamedTempFile;
-use tmpfile_helper::*;
 use utils::bench::{benchmark, Metrics};
 use utils::metadata::FIBONACCI_INPUTS;
+use valida_bench_host::utils::bytes_to_temp_file;
 #[cfg(target_arch = "aarch64")]
 use valida_vm_api_linux_arm::*;
 #[cfg(target_arch = "x86_64")]
@@ -12,13 +12,13 @@ use valida_vm_api_linux_x86::*;
 
 fn main() {
     benchmark(
-        bench_fib,
+        bench_valida_fib,
         &FIBONACCI_INPUTS,
         "../../.outputs/benchmark/fib_valida.csv",
     );
 }
 
-fn bench_fib(n: u32) -> Metrics {
+fn bench_valida_fib(n: u32) -> Metrics {
     let mut metrics = Metrics::new(n as usize);
     let program =
         Path::new("../fibonacci/target/valida-unknown-baremetal-gnu/release/").join("fibonacci");

@@ -7,7 +7,7 @@ edition = "2021"
 members = ["methods"]
 
 [workspace.dependencies]
-risc0-build = "2.2.0"
+risc0-build = "3.0.3"
 
 [dependencies]
 clap = { version = "4.5", features = ["derive"] }
@@ -21,7 +21,7 @@ k256 = { version = "0.13", features = ["serde"] }
 rand = "0.9.1"
 rand_core = "0.9.3"
 risc0-benchmark-methods = { path = "methods" }
-risc0-zkvm = { version = "2.2.0", features = ["prove"] }
+risc0-zkvm = { version = "3.0.3", features = ["prove"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_with = "3.8"
 tabled = "0.20"

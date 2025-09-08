@@ -23,9 +23,8 @@ fn bench_zkm(elf: &[u8], stdin: ZKMStdin, size_label: usize) -> Metrics {
 
     // Execute the program using the `ProverClient.execute` method, without generating a proof.
     let start = Instant::now();
-    let (_, report) = client.execute(elf, stdin.clone()).run().unwrap();
+    client.execute(elf, stdin.clone()).run().unwrap();
     metrics.exec_duration = start.elapsed();
-    metrics.cycles = report.total_instruction_count() as u64;
 
     let start = Instant::now();
     let proof = client.prove(&pk, stdin.clone()).run().unwrap();
@@ -40,7 +39,7 @@ fn bench_zkm(elf: &[u8], stdin: ZKMStdin, size_label: usize) -> Metrics {
     metrics
 }
 
-pub fn benchmark_sha2(num_bytes: usize) -> Metrics {
+pub fn bench_zkm_sha256(num_bytes: usize) -> Metrics {
     let input = sha2_input(num_bytes);
     let mut stdin = ZKMStdin::new();
     stdin.write(&input);
@@ -54,7 +53,7 @@ pub fn benchmark_sha3(num_bytes: usize) -> Metrics {
     bench_zkm(SHA3_ELF, stdin, num_bytes)
 }
 
-pub fn bench_fibonacci(n: u32) -> Metrics {
+pub fn bench_zkm_fib(n: u32) -> Metrics {
     let mut stdin = ZKMStdin::new();
     stdin.write(&n);
     bench_zkm(FIBONACCI_ELF, stdin, n as usize)

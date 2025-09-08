@@ -1,0 +1,5 @@
+proofs/
+keth/
+sha256_input_[0-9]*
+sha256.json
+fibonacci.json

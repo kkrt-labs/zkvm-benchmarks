@@ -47,7 +47,7 @@ fn bench_miden_fib(n: u32) -> Metrics {
 
     // Execute
     let execution_start = Instant::now();
-    let trace = execute(
+    execute(
         &program,
         stack_inputs.clone(),
         advice_inputs.clone(),
@@ -57,7 +57,6 @@ fn bench_miden_fib(n: u32) -> Metrics {
     )
     .expect("Failed to execute Miden program");
     metrics.exec_duration = execution_start.elapsed();
-    metrics.cycles = trace.get_trace_len() as u64;
 
     // Prove and execute (not possible to isolate the proof generation due to ExecutionProver being private)
     // An approximation of the proof duration is done by subtracting the execution duration from the total duration

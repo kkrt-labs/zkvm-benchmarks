@@ -30,20 +30,20 @@ fn main() {
             .expect("Value for --n should be a valid u32");
 
         benchmark(
-            bench_fib,
+            bench_sp1_fib,
             &[n],
             format!("../.outputs/benchmark/fib_sp1-gpu-{}.csv", n).as_str(),
         );
     } else {
         benchmark(
-            bench_fib,
+            bench_sp1_fib,
             &FIBONACCI_INPUTS,
             "../.outputs/benchmark/fib_sp1.csv",
         );
     }
 }
 
-fn bench_fib(n: u32) -> Metrics {
+fn bench_sp1_fib(n: u32) -> Metrics {
     let mut metrics: Metrics = Metrics::new(n as usize);
 
     // Setup the logger.
@@ -61,7 +61,6 @@ fn bench_fib(n: u32) -> Metrics {
     let start = Instant::now();
     let (_output, report) = client.execute(FIBONACCI_ELF, &stdin).run().unwrap();
     metrics.exec_duration = start.elapsed();
-    metrics.cycles = report.total_instruction_count();
 
     write_json(
         &report.opcode_counts,

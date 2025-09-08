@@ -28,7 +28,6 @@ fn bench_ecdsa(size: usize) -> Metrics {
     let start = Instant::now();
     let program_summary = ecdsa_guest::analyze_ecdsa_verify(input.clone());
     metrics.exec_duration = start.elapsed();
-    metrics.cycles = program_summary.processed_trace.len() as u64;
     // save_summary_to_json(&program_summary, "../.outputs/traces/ecdsa_jolt.json")
     //     .expect("Failed to save program summary");
 

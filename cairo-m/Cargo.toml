@@ -9,9 +9,13 @@ cairo-m-runner = { git = "https://github.com/kkrt-labs/cairo-m" }
 cairo-m-prover = { git = "https://github.com/kkrt-labs/cairo-m" }
 cairo-m-compiler = { git = "https://github.com/kkrt-labs/cairo-m" }
 dotenv = "0.15.0"
+sha2 = "0.10"
 sonic-rs = "0.5.2"
 stwo-prover = { git = "https://github.com/starkware-libs/stwo", features = [
   "parallel",
 ], rev = "ab57a1c" }
 thiserror = "2.0.12"
 utils = { path = "../utils" }
+
+[patch."https://github.com/HorizenLabs/poseidon2.git"]
+zkhash = { git = "https://github.com/AntoineFONDEUR/poseidon2.git", branch = "poseidon2-M31" }
