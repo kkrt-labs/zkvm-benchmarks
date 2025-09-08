@@ -1,4 +1,6 @@
-use std::collections::HashMap;
+use cairo_air::verifier::verify_cairo;
+use cairo_air::{CairoProof, PreProcessedTraceVariant};
+use regex::Regex;
 use std::path::PathBuf;
 use std::process::{Command, Stdio};
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
@@ -6,18 +8,6 @@ use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
 use std::{path::Path, time::Instant};
-
-use cairo_air::verifier::verify_cairo;
-use cairo_air::{CairoProof, PreProcessedTraceVariant};
-use cairo_vm::types::builtin_name::BuiltinName;
-use cairo_vm::vm::runners::cairo_runner::CairoRunner;
-use regex::Regex;
-use stwo_cairo_adapter::builtins::MemorySegmentAddresses;
-use stwo_cairo_adapter::memory::{MemoryBuilder, MemoryConfig, MemoryEntry};
-use stwo_cairo_adapter::vm_import::{adapt_to_stwo_input, RelocatedTraceEntry};
-use stwo_cairo_adapter::{ProverInput, PublicSegmentContext};
-use stwo_cairo_prover::stwo::core::fri::FriConfig;
-use stwo_cairo_prover::stwo::core::pcs::PcsConfig;
 use stwo_cairo_prover::stwo::core::vcs::blake2_merkle::{
     Blake2sMerkleChannel, Blake2sMerkleHasher,
 };
@@ -201,110 +191,6 @@ fn bench_cairo_zero_fib(n: u32) -> Metrics {
     metrics.verify_duration = start_time.elapsed();
 
     metrics
-}
-
-/// Configurations for the CSTARK prover.
-///
-/// Conjecture of n-bit security level: `n = n_queries * log_blowup_factor + pow_bits`.
-/// Configuration to achieve 96-bit security level, with PoW bits inferior to 20.
-///
-/// - The blowup factor greatly influences the proving time.
-/// - The number of queries influences the proof size.
-/// - The PoW bits influence the proving time, depending on the hardware and the number of bits to grind.
-pub const REGULAR_96_BITS: PcsConfig = PcsConfig {
-    pow_bits: 16,
-    fri_config: FriConfig {
-        log_last_layer_degree_bound: 0,
-        log_blowup_factor: 1,
-        n_queries: 80,
-    },
-};
-
-///
-/// Replacement of the functions from the `cairo-prove` crate that are conflicting with
-/// the revision of `stwo` to use.
-///
-
-// Deduces the preprocessed trace variant needed for the specific execution, and proves.
-pub fn prove(input: ProverInput, pcs_config: PcsConfig) -> CairoProof<Blake2sMerkleHasher> {
-    // Currently there are two variants of the preprocessed trace:
-    // - Canonical: Pedersen is included in the program.
-    // - CanonicalWithoutPedersen: Pedersen is not included in the program.
-    // We deduce the variant based on weather the pedersen builtin is included in the program.
-    let preprocessed_trace = match input.public_segment_context[1] {
-        true => PreProcessedTraceVariant::Canonical,
-        false => PreProcessedTraceVariant::CanonicalWithoutPedersen,
-    };
-    prove_inner(input, preprocessed_trace, pcs_config)
-}
-
-fn prove_inner(
-    input: ProverInput,
-    preprocessed_trace: PreProcessedTraceVariant,
-    pcs_config: PcsConfig,
-) -> CairoProof<Blake2sMerkleHasher> {
-    stwo_cairo_prover::prover::prove_cairo::<Blake2sMerkleChannel>(
-        input,
-        pcs_config,
-        preprocessed_trace,
-    )
-    .unwrap()
-}
-
-pub fn prover_input_from_runner(runner: &CairoRunner) -> ProverInput {
-    let public_input = runner.get_air_public_input().unwrap();
-    let addresses = public_input
-        .public_memory
-        .iter()
-        .map(|entry| entry.address as u32)
-        .collect::<Vec<_>>();
-    let segments = public_input
-        .memory_segments
-        .iter()
-        .map(|(&k, v)| {
-            (
-                k,
-                MemorySegmentAddresses {
-                    begin_addr: v.begin_addr,
-                    stop_ptr: v.stop_ptr,
-                },
-            )
-        })
-        .collect::<HashMap<_, _>>();
-    let trace = runner
-        .relocated_trace
-        .as_ref()
-        .unwrap()
-        .iter()
-        .map(|x| RelocatedTraceEntry {
-            ap: x.ap,
-            fp: x.fp,
-            pc: x.pc,
-        })
-        .collect::<Vec<_>>();
-    let mem = runner
-        .relocated_memory
-        .iter()
-        .enumerate()
-        .filter_map(|(i, x)| {
-            x.as_ref().map(|value| MemoryEntry {
-                address: i as u64,
-                value: unsafe { std::mem::transmute::<[u8; 32], [u32; 8]>(value.to_bytes_le()) },
-            })
-        });
-    let mem = MemoryBuilder::from_iter(MemoryConfig::default(), mem);
-    let main_args = runner
-        .get_program()
-        .iter_builtins()
-        .copied()
-        .collect::<Vec<_>>();
-
-    let main_args_slice: &[BuiltinName] = &main_args;
-    let public_segment_context = PublicSegmentContext::new(main_args_slice);
-
-    let input =
-        adapt_to_stwo_input(&trace, mem, addresses, &segments, public_segment_context).unwrap();
-    input
 }
 
 ///
