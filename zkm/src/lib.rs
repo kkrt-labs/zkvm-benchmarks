@@ -23,9 +23,8 @@ fn bench_zkm(elf: &[u8], stdin: ZKMStdin, size_label: usize) -> Metrics {
 
     // Execute the program using the `ProverClient.execute` method, without generating a proof.
     let start = Instant::now();
-    let (_, report) = client.execute(elf, stdin.clone()).run().unwrap();
+    client.execute(elf, stdin.clone()).run().unwrap();
     metrics.exec_duration = start.elapsed();
-    metrics.cycles = report.total_instruction_count() as u64;
 
     let start = Instant::now();
     let proof = client.prove(&pk, stdin.clone()).run().unwrap();

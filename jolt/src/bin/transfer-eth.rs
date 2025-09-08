@@ -29,7 +29,6 @@ fn benchmark_transfer_eth(n: usize) -> Metrics {
     let start = Instant::now();
     let program_summary = transfer_eth_guest::analyze_transfer_eth_n_times(n);
     metrics.exec_duration = start.elapsed();
-    metrics.cycles = program_summary.processed_trace.len() as u64;
 
     let start = Instant::now();
     let (output, proof) = prover(n);

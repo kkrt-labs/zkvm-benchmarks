@@ -59,9 +59,8 @@ fn bench_sp1_sha256(num_bytes: usize) -> Metrics {
 
     // Execute the program
     let start = Instant::now();
-    let (_, report) = client.execute(SHA2_ELF, &stdin).run().unwrap();
+    client.execute(SHA2_ELF, &stdin).run().unwrap();
     metrics.exec_duration = start.elapsed();
-    metrics.cycles = report.total_instruction_count() as u64;
 
     // Setup the program for proving.
     let (pk, vk) = client.setup(SHA2_ELF);

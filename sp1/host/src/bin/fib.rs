@@ -61,7 +61,6 @@ fn bench_sp1_fib(n: u32) -> Metrics {
     let start = Instant::now();
     let (_output, report) = client.execute(FIBONACCI_ELF, &stdin).run().unwrap();
     metrics.exec_duration = start.elapsed();
-    metrics.cycles = report.total_instruction_count();
 
     write_json(
         &report.opcode_counts,

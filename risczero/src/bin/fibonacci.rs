@@ -40,7 +40,6 @@ fn bench_risczero_fib(input: u32) -> Metrics {
     let start = Instant::now();
     let session = exec.run().unwrap();
     metrics.exec_duration = start.elapsed();
-    metrics.cycles = session.user_cycles;
 
     let prover = get_prover_server(&ProverOpts::succinct()).unwrap();
     let ctx = VerifierContext::default();
