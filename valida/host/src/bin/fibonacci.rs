@@ -1,21 +1,14 @@
 use std::fs;
-use std::io::Write;
 use std::path::Path;
 use std::time::Instant;
 use tempfile::NamedTempFile;
 use utils::bench::{benchmark, Metrics};
 use utils::metadata::FIBONACCI_INPUTS;
+use valida_bench_host::utils::bytes_to_temp_file;
 #[cfg(target_arch = "aarch64")]
 use valida_vm_api_linux_arm::*;
 #[cfg(target_arch = "x86_64")]
 use valida_vm_api_linux_x86::*;
-
-fn bytes_to_temp_file(bytes: &[u8]) -> std::io::Result<NamedTempFile> {
-    let mut file = NamedTempFile::new()?;
-    file.write_all(bytes)?;
-    file.flush()?;
-    Ok(file)
-}
 
 fn main() {
     benchmark(

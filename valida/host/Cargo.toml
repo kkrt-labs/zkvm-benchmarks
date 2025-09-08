@@ -1,5 +1,5 @@
 [package]
-name = "valida-vm-api-test"
+name = "valida-bench-host"
 version = "0.1.0"
 edition = "2021"
 
