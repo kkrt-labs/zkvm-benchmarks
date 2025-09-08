@@ -1,13 +1,18 @@
 use cairo_air::verifier::verify_cairo;
 use cairo_air::CairoProof;
 use cairo_air::PreProcessedTraceVariant;
+use cairo_lang_casm::hints::Hint;
+use cairo_lang_executable::executable::EntryPointKind;
 use cairo_lang_executable::executable::Executable;
+use cairo_lang_runner::build_hints_dict;
+
 use cairo_lang_runner::Arg;
 use cairo_lang_runner::CairoHintProcessor;
-use cairo_lang_utils::program_and_hints_from_executable;
 use cairo_vm::cairo_run::{cairo_run_program, CairoRunConfig};
 use cairo_vm::types::builtin_name::BuiltinName;
 use cairo_vm::types::layout_name::LayoutName;
+use cairo_vm::types::program::Program;
+use cairo_vm::types::relocatable::MaybeRelocatable;
 use cairo_vm::vm::runners::cairo_runner::CairoRunner;
 use cairo_vm::Felt252;
 use log::info;
@@ -18,9 +23,9 @@ use stwo_cairo_adapter::builtins::MemorySegmentAddresses;
 use stwo_cairo_adapter::memory::{MemoryBuilder, MemoryConfig, MemoryEntry};
 use stwo_cairo_adapter::vm_import::{adapt_to_stwo_input, RelocatedTraceEntry};
 use stwo_cairo_adapter::{ProverInput, PublicSegmentContext};
-use stwo_cairo_prover::stwo_prover::core::fri::FriConfig;
-use stwo_cairo_prover::stwo_prover::core::pcs::PcsConfig;
-use stwo_cairo_prover::stwo_prover::core::vcs::blake2_merkle::{
+use stwo_cairo_prover::stwo::core::fri::FriConfig;
+use stwo_cairo_prover::stwo::core::pcs::PcsConfig;
+use stwo_cairo_prover::stwo::core::vcs::blake2_merkle::{
     Blake2sMerkleChannel, Blake2sMerkleHasher,
 };
 use utils::{
@@ -45,6 +50,35 @@ pub const REGULAR_96_BITS: PcsConfig = PcsConfig {
         n_queries: 80,
     },
 };
+
+fn program_and_hints_from_executable(executable: &Executable) -> (Program, HashMap<String, Hint>) {
+    let data: Vec<MaybeRelocatable> = executable
+        .program
+        .bytecode
+        .iter()
+        .map(Felt252::from)
+        .map(MaybeRelocatable::from)
+        .collect();
+    let (hints, string_to_hint) = build_hints_dict(&executable.program.hints);
+    let entrypoint = executable
+        .entrypoints
+        .iter()
+        .find(|e| matches!(e.kind, EntryPointKind::Standalone))
+        .expect("Failed to find entrypoint");
+    let program = Program::new_for_proof(
+        entrypoint.builtins.clone(),
+        data,
+        entrypoint.offset,
+        entrypoint.offset + 4,
+        hints,
+        Default::default(),
+        Default::default(),
+        vec![],
+        None,
+    )
+    .unwrap();
+    (program, string_to_hint)
+}
 
 /// Executes a Cairo program and returns a `CairoRunner` that can be used to generate artifacts for
 /// the prover.
@@ -194,7 +228,7 @@ fn bench_cairo_fib(n: u32) -> Metrics {
     // Verify.
     let start_time = std::time::Instant::now();
     let preprocessed_trace = PreProcessedTraceVariant::CanonicalWithoutPedersen;
-    let result = verify_cairo::<Blake2sMerkleChannel>(proof, pcs_config, preprocessed_trace);
+    let result = verify_cairo::<Blake2sMerkleChannel>(proof, pcs_config);
     assert!(result.is_ok());
     metrics.verify_duration = start_time.elapsed();
 

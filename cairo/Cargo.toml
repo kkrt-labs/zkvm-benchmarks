@@ -10,18 +10,19 @@ log = "0.4"
 regex = "1.10"
 
 cairo-air = { git = "https://github.com/starkware-libs/stwo-cairo", rev = "92232543984e20e984c5a7194561ff1fffa76dae" }
-cairo-prove = { git = "https://github.com/starkware-libs/stwo-cairo", rev = "92232543984e20e984c5a7194561ff1fffa76dae"}
-stwo_cairo_prover = { git = "https://github.com/starkware-libs/stwo-cairo", rev = "92232543984e20e984c5a7194561ff1fffa76dae" }
+
 stwo-cairo-adapter = { git = "https://github.com/starkware-libs/stwo-cairo", rev = "92232543984e20e984c5a7194561ff1fffa76dae" }
+stwo_cairo_prover = { git = "https://github.com/starkware-libs/stwo-cairo", rev = "92232543984e20e984c5a7194561ff1fffa76dae" }
 
-cairo-lang-runner = { git = "https://github.com/starkware-libs/cairo.git", rev = "b59953c3f20be94a416ffd95b9f89c037ee63ec7" }
-cairo-lang-casm = { git = "https://github.com/starkware-libs/cairo.git", rev = "b59953c3f20be94a416ffd95b9f89c037ee63ec7" }
-cairo-lang-utils = { git = "https://github.com/starkware-libs/cairo.git", rev = "b59953c3f20be94a416ffd95b9f89c037ee63ec7" }
-cairo-lang-executable = { git = "https://github.com/starkware-libs/cairo.git", rev = "b59953c3f20be94a416ffd95b9f89c037ee63ec7" }
-
-cairo-vm = { git = "https://github.com/lambdaclass/cairo-vm", rev = "e2c6c91c73cd0bc351721f302390fcc0965c6224", features = [
-  "mod_builtin",
+cairo-vm = { git = "https://github.com/lambdaclass/cairo-vm", rev = "b1a91f929b5fa29a1a2e9e6990a68a1220c0c673", features = [
+    "mod_builtin",
 ] }
+
+cairo-lang-runner = { git = "https://github.com/starkware-libs/cairo.git", rev = "5cc466a" }
+cairo-lang-utils = { git = "https://github.com/starkware-libs/cairo.git", rev = "5cc466a" }
+cairo-lang-executable = { git = "https://github.com/starkware-libs/cairo.git", rev = "5cc466a" }
+cairo-lang-casm = { git = "https://github.com/starkware-libs/cairo.git", rev = "5cc466a" }
+
 
 utils = { path = "../utils" }
 dotenv = "0.15.0"
