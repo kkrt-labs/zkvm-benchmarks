@@ -1,13 +1,9 @@
 use miden_processor::execute;
 use miden_processor::math::Felt;
 use miden_processor::ExecutionOptions;
-use miden_vm::{
-    assembly::DefaultSourceManager, prove, verify, Assembler, DefaultHost, ProgramInfo,
-    ProvingOptions,
-};
+use miden_vm::{prove, verify, Assembler, DefaultHost, ProgramInfo, ProvingOptions};
 use miden_vm::{AdviceInputs, StackInputs, StackOutputs};
 use std::fs;
-use std::sync::Arc;
 use std::time::Instant;
 use utils::{
     bench::{benchmark, Metrics},
@@ -43,7 +39,6 @@ fn bench_miden_fib(n: u32) -> Metrics {
     let stack_inputs =
         StackInputs::new(vec![Felt::from(1_u32)]).expect("Failed to create stack inputs");
     let advice_inputs = AdviceInputs::default();
-    let source_manager = Arc::new(DefaultSourceManager::default());
 
     // Execute
     let execution_start = Instant::now();
@@ -53,7 +48,6 @@ fn bench_miden_fib(n: u32) -> Metrics {
         advice_inputs.clone(),
         &mut DefaultHost::default(),
         ExecutionOptions::default(),
-        source_manager,
     )
     .expect("Failed to execute Miden program");
     metrics.exec_duration = execution_start.elapsed();
@@ -61,14 +55,12 @@ fn bench_miden_fib(n: u32) -> Metrics {
     // Prove and execute (not possible to isolate the proof generation due to ExecutionProver being private)
     // An approximation of the proof duration is done by subtracting the execution duration from the total duration
     let execution_proving_start = Instant::now();
-    let source_manager = Arc::new(DefaultSourceManager::default());
     let (outputs, proof) = prove(
         &program,
         stack_inputs.clone(),
         advice_inputs.clone(),
         &mut DefaultHost::default(),
         ProvingOptions::default(),
-        source_manager,
     )
     .expect("Failed to prove Miden program execution");
     let execution_proving_end = execution_proving_start.elapsed();
