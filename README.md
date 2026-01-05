@@ -35,7 +35,7 @@ The following table lists the versions of the ZK-VMs used in these benchmarks an
 | Cairo         | stwo-cairo `4bf779d` (main)      | Jan 2026       | [starkware-libs/stwo-cairo](https://github.com/starkware-libs/stwo-cairo) |
 | Cairo0        | cairo-vm `v3.0.1`                | Dec 2025       | [lambdaclass/cairo-vm](https://github.com/lambdaclass/cairo-vm) |
 | Cairo M       | stwo `v1.0.0`                    | Nov 2025       | [starkware-libs/stwo](https://github.com/starkware-libs/stwo) |
-| Miden         | `0.16.4`                         | Jul 25, 2025   | [0xMiden/miden-vm](https://github.com/0xMiden/miden-vm) |
+| Miden         | `0.20.1`                         | Dec 2025       | [0xMiden/miden-vm](https://github.com/0xMiden/miden-vm) |
 | Noir ProveKit | —                                | —              | [worldfnd/ProveKit](https://github.com/worldfnd/ProveKit) |
 | OpenVM        | `v1.4.2`                         | Dec 8, 2025    | [openvm-org/openvm](https://github.com/openvm-org/openvm) |
 | RiscZero      | `3.0.4`                          | Nov 24, 2025   | [risc0/risc0](https://github.com/risc0/risc0) |
