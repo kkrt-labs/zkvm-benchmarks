@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-openvm = { git = "https://github.com/openvm-org/openvm.git", tag = "v1.2.0" }
+openvm = { git = "https://github.com/openvm-org/openvm.git", tag = "v1.4.2" }
 hex = "0.4.3"
 serde = "1.0.26"
 guests = { path = "../../guests", features = ["with-ecdsa"] }
