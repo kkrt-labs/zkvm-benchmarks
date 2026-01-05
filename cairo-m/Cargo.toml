@@ -4,16 +4,16 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-cairo-m-common = { git = "https://github.com/kkrt-labs/cairo-m" }
-cairo-m-runner = { git = "https://github.com/kkrt-labs/cairo-m" }
-cairo-m-prover = { git = "https://github.com/kkrt-labs/cairo-m" }
-cairo-m-compiler = { git = "https://github.com/kkrt-labs/cairo-m" }
+cairo-m-common = { git = "https://github.com/kkrt-labs/cairo-m", branch = "main" }
+cairo-m-runner = { git = "https://github.com/kkrt-labs/cairo-m", branch = "main" }
+cairo-m-prover = { git = "https://github.com/kkrt-labs/cairo-m", branch = "main" }
+cairo-m-compiler = { git = "https://github.com/kkrt-labs/cairo-m", branch = "main" }
 dotenv = "0.15.0"
 sha2 = "0.10"
 sonic-rs = "0.5.2"
 stwo-prover = { git = "https://github.com/starkware-libs/stwo", features = [
   "parallel",
-], rev = "ab57a1c" }
+], tag = "v1.0.0" }
 thiserror = "2.0.12"
 utils = { path = "../utils" }
 
