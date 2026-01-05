@@ -15,11 +15,11 @@ k256 = { version = "=0.13.4", features = [
   "std",
   "ecdsa",
 ], default-features = false }
-risc0-zkvm = { version = "3.0.3", default-features = false, features = [
+risc0-zkvm = { version = "3.0.4", default-features = false, features = [
   "std",
   "unstable",
 ] }
-risc0-zkp = { version = "3.0.2", default-features = false }
+risc0-zkp = { version = "3.0.3", default-features = false }
 sha3 = { version = "0.10", default-features = false }
 starknet-crypto = "0.6"
 guests = { path = "../../../guests", features = [
