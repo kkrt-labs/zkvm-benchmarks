@@ -1,0 +1,16 @@
+[package]
+name = "stark-v-fib-guest"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# guest-bin provides guest_main! macro and its build.rs emits the linker script
+guest-bin = { git = "https://github.com/AntoineFONDEUR/stark-v", branch = "feat/sdk-guest-infrastructure", package = "guest-bin" }
+guest-lib = { git = "https://github.com/AntoineFONDEUR/stark-v", branch = "feat/sdk-guest-infrastructure", package = "guest-lib" }
+
+[build-dependencies]
+serde_json = "1.0"
+
+[profile.release]
+opt-level = 3
+lto = true
