@@ -9,4 +9,6 @@ path = "src/bin/fib.rs"
 
 [dependencies]
 utils = { path = "../utils" }
-stark-v-sdk = { git = "https://github.com/AntoineFONDEUR/stark-v", branch = "feat/sdk-guest-infrastructure", package = "stark-v-sdk" }
+stark-v-sdk = { git = "https://github.com/AntoineFONDEUR/stark-v", package = "stark-v-sdk" }
+# Enable parallel proving via prover crate directly
+prover = { git = "https://github.com/AntoineFONDEUR/stark-v", package = "prover", features = ["parallel"] }
