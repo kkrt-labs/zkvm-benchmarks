@@ -44,5 +44,5 @@ fn bench_stark_v_fib(n: u32) -> Metrics {
 }
 
 fn main() {
-    benchmark(bench_stark_v_fib, &FIBONACCI_INPUTS, "../.outputs/benchmark/fib_stark_v.csv");
+    benchmark(bench_stark_v_fib, &FIBONACCI_INPUTS, "../.outputs/benchmark/fib_stark-v.csv");
 }
