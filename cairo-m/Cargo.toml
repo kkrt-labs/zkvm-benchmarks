@@ -9,11 +9,12 @@ cairo-m-runner = { git = "https://github.com/kkrt-labs/cairo-m", branch = "main"
 cairo-m-prover = { git = "https://github.com/kkrt-labs/cairo-m", branch = "main" }
 cairo-m-compiler = { git = "https://github.com/kkrt-labs/cairo-m", branch = "main" }
 dotenv = "0.15.0"
+serde_json = "=1.0.145"
 sha2 = "0.10"
 sonic-rs = "0.5.2"
 stwo-prover = { git = "https://github.com/starkware-libs/stwo", features = [
   "parallel",
-], tag = "v1.0.0" }
+], rev = "ab57a1c" }
 thiserror = "2.0.12"
 utils = { path = "../utils" }
 
