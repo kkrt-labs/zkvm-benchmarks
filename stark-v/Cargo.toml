@@ -9,5 +9,4 @@ path = "src/bin/fib.rs"
 
 [dependencies]
 utils = { path = "../utils" }
-prover = { git = "https://github.com/AntoineFONDEUR/stark-v", branch = "feat/sdk-guest-infrastructure", package = "prover" }
-runner = { git = "https://github.com/AntoineFONDEUR/stark-v", branch = "feat/sdk-guest-infrastructure", package = "runner" }
+stark-v-sdk = { git = "https://github.com/AntoineFONDEUR/stark-v", branch = "feat/sdk-guest-infrastructure", package = "stark-v-sdk" }

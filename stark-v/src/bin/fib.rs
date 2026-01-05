@@ -1,7 +1,8 @@
 use std::time::Instant;
 use utils::bench::{benchmark, Metrics};
 use utils::metadata::FIBONACCI_INPUTS;
-use prover::{prove_rv32im, verify_rv32im, PcsConfig, FriConfig};
+use stark_v_sdk::prover::{prove_rv32im, verify_rv32im, PcsConfig, FriConfig};
+use stark_v_sdk::runner;
 
 const GUEST_ELF: &[u8] = include_bytes!(
     "../../guest/target/riscv32im-unknown-none-elf/release/stark-v-fib-guest"
