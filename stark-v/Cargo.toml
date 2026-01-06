@@ -1,0 +1,14 @@
+[package]
+name = "stark-v-bench"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "fib"
+path = "src/bin/fib.rs"
+
+[dependencies]
+utils = { path = "../utils" }
+stark-v-sdk = { git = "https://github.com/AntoineFONDEUR/stark-v", package = "stark-v-sdk" }
+# Enable parallel proving via prover crate directly
+prover = { git = "https://github.com/AntoineFONDEUR/stark-v", package = "prover", features = ["parallel"] }

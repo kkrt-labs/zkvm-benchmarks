@@ -11,9 +11,21 @@ bench-all:
 	make bench-openvm
 	make bench-risczero
 	make bench-sp1
+	make bench-stark-v
 	make bench-valida
 	make bench-zkm
 	@echo "Results are available through Jupyter Notebook: $(results_file)"
+
+build-stark-v-guest:
+	cd stark-v/guest && \
+	cargo build --release
+
+bench-stark-v-fib: build-stark-v-guest
+	cd stark-v && \
+	RUSTFLAGS="-C target-cpu=native" cargo run --release --bin fib
+
+bench-stark-v:
+	make bench-stark-v-fib
 
 ifeq ($(platform)-$(architecture), Linux-x86_64)
 bench-valida-fib:

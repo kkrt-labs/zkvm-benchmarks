@@ -20,10 +20,29 @@ For example, the fibonacci program will use the native field of the ZK-VM when d
 | OpenVM        | ✅        | ✅     |
 | RiscZero      | ✅        | ✅     |
 | SP1           | ✅        | ✅     |
+| stark-v       | ✅        | ❌     |
 | Valida        | ✅        | ✅     |
 | ZKM           | ✅        | ✅     |
 
 The following ZK-VMs are yet to be adapted: Ceno, Jolt, Nexus, Noir Barretenberg, Pico
+
+## Versions
+
+The following table lists the versions of the ZK-VMs used in these benchmarks and their release dates.
+
+| ZK-VM         | Version / Commit                 | Release Date   | Repository                                                |
+| ------------- | -------------------------------- | -------------- | --------------------------------------------------------- |
+| Cairo         | stwo-cairo `4bf779d` (main)      | Jan 2026       | [starkware-libs/stwo-cairo](https://github.com/starkware-libs/stwo-cairo) |
+| Cairo0        | cairo-vm `v3.0.1`                | Dec 2025       | [lambdaclass/cairo-vm](https://github.com/lambdaclass/cairo-vm) |
+| Cairo M       | stwo `v1.0.0`                    | Nov 2025       | [starkware-libs/stwo](https://github.com/starkware-libs/stwo) |
+| Miden         | `0.20.1`                         | Dec 2025       | [0xMiden/miden-vm](https://github.com/0xMiden/miden-vm) |
+| Noir ProveKit | —                                | —              | [worldfnd/ProveKit](https://github.com/worldfnd/ProveKit) |
+| OpenVM        | `v1.4.2`                         | Dec 8, 2025    | [openvm-org/openvm](https://github.com/openvm-org/openvm) |
+| RiscZero      | `3.0.4`                          | Nov 24, 2025   | [risc0/risc0](https://github.com/risc0/risc0) |
+| SP1           | `5.2.4`                          | Dec 15, 2025   | [succinctlabs/sp1](https://github.com/succinctlabs/sp1) |
+| stark-v       | main branch                      | Jan 2026       | [AntoineFONDEUR/stark-v](https://github.com/AntoineFONDEUR/stark-v) |
+| Valida        | `1.0.0`                          | Sep 24, 2025   | [lita-xyz/valida](https://github.com/lita-xyz/valida) |
+| ZKM           | `v1.2.3`                         | Dec 10, 2025   | [ProjectZKM/Ziren](https://github.com/ProjectZKM/Ziren) |
 
 Benchmarks can be done on ARM64 (MacOS) and x86 architectures.
 
@@ -71,7 +90,7 @@ make bench-all
 Or launch benchmark for a given ZK-VM:
 
 ```bash
-make bench-<cairo|cairo-m|miden|noir-provekit|openvm|risczero|sp1|valida|zkm>
+make bench-<cairo|cairo-m|miden|noir-provekit|openvm|risczero|sp1|stark-v|valida|zkm>
 ```
 
 ## Benchmark Details

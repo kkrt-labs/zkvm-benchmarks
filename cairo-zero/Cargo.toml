@@ -8,12 +8,12 @@ thiserror = "2.0.12"
 sonic-rs = "0.5.1"
 serde_json = "1.0"
 
-cairo-air = { git = "https://github.com/starkware-libs/stwo-cairo", rev = "92232543984e20e984c5a7194561ff1fffa76dae" }
-cairo-vm = { git = "https://github.com/lambdaclass/cairo-vm", rev = "e2c6c91c73cd0bc351721f302390fcc0965c6224", features = [
+cairo-air = { git = "https://github.com/starkware-libs/stwo-cairo", rev = "4bf779d8448e1eae2a8f5ffcfd0d4b3a1e879bd1" }
+cairo-vm = { git = "https://github.com/lambdaclass/cairo-vm", tag = "v3.0.1", features = [
   "mod_builtin",
 ] }
-stwo-cairo-adapter = { git = "https://github.com/starkware-libs/stwo-cairo", rev = "92232543984e20e984c5a7194561ff1fffa76dae" }
-stwo_cairo_prover = { git = "https://github.com/starkware-libs/stwo-cairo", rev = "92232543984e20e984c5a7194561ff1fffa76dae" }
+stwo-cairo-adapter = { git = "https://github.com/starkware-libs/stwo-cairo", rev = "4bf779d8448e1eae2a8f5ffcfd0d4b3a1e879bd1" }
+stwo_cairo_prover = { git = "https://github.com/starkware-libs/stwo-cairo", rev = "4bf779d8448e1eae2a8f5ffcfd0d4b3a1e879bd1" }
 
 utils = { path = "../utils" }
 dotenv = "0.15.0"

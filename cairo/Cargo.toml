@@ -9,7 +9,7 @@ sonic-rs = "0.5.1"
 
 cairo-air = { git = "https://github.com/starkware-libs/stwo-cairo", rev = "62c3c4a" }
 cairo-lang-runner = { git = "https://github.com/starkware-libs/cairo.git", rev = "5cc466a" }
-cairo-prove = { git = "https://github.com/starkware-libs/stwo-cairo" }
+cairo-prove = { git = "https://github.com/starkware-libs/stwo-cairo", rev = "62c3c4a" }
 cairo-vm = { git = "https://github.com/lambdaclass/cairo-vm", rev = "b1a91f929b5fa29a1a2e9e6990a68a1220c0c673", features = [
   "mod_builtin",
 ] }
